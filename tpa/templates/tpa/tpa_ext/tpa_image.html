@@ -1,0 +1,11 @@
+{% load static %}
+{% load thumbnail %}
+
+{% for i in valve.images.all %}
+    {% thumbnail i.image size crop="center" upscale=True as im %}
+        <div class="card__image-container">
+            <img class={{ class }} src="{{ im.url }}" title="{{ i.valve_type }}">
+            <button class="service__button_basket service__button card__basket" type="button"></button>
+        </div>
+    {% endthumbnail %}
+{% endfor %}

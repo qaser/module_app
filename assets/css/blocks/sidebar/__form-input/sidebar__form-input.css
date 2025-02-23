@@ -1,0 +1,20 @@
+.sidebar__form-input {
+    background: white;
+    border: .5px solid #C5C5C5;
+    border-radius: 5px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    outline: none;
+    margin: 7px 0 0 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 10px;
+    height: 26px;
+}
+
+.sidebar__form-input:focus {
+    border: 1px solid #648763;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+}

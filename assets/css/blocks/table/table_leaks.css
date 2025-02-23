@@ -1,0 +1,13 @@
+.table_leaks tr:hover {
+    background-color: #A3CDDA;
+    cursor: pointer;
+}
+
+.table_leaks th {
+    font-weight: 300;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: left;
+    background-color: #40869B;
+    color: white;
+}

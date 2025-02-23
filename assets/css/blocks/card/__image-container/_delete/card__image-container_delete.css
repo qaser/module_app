@@ -1,0 +1,17 @@
+.card__image-container_delete {
+  cursor: pointer;
+}
+
+
+.card__image-container_delete:hover {
+  animation: wiggle .2s infinite;
+}
+
+
+@keyframes wiggle {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}

@@ -1,0 +1,19 @@
+.popup__image {
+  max-width: 75vw;
+  max-height: 75vh;
+  border-radius: 20px;
+}
+
+.popup__image::before { /* обработка невалидной ссылки */
+  display: inline-block;
+  min-width: 50vw;
+  min-height: 50vh;
+  background-image: url(../../../images/error.jpg);
+  background-size: cover;
+}
+
+@media screen and (max-width: 600px) {
+  .popup__image {
+    margin-top: 16px;
+  }
+}

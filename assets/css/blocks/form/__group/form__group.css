@@ -1,0 +1,7 @@
+.form__group {
+    display: flex;
+    width: 100%;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}

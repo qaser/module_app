@@ -1,0 +1,12 @@
+.sidebar__link {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    margin: 12px auto 0 auto;
+    width: 85%;
+    display: block;
+}
+
+.sidebar__link:first-of-type {
+    margin-top: 0;
+  }

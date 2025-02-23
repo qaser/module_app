@@ -1,0 +1,5 @@
+.header__link_no-transparent {
+    text-decoration: none;
+    color: black;
+    cursor: pointer;
+}

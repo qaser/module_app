@@ -1,0 +1,17 @@
+.report__work {
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 0.5px solid #CBCCCE;
+    transition: background-color .1s linear .1s;
+    background-color: white;
+}
+
+.report__work:hover {
+    background-color: #F8F8F8;
+    cursor: pointer;
+}
+
+.report__work:last-of-type {
+    margin-bottom: 40px;
+}

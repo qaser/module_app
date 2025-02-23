@@ -1,0 +1,17 @@
+{% load static %}
+
+<header class="header module-color_{{ app }}" id="header">
+    <a class="header__link" href="{% url 'leaks:index' %}"><img class="header__logo" src="{% static 'img/logo-full-large.png' %}" alt="Логотип"></a>
+    <a class="header__link_no-transparent" href="{% url 'logout' %}">
+        <div class="header__auth">
+            <div class="header__userinfo">
+                <p class="header__username"></p>
+                <p class="header__user-proff"></p>
+            </div>
+            <img class="header__avatar" src="{% static 'img/avatar.png' %}" alt="Аватар">
+        </div>
+    </a>
+    <!-- {% if user.is_authenticated %}
+        <a class="header__point" href="{% url 'logout' %}">Выйти</a>
+    {% endif %} -->
+</header>

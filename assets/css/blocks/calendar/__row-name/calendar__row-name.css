@@ -1,0 +1,8 @@
+.calendar__row-name {
+    width: 76px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}

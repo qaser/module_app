@@ -1,0 +1,13 @@
+.card__basket {
+    background-image: url(../../../../img/Remove.png);
+    width: 30px;
+    height: 30px;
+    background-position: center;
+    background-size: contain;
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    visibility: hidden;
+}

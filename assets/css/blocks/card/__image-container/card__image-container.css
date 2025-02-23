@@ -1,0 +1,8 @@
+.card__image-container {
+    background-color: #D9D9D9;
+    background-image: url(../../../../img/remove_image.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 10px;
+    position: relative;
+  }

@@ -1,0 +1,9 @@
+.card__value {
+    width: 47%;
+    margin: auto 0;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 300;
+    /* ani находится в card__input */
+    animation: ani 1s forwards;
+}

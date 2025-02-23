@@ -1,0 +1,86 @@
+{% extends "module_app/base.html" %}
+{% block title %}Обзор выбранной утечки газа{% endblock %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+<div class="sidebar__panel">
+    <a href="{% url 'leaks:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Обзор утечек газа</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_objects"></div>
+        <h3 class="sidebar__text">Обзор объекта</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+      <!-- основная панель -->
+      <section class="main" id="main">
+        <h1 class="main__title"></h1>
+        <div class="card" id="{{ leak_id }}">
+            <div class="card__container">
+                <div class="card__header card__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Информация об утечке газа</h3>
+                    <button class="button card__button card__button_edit"></button>
+                </div>
+                <div class="card__field" id="leak_info">
+                  {% for field in leak %}
+                    <div class="card__line">
+                      <p class="card__param">{{ field.verbose_name }}</p>
+                      <p class="card__value" id="{{ field.name }}"></p>
+                    </div>
+                  {% endfor %}
+                <div class="card__header card__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Документация</h3>
+                </div>
+                <div class="card__line" id="doc_manual">
+                  <p class="card__param">Руководство по эксплуатации</p>
+                  <a class="card__value_ext  link" target="_blank">-</a>
+                </div>
+                {% comment %}
+                <form class="card__form" name="leak-edit" id="form-leak-edit">
+                  <button class="button" type="reset">Отмена</button>
+                  <button class="button" type="submit">Сохранить</button>
+                </form>
+                {% endcomment %}
+            </div>
+
+        </div>
+        <div class="card__images"></div>
+      </section>
+    </main>
+
+    <!-- всплывающее окно с фото -->
+    <div class="popup popup_darker" id="popup-image">
+      <div class="popup__container">
+        <button class="button popup__button-close" type="button"></button>
+        <img class="popup__image" src="#" alt="#">
+      </div>
+    </div>
+
+    <template class="image-template">
+        <div class="card__image-container" id="">
+            <img class="card__image" src="" title="">
+            {% comment %} <button class="service__button_basket service__button card__basket" type="button"></button> {% endcomment %}
+        </div>
+    </template>
+
+
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/singleLeak.js' %}"></script>
+{% endblock %}

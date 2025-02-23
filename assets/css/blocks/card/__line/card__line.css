@@ -1,0 +1,12 @@
+.card__line {
+    display: flex;
+    padding: 0 10px;
+    justify-content: space-between;
+    min-height: 36px;
+    position: relative;
+}
+
+
+.card__line:nth-child(even){
+  background-color: #EFEFEF;
+}

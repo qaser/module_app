@@ -1,0 +1,5 @@
+.form__label_textarea {
+    width: 100%;
+    max-width: none;
+    margin-bottom: 5px;
+}

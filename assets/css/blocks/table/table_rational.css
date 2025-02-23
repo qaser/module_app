@@ -1,0 +1,13 @@
+.table_rational tr:hover {
+    background-color: #B6A6C0;
+    cursor: pointer;
+}
+
+.table_rational th {
+    font-weight: 300;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: left;
+    background-color: #58386B;
+    color: white;
+  }

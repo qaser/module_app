@@ -1,0 +1,13 @@
+.main__link {
+    margin: 15px 0 0 0;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 16px;
+    color: #030098;
+    text-decoration: none;
+    transition: opacity .2s linear .1s;
+}
+
+.main__link:hover {
+  opacity: 0.7;
+}

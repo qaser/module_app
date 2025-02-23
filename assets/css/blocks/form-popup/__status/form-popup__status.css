@@ -1,0 +1,7 @@
+.form-popup__status {
+    content: "Не загружено";
+}
+
+.form-popup__status:empty + span {
+    display: none;
+}

@@ -1,0 +1,19 @@
+.form-popup__button {
+  width: 85%;
+  height: 50px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 18px;
+  text-align: center;
+  margin: 46px 0 37px 0;
+  border-radius: 2px;
+}
+
+@media screen and (max-width: 600px) {
+  .form-popup__button {
+    font-size: 14px;
+    line-height: 16px;
+    height: 46px;
+    margin: 44px 0 25px 0;
+  }
+}

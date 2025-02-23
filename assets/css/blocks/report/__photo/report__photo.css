@@ -1,0 +1,16 @@
+.report__photo {
+    visibility: hidden;
+    background-image: url('../../../../img/Camera.png');
+    width: 40px;
+    height: 40px;
+    background-size: contain;
+    background-color: transparent;
+    transition: transform .1s ease-out .1s;
+    margin: 0 auto;
+    border: none;
+}
+
+.report__photo:hover {
+    cursor: pointer;
+    transform: scale(1.05);
+}

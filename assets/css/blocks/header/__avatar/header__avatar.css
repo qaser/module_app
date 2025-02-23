@@ -1,0 +1,5 @@
+.header__avatar {
+    object-fit: cover;
+    width: 33px;
+    margin: 0 10px 0 10px;
+}

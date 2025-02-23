@@ -1,0 +1,15 @@
+.form-popup_wide {
+    width: 500px;
+}
+
+@media screen and (max-width: 600px) {
+    .form-popup_wide {
+        width: 400px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    .form-popup_wide {
+         width: 300px;
+    }
+}

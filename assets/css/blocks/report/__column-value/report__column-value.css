@@ -1,0 +1,14 @@
+.report__column-value {
+    width: 20%;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.report__column-value:first-of-type {
+    width: 40%;
+    text-align: justify;
+    margin-left: 15px;
+}

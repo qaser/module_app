@@ -1,0 +1,33 @@
+.form__checkbox {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    color: #ddd;
+    border: 1px solid black;
+    -webkit-appearance: none;
+    outline: none;
+    margin-right: 43%;
+    cursor: pointer;
+}
+.form__checkbox:checked {
+    background: rgb(173, 71, 71);
+}
+.form__checkbox:checked:before {
+    content: '';
+    position: absolute;
+    background: url("../../../../img/yes.svg");
+    width: 12px;
+    height: 9px;
+    top: 7px;
+    left: 5px;
+}
+.form__checkbox:active {
+    box-shadow: 0 0 7px #ddd;
+}
+
+@media screen and (max-width: 500px) {
+    .form__checkbox {
+        margin-right: 0;
+    }
+}

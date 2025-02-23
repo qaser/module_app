@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./pages/single_valve_service.css">
+    <title>Модуль ТПА</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Проект информационного сопровождения регламентных работ по техническому обслуживанию ТПА">
+    <meta name="keywords" content="html, css">
+    <meta name="author" content="Сайгин Алексей">
+  </head>
+
+  <body>
+
+    <div class="page">
+      <!-- заголовок -->
+      <header class="header" id="header">
+        <a class="header__link" href="#" ><img class="header__logo" src="../img/logo-full-large.png" alt="Логотип"></a>
+        <div class="header__auth">
+          <div class="header__userinfo">
+            <p class="header__username">Ястрежемский М.В.</p>
+            <p class="header__user-proff">Начальник КЦ-5,6</p>
+          </div>
+          <img class="header__avatar" src="../img/avatar.png" alt="Аватар">
+        </div>
+      </header>
+
+
+      <!-- боковая панель -->
+      <section  class="sidebar" id="sidebar">
+        <div class="sidebar__panel">
+            <a href="" class="sidebar__item">
+                <div class="sidebar__icon sidebar__icon_index"></div>
+                <h3 class="sidebar__text">Обзор ТПА</h3>
+            </a>
+            <a href="" class="sidebar__item">
+                <div class="sidebar__icon sidebar__icon_objects"></div>
+                <h3 class="sidebar__text">Обзор объекта</h3>
+            </a>
+            <a href="" class="sidebar__item">
+                <div class="sidebar__icon sidebar__icon_help"></div>
+                <h3 class="sidebar__text">Справочная информация</h3>
+            </a>
+            <a href="" class="sidebar__item">
+                <div class="sidebar__icon sidebar__icon_edit"></div>
+                <h3 class="sidebar__text">Справочная информация</h3>
+            </a>
+        </div>
+      </section>
+
+      <!-- главный контент -->
+      <main class="content">
+        <!-- основная панель -->
+        <section class="main" id="main">
+            <h1 class="main__title">Техническое обслуживание ТПА  |   ГПА 33  |  кран шаровый №6</h1>
+            <div class="calendar">
+                <div class="calendar__header">
+                    <p class="calendar__month"></p> <!-- пустой блок для отступа-->
+                    <p class="calendar__month">янв.</p>
+                    <p class="calendar__month">фев.</p>
+                    <p class="calendar__month">март</p>
+                    <p class="calendar__month">апр.</p>
+                    <p class="calendar__month">май</p>
+                    <p class="calendar__month">июнь</p>
+                    <p class="calendar__month">июль</p>
+                    <p class="calendar__month">авг.</p>
+                    <p class="calendar__month">сент.</p>
+                    <p class="calendar__month">окт.</p>
+                    <p class="calendar__month">нояб.</p>
+                    <p class="calendar__month">дек.</p>
+                </div>
+                <div class="calendar__item">
+                    <div class="calendar__item-header">ГПА52</div>
+                    <div class="calendar__row">
+                        <p class="calendar__row-name">ОК 04.12</p>
+                        <div class="calendar__row-month calendar__row-month_blue">ТО-1</div>
+                        <div class="calendar__row-month">ТО-1</div>
+                        <div class="calendar__row-month">ТОиР</div>
+                        <div class="calendar__row-month calendar__row-month_red">ТО-1/ТО-2</div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                    </div>
+                </div>
+                <div class="calendar__item">
+                    <div class="calendar__row">
+                        <p class="calendar__row-name">81.37-5</p>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month calendar__row-month_violet">ТО-2</div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month calendar__row-month_gray">ТО-2</div>
+                        <div class="calendar__row-month"></div>
+                        <div class="calendar__row-month calendar__row-month_yellow">ТОиР</div>
+                        <div class="calendar__row-month"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- блок для подробного отображения работ при ТО -->
+            <div class="service">
+                <div class="service__item">
+                    <div class="service__header">
+                        <h2 class="service__title" id="">ТО-1 от 23.04.2023г.</h2>
+                        <div class="service__buttons">
+                            <button class="service__button button">Добавить доп. работы</button>
+                            <button class="service__button button">Распечатать акт проверки</button>
+                            <button class="service__button button">Редактировать работы</button>
+                        </div>
+                    </div>
+                    <div class="report">
+                        <div class="report__header">
+                            <p class="report__column-title">Описание работы</p>
+                            <p class="report__column-title">Отметка о выполнении</p>
+                            <p class="report__column-title">Замечания</p>
+                            <p class="report__column-title">Фото и видео материалы</p>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="service__item">
+                    <div class="service__header">
+                        <h2 class="service__title" id="">ТО-1 от 23.04.2023г.</h2>
+                        <div class="service__buttons">
+                            <button class="service__button button">Добавить доп. работы</button>
+                            <button class="service__button button">Распечатать акт проверки</button>
+                            <button class="service__button button">Редактировать работы</button>
+                        </div>
+                    </div>
+                    <div class="report">
+                        <div class="report__header">
+                            <p class="report__column-title">Описание работы</p>
+                            <p class="report__column-title">Отметка о выполнении</p>
+                            <p class="report__column-title">Замечания</p>
+                            <p class="report__column-title">Фото и видео материалы</p>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                        <div class="report__work" id="">
+                            <div class="report__column-value">Проверка наличия заводской маркировки, надписи технологического номера и указателя положения затвора</div>
+                            <div class="report__column-value">Выполнено</div>
+                            <div class="report__column-value">Замечаний нет</div>
+                            <div class="report__column-value">Отсутствуют</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+
+    <!-- всплывающее окно с фото -->
+    <div class="popup popup_darker" id="popup-image">
+        <div class="popup__container">
+            <button class="button popup__button-close" type="button"></button>
+            <div class="images">
+                <img class="images__display" src="../photo-1559569283-327b99858782.jpg" alt="#">
+                <p class="images__title">Картинка</p>
+                <div class="images__panel">
+                    <img src="../photo-1559569283-327b99858782.jpg" alt="" class="images__item images__item_active">
+                    <img src="../photo-1582642880428-3e2c04ad14ec.jpg" alt="" class="images__item">
+                    <img src="../photo-1596394723537-ee8cb659ce24.jpg" alt="" class="images__item">
+                    <img src="../photo-1596394723537-ee8cb659ce24.jpg" alt="" class="images__item">
+                    <img src="../photo-1596394723537-ee8cb659ce24.jpg" alt="" class="images__item">
+                    <img src="../photo-1596394723537-ee8cb659ce24.jpg" alt="" class="images__item">
+                    <img src="../photo-1582642880428-3e2c04ad14ec.jpg" alt="" class="images__item">
+                    <img src="../photo-1596394723537-ee8cb659ce24.jpg" alt="" class="images__item">
+                    <img src="../photo-1596394723537-ee8cb659ce24.jpg" alt="" class="images__item">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <footer class="footer">
+    </footer> -->
+
+    </div>
+  </body>
+</html>

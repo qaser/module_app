@@ -1,0 +1,17 @@
+{% if widget.is_initial %}
+    <span class="form__label">Текущее изображение:
+        <a href="{{ widget.value.url }}">Открыть</a>
+    </span>
+    <br>
+{% endif %}
+
+<input type="{{ widget.type }}" name="{{ widget.name }}" id="file-upload"
+    {% for name, value in widget.attrs.items %}
+        {% if value is not False %}
+            {{ name }}
+            {% if value is not True %}
+                ="{{ value|stringformat:'s' }}"
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+>

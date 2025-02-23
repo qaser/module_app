@@ -1,0 +1,16 @@
+.card__delete {
+    position: absolute;
+    right: 13px; /* Расположим кнопку справа */
+    top: 50%;
+    transform: translateY(-50%); /* Центрируем по вертикали */
+    background: transparent;
+    border: none;
+    color: red;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.card__delete:hover {
+    color: darkred;
+}

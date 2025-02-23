@@ -1,0 +1,47 @@
+.tooltip {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    left: 720.617px;
+    top: 69.9px;
+}
+
+.tooltip-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tooltip-glass {
+    background: rgba(50, 50, 50, 0.8);
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip-arrow {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: inherit;
+    clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+.tooltip-bottom .tooltip-arrow {
+    top: -6px;
+    bottom: auto;
+    transform: translateX(-50%) rotate(180deg);
+}

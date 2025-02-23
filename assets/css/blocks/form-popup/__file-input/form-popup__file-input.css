@@ -1,0 +1,21 @@
+.form-popup__file-input {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    font-family: inherit;
+}
+
+.form-popup__file-input::file-selector-button {
+    background-color: #9AC999;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 6px;
+    font-weight: inherit;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#uploadForm_File {
+    text-transform: lowercase;
+    cursor: pointer;
+}

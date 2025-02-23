@@ -1,0 +1,21 @@
+.images__item {
+    max-height: 75px;
+    margin: 0 0 10px 20px;
+    transition: transform .2s ease-in-out;
+    border-radius: 5px;
+}
+
+.images__item:first-of-type {
+    margin: 0 0 10px 0;
+}
+
+@media screen and (max-width: 600px) {
+    .images__item {
+        max-height: 60px;
+    }
+}
+
+.images__item:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}

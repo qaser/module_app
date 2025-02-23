@@ -1,0 +1,5 @@
+.content {
+    grid-area: content;
+    min-height: calc(100vh - 60px); /* прижимаю футер к низу экрана */
+    overflow-x: auto;
+}

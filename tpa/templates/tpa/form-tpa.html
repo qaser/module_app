@@ -1,0 +1,54 @@
+{% extends "module_app/base.html" %}
+
+{% block title %}Добавить новую запись о ТПА{% endblock %}
+
+{% load static %}
+{% load tpa_filters %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/form-tpa.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+<div class="sidebar__panel">
+    <a href="{% url 'tpa:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Обзор ТПА</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+        <section class="main" id="main">
+            <!-- блок формы -->
+
+            <form class="card__container" method="post" enctype="multipart/form-data">
+                <div class="card__header card__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Добавить новую запись о ТПА</h3>
+                </div>
+                {% csrf_token %}
+
+                {% for field in form %}
+
+                    <div class="card__line" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="card__param">{{ field.label }}</label>
+                        {{ field|addclass:'card__value card__input' }}
+                        {% include 'tpa/tpa_ext/form_extend/error.html' with field=field %}
+                    </div>
+
+                {% endfor %}
+
+                {% include "tpa/tpa_ext/button_ext/save_button.html" %}
+            </form>
+
+            <!-- конец блока формы -->
+        </section>
+    </main>
+{% endblock %}

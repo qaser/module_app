@@ -1,0 +1,33 @@
+.form-popup__file-submit {
+    display: block;
+    margin-top: 25px;
+    padding: 9px 15px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    color: #000000;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    font-family: inherit;
+    transition: background-color 0.2s linear;
+  }
+
+  .form-popup__file-submit:hover {
+    background-color: #FFFFFF;
+    cursor: pointer;
+    transition: background-color 0.2s linear;
+  }
+
+  .form-popup__file-submit:focus-visible {
+    border: 2px solid #ffffff;
+    outline: none;
+  }
+
+  .form-popup__file-submit:focus {
+    border: 2px solid #ffffff;
+    outline: none;
+  }
+
+  .form-popup__file-submit_green {
+    background-color: #C56FFF;
+  }

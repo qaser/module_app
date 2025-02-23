@@ -1,0 +1,8 @@
+.form-popup__button_disactive {
+  color: black;
+  background-color: white;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.2;
+  border: 1px solid #648763;
+}

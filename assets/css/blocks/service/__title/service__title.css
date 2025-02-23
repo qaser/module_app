@@ -1,0 +1,20 @@
+.service__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+}
+
+@media screen and (max-width: 800px) {
+    .service__title {
+        font-size: 14px;
+        line-height: 16px;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .service__title {
+        font-size: 12px;
+        line-height: 14px;
+    }
+}

@@ -1,0 +1,15 @@
+.form-popup__field {
+  margin: 30px 0 0 0;
+  position: relative;
+  width: 85%;
+}
+
+.form-popup__field:first-of-type {
+  margin: 20px 0 0 0;
+}
+
+@media screen and (max-width: 600px) {
+  .form-popup__field:first-of-type {
+    margin: 15px 0 0 0;
+  }
+}

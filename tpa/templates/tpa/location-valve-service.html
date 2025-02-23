@@ -1,0 +1,225 @@
+{% extends "module_app/base.html" %}
+{% block title %}Обзор объекта{% endblock %}
+
+{% load static %}
+{% load tpa_filters %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/location_valve_service.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <div class="sidebar__panel">
+        <a href="{% url 'tpa:index' %}" class="sidebar__item">
+            <div class="sidebar__icon sidebar__icon_index"></div>
+            <h3 class="sidebar__text">Обзор ТПА</h3>
+        </a>
+        <a href="" class="sidebar__item">
+            <div class="sidebar__icon sidebar__icon_doc"></div>
+            <h3 class="sidebar__text">Документация на ТПА</h3>
+        </a>
+        <a href="" class="sidebar__item">
+            <div class="sidebar__icon sidebar__icon_help"></div>
+            <h3 class="sidebar__text">Справочная информация</h3>
+        </a>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+        <!-- главный контент -->
+        <main class="content">
+        <!-- основная панель -->
+        <section class="main" id="main">
+            <h1 class="main__title">График ТОиР | {{ location.department.station }} | {{ location.department }} | {{ location }}</h1>
+            <div class="calendar" id="{{ location.id }}">
+                <div class="calendar__header">
+                    <p class="calendar__month"></p> <!-- пустой блок для отступа-->
+                    <p class="calendar__month">янв.</p>
+                    <p class="calendar__month">фев.</p>
+                    <p class="calendar__month">март</p>
+                    <p class="calendar__month">апр.</p>
+                    <p class="calendar__month">май</p>
+                    <p class="calendar__month">июнь</p>
+                    <p class="calendar__month">июль</p>
+                    <p class="calendar__month">авг.</p>
+                    <p class="calendar__month">сент.</p>
+                    <p class="calendar__month">окт.</p>
+                    <p class="calendar__month">нояб.</p>
+                    <p class="calendar__month">дек.</p>
+                </div>
+                <div class="calendar__item">
+                    <!-- <div class="calendar__item-header">ГПА52</div> -->
+                    {% for valve, months in services.items %}
+                        <div class="calendar__row">
+                            <p class="calendar__row-name">{{ valve }}</p>
+                            {% for month, service in months.items %}
+                                {% if service|length == 0 %}
+                                    <div class="calendar__row-month" id="empty" name="{{year}}-{{month}}-01"></div>
+                                {% elif service|length == 1 %}
+                                    <div class="calendar__row-month calendar__row-month_{{ service.0.service_type.color }}" id="{{ service.0.id }}" name="{{year}}-{{month}}-01">{{ service.0.service_type.name }}</div>
+                                {% elif service|length > 1 %}
+                                    <div class="calendar__row-month calendar__row-month_red" id="{{ service|get_ids }}" name="{{year}}-{{month}}-01">{{ service|get_names }}</div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        </main>
+
+
+        <!-- всплывающее окно с формой добавления ТО -->
+        <div class="popup" id="popup-newservice">
+            <div class="popup__container">
+                <button class="popup__button-close" type="button"></button>
+                <form class="form-popup" name="new-service" id="form-newservice" novalidate>
+                    <h2 class="form-popup__header"></h2>
+                    <label class="form-popup__field">
+                        <select class="form-popup__input" id="service-name" name="name"></select>
+                        <span class="form-popup__input-error" id="service-name-error"></span>
+                    </label>
+                    <label class="form-popup__field">
+                        <input class="form-popup__input" id="service-date" type="date" name="date">
+                        <span class="form-popup__input-error" id="service-date-error"></span>
+                    </label>
+                    <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- всплывающее окно с формой добавления работы -->
+        <div class="popup" id="popup-newwork">
+            <div class="popup__container">
+                <button class="popup__button-close" type="button"></button>
+                <form class="form-popup form-popup_wide" name="new-work" id="form-newwork" enctype="multipart/form-data">
+                    <h2 class="form-popup__header"></h2>
+                    <label class="form-popup__field">
+                        <textarea class="form-popup__input" id="work-description" name="description" rows="5" placeholder="Введите описание работы" required maxlength="500" minlength="7"></textarea>
+                        <span class="form-popup__input-error" id="work-description-error"></span>
+                    </label>
+                    <label class="form-popup__field">
+                        <select class="form-popup__input" id="work-done" name="done" required>
+                            <option value="Выполнено">Выполнено</option>
+                            <option value="Не выполнено">Не выполнено</option>
+                        </select>
+                        <span class="form-popup__input-error" id="work-done-error"></span>
+                    </label>
+                    <label class="form-popup__field">
+                        <textarea class="form-popup__input" id="work-faults" name="faults" rows="5" placeholder="Введите выявленные замечания или оставьте поле пустым" maxlength="500"></textarea>
+                        <span class="form-popup__input-error" id="work-faults-error"></span>
+                    </label>
+                    <label class="form-popup__file-field">
+                        <span class="form-popup__file-title">Файлы:</span>
+                        <input class="form-popup__input" type="file" id="work-files" name="files" accept="image/*, video/*" multiple>
+                        <span class="form-popup__input-error" id="work-files-error"></span>
+                    </label>
+                    <progress id="progressBar" value="0" max="100"></progress>
+                    <div class="form-popup__container">
+                        <span class="form-popup__status" id="uploadForm_Status"></span>
+                        <span id="uploadForm_Size"></span>
+                    </div>
+                    <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- всплывающее окно с формой редактирования работы -->
+        <div class="popup" id="popup-editwork">
+            <div class="popup__container">
+                <button class="popup__button-close" type="button"></button>
+                <form class="form-popup form-popup_wide" name="edit-work" id="form-editwork" enctype="multipart/form-data">
+                    <h2 class="form-popup__header"></h2>
+                    <label class="form-popup__field">
+                        <textarea class="form-popup__input" id="editwork-description" name="description" rows="5" placeholder="Введите описание работы" required maxlength="500" minlength="7"></textarea>
+                        <span class="form-popup__input-error" id="editwork-description-error"></span>
+                    </label>
+                    <label class="form-popup__field">
+                        <select class="form-popup__input" id="editwork-done" name="done" required>
+                            <option value="Выполнено">Выполнено</option>
+                            <option value="Не выполнено">Не выполнено</option>
+                        </select>
+                        <span class="form-popup__input-error" id="editwork-done-error"></span>
+                    </label>
+                    <label class="form-popup__field">
+                        <textarea class="form-popup__input" id="editwork-faults" name="faults" rows="5" placeholder="Введите выявленные замечания или оставьте поле пустым" maxlength="500"></textarea>
+                        <span class="form-popup__input-error" id="editwork-faults-error"></span>
+                    </label>
+                    <label class="form-popup__file-field">
+                        <span class="form-popup__file-title">Файлы:</span>
+                        <input class="form-popup__input" type="file" id="editwork-files" name="files" accept="image/*, video/*" multiple>
+                        <span class="form-popup__input-error" id="editwork-files-error"></span>
+                    </label>
+                    <progress id="progressBarEdit" value="0" max="100"></progress>
+                    <div class="form-popup__container">
+                        <span class="form-popup__status" id="uploadFormEdit_Status"></span>
+                        <span id="uploadFormEdit_Size"></span>
+                    </div>
+                    <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- всплывающее окно с подтверждением удаления ТО -->
+        <div class="popup" id="popup-confirm-delete">
+            <div class="popup__container">
+                <button class="popup__button-close" type="button"></button>
+                <form class="form-popup" name="confirm-delete" id="form-delete" novalidate>
+                    <h2 class="form-popup__header">Вы удаляете запись о ТО</h2>
+                    <button class="form-popup__button button button_dark-green" type="submit">Подтвердить</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- всплывающее окно с фото -->
+        <div class="popup popup_darker" id="popup-images">
+            <div class="popup__container">
+                <button class="button popup__button-close" type="button"></button>
+                <div class="images">
+                    <div class="images__switch">
+                        <!-- <img src="" alt="" class="images__display"> -->
+                    </div>
+                    <p class="images__title"></p>
+                    <div class="images__panel">
+                        <!-- <img src="" alt="" class="images__item"> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <template class="service-template">
+            <div class="service__item" id="">
+                <div class="service__header">
+                    <h2 class="service__title" ></h2> <!-- наименование ТО -->
+                    <div class="service__buttons">
+                        <button class="service__button_add service__button" type="button" title="Добавить дополнительную работу"></button>
+                        <button class="service__button_basket service__button" type="button" title="Удалить запись о ТО"></button>
+                    </div>
+                </div>
+                <div class="report" id="">
+                    <div class="report__header">
+                        <p class="report__column-title">Описание работы</p>
+                        <p class="report__column-title">Отметка о выполнении</p>
+                        <p class="report__column-title">Замечания</p>
+                        <p class="report__column-title">Фото и видео материалы</p>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template class="work-template">
+            <div class="report__work" id="">
+                <p class="report__column-value" id="description"></p>
+                <p class="report__column-value" id="done"></p>
+                <p class="report__column-value" id="faults"></p>
+                <button class="report__photo" type="button" id="files"></button>
+            </div>
+        </template>
+
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/singleValveService.js' %}"></script>
+{% endblock %}

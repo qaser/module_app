@@ -1,0 +1,6 @@
+.card__header {
+    padding: 6px 6px 6px 10px;
+    display: flex;
+    /* flex-direction: row; */
+    justify-content: space-between;
+}

@@ -1,0 +1,13 @@
+.table_oil tr:hover {
+    background-color: #EBDA9D;
+    cursor: pointer;
+}
+
+.table_oil th {
+    font-weight: 300;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    text-align: left;
+    background-color: #86753A;
+    color: white;
+  }

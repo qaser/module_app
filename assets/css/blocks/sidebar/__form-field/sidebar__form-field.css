@@ -1,0 +1,12 @@
+.sidebar__form-field {
+    width: 90%;
+    margin: 12px auto;
+}
+
+.sidebar__form-field:first-of-type {
+    margin-top: 0;
+  }
+
+  .sidebar__form-field:last-of-type {
+    margin-bottom: 24px;
+  }

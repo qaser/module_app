@@ -1,0 +1,25 @@
+.form__input {
+    width: 35%;
+    background: #F9FFF9;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    outline: none;
+    margin: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 0 10px;
+    height: 26px;
+}
+.form__input:focus {
+    border: 1px solid #648763;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 500px) {
+    .form__input {
+        width: 100%;
+    }
+}

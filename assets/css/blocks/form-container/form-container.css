@@ -1,0 +1,14 @@
+.form-container {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-top: 10px;
+    margin-right: 20px;
+}
+
+@media screen and (max-width: 800px) {
+    .form-container {
+        margin-right: 10px;
+        margin-left: 10px;
+    }
+}

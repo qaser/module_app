@@ -1,0 +1,29 @@
+.form-popup__input {
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 1px solid;
+  border-top: 1px solid;
+  border-color: rgba(0, 0, 0, 0.2);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  outline: none;
+  background-color: white;
+  resize: none;
+}
+
+.form-popup__input::file-selector-button {
+    background-color: #9AC999;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 6px;
+    font-weight: inherit;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#uploadForm_File {
+    text-transform: lowercase;
+    cursor: pointer;
+}

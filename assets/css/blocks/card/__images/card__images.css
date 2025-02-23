@@ -1,0 +1,16 @@
+.card__images {
+    width: 45%;
+    margin: 0 0 0 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 10px;
+    align-items: stretch;
+}
+
+@media screen and (max-width: 1200px) {
+    .card__images {
+        width: 100%;
+        margin: 10px auto;
+
+    }
+}

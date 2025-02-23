@@ -1,0 +1,11 @@
+.report__column-title {
+    width: 20%;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    color: white;
+}
+
+.report__column-title:first-of-type {
+    width: 40%;
+}

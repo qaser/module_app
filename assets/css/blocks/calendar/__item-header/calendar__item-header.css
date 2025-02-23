@@ -1,0 +1,10 @@
+.calendar__item-header {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 30px;
+    background-color: #648763;
+    width: 1065px; /* подбирать в зависимости от padding-left */
+    height: 30px; /* должна соответствовать line-height */
+    color: white;
+    padding-left: 10px;
+}

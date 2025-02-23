@@ -1,0 +1,49 @@
+.page {
+    font-family: 'Inter', 'Arial', 'Helvetica', 'sans-serif';
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    margin: 0;
+    padding: 0;
+    background-color: #F8F8F8;
+    display: grid;
+    /* grid-template-columns: 280px calc(100% - 280px); */
+    grid-template-columns: calc((100% - 1600px) / 2) 280px 1320px calc((100% - 1600px) / 2);
+    grid-template-areas:
+    "header header header header"
+    ". sidebar content .";
+    justify-content: center;
+}
+
+@media screen and (max-width: 1600px) {
+    .page {
+        grid-template-columns: 280px calc(100% - 280px);
+        grid-template-areas:
+        "header header"
+        "sidebar content";
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .page {
+        grid-template-columns: 50% 50%;
+        grid-template-areas:
+        "header header"
+        "sidebar sidebar"
+        "content content";
+    }
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type=number] {
+    appearance: none;
+    -moz-appearance: textfield; /* Firefox */
+}

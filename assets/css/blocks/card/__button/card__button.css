@@ -1,0 +1,9 @@
+.card__button {
+  width: 18px;
+  height: 18px;
+  background-position: center;
+  background-size: contain;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  margin: 0 5px 0 0;
+}

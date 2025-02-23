@@ -1,0 +1,8 @@
+.calendar__row {
+    display: grid;
+    width: 1080px;
+    margin: 5px 0px;
+    grid-template-columns: repeat(13, 1fr);
+    justify-content: space-between;
+    align-items: center;
+}

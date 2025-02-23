@@ -1,0 +1,38 @@
+.form-popup {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border-radius: 10px;
+  text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+  .form-popup {
+    width: 282px;
+  }
+}
+
+progress {
+    width: 85%;
+    height: 5px;
+    margin-top: 15px;
+    border: none;
+    background-color: white;
+}
+
+progress::-webkit-progress-bar {
+    border: none;
+    background-color: white;
+}
+
+progress::-webkit-progress-value {
+    background-color: #648763;
+}
+
+progress::-moz-progress-bar {
+    border: none;
+    background-color: #648763;
+}

@@ -1,0 +1,9 @@
+.card__image_delete {
+  pointer-events: none;
+  animation: fade 1s forwards;
+}
+
+@keyframes fade {
+  0% {opacity: 1;}
+  100% {opacity: .2;}
+}

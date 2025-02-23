@@ -1,0 +1,207 @@
+{% extends "module_app/base.html" %}
+
+{% block title %}Добавить новую запись об утечке газа{% endblock %}
+
+{% load static %}
+{% load leaks_filters %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/form-leak.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+<div class="sidebar__panel">
+    <a href="{% url 'leaks:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Обзор утечек газа</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+</div>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+        <section class="main" id="main">
+            <h1 class="main__title">Добавить новую запись об утечке газа</h1>
+
+            <!-- блок формы -->
+
+            <div class="form-container">
+                <form class="form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    {% with form.location as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.title as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.diameter as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.pressure as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.valve_type as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.factory as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.year_made as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.year_exploit as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.tech_number as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.factory_number as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.inventory_number as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.remote as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.label as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.design as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.drive_type as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.drive_factory as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.drive_year_exploit as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.material as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label form__label_textarea">{{ field.label }}</label>
+                            {{ field|addclass:'form__input-char' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.description as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                            {{ field|addclass:'form__textarea' }}
+                            {% include 'leaks/leaks_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.images as field %}
+                        <div class="form__group">
+
+                            <label class="form__label">Загрузить фото</label>
+                            {% comment %} <input type="file" name="images" class="form-control-file" id="note-image" multiple> {% endcomment %}
+                            {{ field }}
+                            <span class="form__error">{{ form.images.errors }}</span>
+                        </div>
+                    {% endwith %}
+
+                    {% include "leaks/leaks_ext/button_ext/save_button.html" %}
+                </form>
+            </div>
+
+            <!-- конец блока формы -->
+        </section>
+    </main>
+{% endblock %}

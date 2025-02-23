@@ -1,0 +1,6 @@
+.report__header {
+    background-color: #648763;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}

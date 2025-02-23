@@ -1,0 +1,13 @@
+.main__links {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1250px;
+    margin: 20px 40px 0 0;
+    align-items: center;
+}
+
+@media screen and (max-width: 800px) {
+    .main__links {
+        margin-right: 0;
+    }
+}

@@ -1,0 +1,14 @@
+.sidebar__button {
+    font-weight: 400;
+    font-size: 12px;
+    border-radius: 5px;
+    height: 33px;
+    border: 1px solid transparent;
+    width: 90%;
+    margin: 0 auto;
+    display: block;
+}
+
+.sidebar__button_mar-bottom {
+    margin-bottom: 15px;
+}
