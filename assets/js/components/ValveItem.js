@@ -57,12 +57,11 @@ export default class ValveItem {
     }
 
     renderItem(valve) {
-        const dep = valve.department;
-        const loc = valve.location;
+        const eq = valve.equipment;
         const type = valve.valve_type;
         const diam = valve.diameter;
         const num = valve.tech_number;
-        this._title.textContent = `${dep} | ${loc} | ${type} | Ду${diam} | №${num}`;
+        this._title.textContent = `${eq} | ${type} | Ду${diam} | №${num}`;
         this._values.forEach((item) => {
             item.textContent = valve[item.id];
         });

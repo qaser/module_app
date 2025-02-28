@@ -7,6 +7,8 @@ import Image from './components/Image.js';
 import Section from './components/Section.js';
 import PopupWithImage from './components/PopupWithImage.js';
 import FormValidator from './components/FormValidator.js';
+import Tooltip from '../js/components/Tooltip.js';
+import AppMenu from '../js/components/AppMenu.js';
 
 
 const leak_id = document.querySelector('.card').id;
@@ -151,6 +153,8 @@ function renderLoading(isLoading) {
 
 // enableValidation(formConfig);
 popupImage.setEventListeners();
+new Tooltip();
+new AppMenu();
 
 // промис (заполнение данных пользователя) и (функция загрузки ТПА с сервера)
 Promise.all([api.getMyProfile(), api.getLeakItem(leak_id)])

@@ -1,5 +1,6 @@
 {% extends "module_app/base.html" %}
 {% block title %}Обзор графика ТО | {{ valve.valve_type }} Ду{{ valve.diameter }}, Ру{{ valve.pressure }}{% endblock %}
+{% block app_name %}Техническое обслуживание ТПА{% endblock %}
 
 {% load static %}
 {% load tpa_filters %}
@@ -9,12 +10,11 @@
 {% endblock %}
 
 {% block sidepanel %}
-    <div class="sidebar__panel">
         <a href="{% url 'tpa:index' %}" class="sidebar__item">
             <div class="sidebar__icon sidebar__icon_index"></div>
             <h3 class="sidebar__text">Обзор ТПА</h3>
         </a>
-        <a href="{% url 'tpa:location_valve_service' valve.location.id %}" class="sidebar__item">
+        <a href="{% url 'tpa:equipment_valve_service' valve.equipment.id %}" class="sidebar__item">
             <div class="sidebar__icon sidebar__icon_objects"></div>
             <h3 class="sidebar__text">Обзор объекта</h3>
         </a>
@@ -30,7 +30,6 @@
             <div class="sidebar__icon sidebar__icon_help"></div>
             <h3 class="sidebar__text">Справочная информация</h3>
         </a>
-    </div>
 {% endblock %}
 
 {% block content %}
@@ -39,7 +38,7 @@
         <main class="content">
         <!-- основная панель -->
         <section class="main" id="main">
-            <h1 class="main__title">График ТОиР | {{ valve.location.department }} | {{ valve.location }} | {{ valve.valve_type }} (Ду{{ valve.diameter }}) №{{ valve.tech_number }}</h1>
+            <h1 class="main__title">График ТОиР | {{ valve.equipment }} | {{ valve.valve_type }} (Ду{{ valve.diameter }}) №{{ valve.tech_number }}</h1>
             <div class="calendar" id="{{ valve.id }}">
                 <div class="calendar__header">
                     <p class="calendar__month"></p> <!-- пустой блок для отступа-->

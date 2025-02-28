@@ -1,6 +1,7 @@
 {% extends "module_app/base.html" %}
 
 {% block title %}Добавить новую запись о ТПА{% endblock %}
+{% block app_name %}Техническое обслуживание ТПА{% endblock %}
 
 {% load static %}
 {% load tpa_filters %}
@@ -11,7 +12,6 @@
 {% endblock %}
 
 {% block sidepanel %}
-<div class="sidebar__panel">
     <a href="{% url 'tpa:index' %}" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_index"></div>
         <h3 class="sidebar__text">Обзор ТПА</h3>
@@ -20,7 +20,6 @@
         <div class="sidebar__icon sidebar__icon_help"></div>
         <h3 class="sidebar__text">Справочная информация</h3>
     </a>
-</div>
 {% endblock %}
 
 {% block content %}
@@ -29,7 +28,7 @@
         <section class="main" id="main">
             <!-- блок формы -->
 
-            <form class="card__container" method="post" enctype="multipart/form-data">
+            <form class="card__container" method="post" enctype="multipart/form-data" id="form-new-tpa">
                 <div class="card__header card__header_{{ request.resolver_match.app_name }}">
                     <h3 class="card__title">Добавить новую запись о ТПА</h3>
                 </div>
@@ -51,4 +50,9 @@
             <!-- конец блока формы -->
         </section>
     </main>
+{% endblock %}
+
+
+{% block script %}
+    <script type="module" src="{% static 'js/newValve.js' %}"></script>
 {% endblock %}

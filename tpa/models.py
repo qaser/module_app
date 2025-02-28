@@ -1,9 +1,9 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from locations.models import Location
+from equipments.models import Equipment
 from tpa.utils import compress_image
-
+from users.models import ModuleUser
 
 DRIVETYPE = (
     ('Пневматический', 'Пневматический'),
@@ -62,11 +62,13 @@ class Factory(models.Model):
 
 
 class Valve(models.Model):
-    location = models.ForeignKey(
-        Location,
+    equipment = models.ForeignKey(
+        Equipment(),
         verbose_name='Место установки',
-        related_name='location',
+        related_name='equipment',
         on_delete=models.CASCADE,
+        null=False,
+        blank=False,
     )
     title = models.CharField(
         'Наименование ТПА',
@@ -107,20 +109,20 @@ class Valve(models.Model):
         blank=True,
     )
     tech_number =  models.CharField(
-        'Тех. номер',
+        'Технологический номер',
         max_length=10,
         null=False,
         blank=False,
     )
     factory_number = models.CharField(
-        'Зав. номер',
+        'Заводской номер',
         default='',
         max_length=20,
         null=True,
         blank=True,
     )
     inventory_number = models.CharField(
-        'Инв. номер',
+        'Инвентарный номер',
         default='',
         max_length=20,
         null=True,
@@ -190,8 +192,23 @@ class Valve(models.Model):
         verbose_name = 'ТПА'
         verbose_name_plural = 'ТПА'
 
+    def get_ks(self):
+        """
+        Возвращает корневой элемент второго уровня для текущего оборудования.
+        """
+        if self.equipment:
+            # Получаем корень ветки
+            root = self.equipment.get_root()
+            # Получаем всех потомков корня
+            descendants = root.get_descendants(include_self=True)
+            # Фильтруем элементы второго уровня
+            second_level = descendants.filter(level=1)
+            if second_level.exists():
+                return second_level.first()
+        return None
+
     def __str__(self):
-        return f'{self.valve_type} Ду{self.diameter} | №{self.tech_number} | {self.location}, {self.location.department} '
+        return f'{self.valve_type} Ду{self.diameter} | №{self.tech_number}'
 
 
 class ValveDocument(models.Model):
@@ -321,7 +338,7 @@ class Work(models.Model):
 # проведённые ремонты
 class Service(models.Model):
     executor = models.ForeignKey(
-        'users.Profile',
+        ModuleUser,
         on_delete=models.CASCADE,
         verbose_name='исполнитель',
         related_name='services'

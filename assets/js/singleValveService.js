@@ -10,6 +10,8 @@ import PopupWithForm from './components/PopupWithForm.js';
 import PopupWithConfirm from './components/PopupWithConfirm.js';
 import FormValidator from '../js/components/FormValidator.js';
 import PopupWithImages from './components/PopupWithImages.js';
+import AppMenu from '../js/components/AppMenu.js';
+
 
 let serviceId;
 let workId;
@@ -436,6 +438,7 @@ function renderLoading(isLoading) {
 }
 
 
+new AppMenu();
 enableValidation(formConfig);
 createServiceTypeOptions();
 popupImages.setEventListeners();

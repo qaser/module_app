@@ -17,6 +17,8 @@ export const uploadImageTemplate = `
     </div>
 `;
 
+export const tooltipFormField = 'Можно выбирать последовательно'
+
 export const BYTES_IN_MB = 1048576;
 
 // атрибуты преобразования формы данных об утечке
@@ -49,7 +51,7 @@ export const formAttrs = {
             'disabled': '',
       }
     },
-    'location': {
+    'equipment': {
         'tag': 'input',
         'tagAttrs': {
             'class': 'card__value card__input',
@@ -196,6 +198,7 @@ export const formAttrs = {
         'options': [
             'Надземное',
             'Подземное',
+            'В колодце',
         ],
         'tagAttrs': {
             'class': 'card__value card__input',

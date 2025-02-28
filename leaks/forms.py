@@ -27,9 +27,9 @@ class LeakForm(ModelForm):
     class Meta:
         model = Leak
         fields = (
-            'direction',
+            # 'direction',
             'place',
-            'location',
+            'equipment',
             'is_valve',
             'specified_location',
             'description',

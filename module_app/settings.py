@@ -12,13 +12,12 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'api',
     'tpa',
-    'locations',
-    'oil',
+    'equipments',
+    # 'oil',
     'leaks',
     'rational',
-    'faults',
     'users',
-    'report',
+    'mptt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -83,6 +82,7 @@ REST_FRAMEWORK = {
     )
 }
 
+AUTH_USER_MODEL = 'users.ModuleUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

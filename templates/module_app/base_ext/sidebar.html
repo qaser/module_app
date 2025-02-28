@@ -1,7 +1,11 @@
 {% load static %}
 
 <section  class="sidebar" id="sidebar">
-  <div class="sidebar__panel">
-    {% block sidepanel %}{% endblock %}
-  </div>
+    <div class="sidebar__panel">
+        <a href="" class="sidebar__item module-color_{{ request.resolver_match.app_name }}" id="menu-apps">
+            <div class="sidebar__icon sidebar__icon_app"></div>
+            <h3 class="sidebar__text">{% block app_name %}{% endblock %}</h3>
+        </a>
+        {% block sidepanel %}{% endblock %}
+    </div>
 </section>

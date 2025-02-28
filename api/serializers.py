@@ -2,11 +2,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
+from equipments.models import Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
-from locations.models import Department, Direction, Location, Station
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
-from users.models import Profile, User
+from users.models import ModuleUser
 
 
 class LeakImageSerializer(serializers.ModelSerializer):
@@ -22,7 +22,10 @@ class LeakDocumentSerializer(serializers.ModelSerializer):
 
 
 class ValveImageSerializer(serializers.ModelSerializer):
-    valve_id = serializers.PrimaryKeyRelatedField(queryset=Valve.objects.all(), source='valve')
+    valve_id = serializers.PrimaryKeyRelatedField(
+        queryset=Valve.objects.all(),
+        source='valve'
+    )
 
     class Meta:
         model = ValveImage
@@ -30,43 +33,23 @@ class ValveImageSerializer(serializers.ModelSerializer):
 
 
 class ValveDocumentSerializer(serializers.ModelSerializer):
-    valve_id = serializers.PrimaryKeyRelatedField(queryset=Valve.objects.all(), source='valve')
+    valve_id = serializers.PrimaryKeyRelatedField(
+        queryset=Valve.objects.all(),
+        source='valve'
+    )
 
     class Meta:
         model = ValveDocument
         fields = ('id', 'doc', 'name', 'valve_id')
 
 
-class DirectionSerializer(serializers.ModelSerializer):
+class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Direction
+        model = Equipment
         fields = '__all__'
-
-
-class StationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Station
-        fields = '__all__'
-
-
-class DepartmentSerializer(serializers.ModelSerializer):
-    station = StationSerializer()
-
-    class Meta:
-        model = Department
-        fields = '__all__'
-
-
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
-        fields = '__all__'
-        depth = 4
 
 
 class LeakSerializer(serializers.ModelSerializer):
-    direction = serializers.SerializerMethodField()
-    location = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
 
@@ -74,9 +57,8 @@ class LeakSerializer(serializers.ModelSerializer):
         model = Leak
         fields = (
             'id',
-            'direction',
             'place',
-            'location',
+            'equipment',
             'specified_location',
             'is_valve',
             'description',
@@ -108,102 +90,23 @@ class LeakSerializer(serializers.ModelSerializer):
         selected_files = LeakDocument.objects.filter(leak=obj)
         return LeakDocumentSerializer(selected_files, many=True).data
 
-    def get_location(self, obj):
-        location = get_object_or_404(Location, id=obj.location.id)
-        return location.name
-
-    # def get_department(self, obj):
-    #     department = get_object_or_404(Department, id=obj.location.department.id)
-    #     return department.name
-
-    # def get_station(self, obj):
-    #     station = get_object_or_404(Station, id=obj.location.department.station.id)
-    #     return station.name
-
-    def get_direction(self, obj):
-        direction = get_object_or_404(Direction, id=obj.location.department.station.direction.id)
-        return direction.name
-
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    station = StationSerializer()
-
-    class Meta:
-        model = Profile
-        fields = ('lastname_and_initials', 'job_position', 'station', 'role')
+    def get_equipment(self, obj):
+        equipment = get_object_or_404(Equipment, id=obj.location.id)
+        return equipment.name
 
 
 class UserSerializer(serializers.ModelSerializer):
-    role = serializers.SerializerMethodField()
-    patronymic = serializers.SerializerMethodField()
-    station = serializers.SerializerMethodField()
-    # profile = ProfileSerializer()
-    job_position = serializers.SerializerMethodField()
-    lastname_and_initials = serializers.SerializerMethodField()
-
     class Meta:
-        model = User
+        model = ModuleUser
         fields = (
             'id', 'last_name', 'first_name', 'patronymic',
             'lastname_and_initials', 'username', 'email',
-            'job_position', 'role', 'station',
+            'job_position', 'role', 'equipment',
         )
-
-    def get_role(self, obj):
-        profile = get_object_or_404(Profile, user=obj)
-        return profile.role
-
-    def get_job_position(self, obj):
-        profile = get_object_or_404(Profile, user=obj)
-        return profile.job_position
-
-    def get_lastname_and_initials(self, obj):
-        profile = get_object_or_404(Profile, user=obj)
-        return profile.lastname_and_initials
-
-    def get_patronymic(self, obj):
-        profile = get_object_or_404(Profile, user=obj)
-        return profile.patronymic
-
-    def get_station(self, obj):
-        profile = get_object_or_404(Profile, user=obj)
-        selected_files = get_object_or_404(Station, id=profile.station.id)
-        return StationSerializer(selected_files).data
-
-
-class DirectionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Direction
-        fields = '__all__'
-
-
-class StationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Station
-        fields = '__all__'
-
-
-class DepartmentSerializer(serializers.ModelSerializer):
-    station = StationSerializer()
-
-    class Meta:
-        model = Department
-        fields = '__all__'
-
-
-class LocationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Location
-        fields = '__all__'
-        depth = 3
 
 
 class ValveSerializer(serializers.ModelSerializer):
-    direction = serializers.SerializerMethodField()
-    station = serializers.SerializerMethodField()
-    department = serializers.SerializerMethodField()
-    location = serializers.SerializerMethodField()
+    equipment = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     factory = serializers.SerializerMethodField()
@@ -212,7 +115,7 @@ class ValveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Valve
-        fields = ('id', 'direction', 'station', 'department', 'location',
+        fields = ('id', 'equipment',
                   'title', 'diameter', 'pressure', 'valve_type',
                   'factory', 'year_made', 'year_exploit', 'tech_number',
                   'factory_number', 'inventory_number', 'lifetime',
@@ -234,21 +137,9 @@ class ValveSerializer(serializers.ModelSerializer):
         factory_country = factory.country
         return f'{factory_name}, {factory_country}'
 
-    def get_location(self, obj):
-        location = get_object_or_404(Location, id=obj.location.id)
-        return location.name
-
-    def get_department(self, obj):
-        department = get_object_or_404(Department, id=obj.location.department.id)
-        return department.name
-
-    def get_station(self, obj):
-        station = get_object_or_404(Station, id=obj.location.department.station.id)
-        return station.name
-
-    def get_direction(self, obj):
-        direction = get_object_or_404(Direction, id=obj.location.department.station.direction.id)
-        return direction.name
+    def get_equipment(self, obj):
+        equipment = get_object_or_404(Equipment, id=obj.equipment.id)
+        return equipment.name
 
     def get_latest_service(self, obj):
         try:
@@ -268,17 +159,9 @@ class ValveSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['factory'] = f"{instance.factory.name}, {instance.factory.country}" if instance.factory else None
-        data['drive_factory'] = f"{instance.drive_factory.name}, {instance.drive_factory.country}" if instance.drive_factory else None
+        data['factory'] = f'{instance.factory.name}, {instance.factory.country}' if instance.factory else None
+        data['drive_factory'] = f'{instance.drive_factory.name}, {instance.drive_factory.country}' if instance.drive_factory else None
         return data
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    station = StationSerializer()
-
-    class Meta:
-        model = Profile
-        fields = ('lastname_and_initials', 'job_position', 'station', 'role')
 
 
 class WorkProofSerializer(serializers.ModelSerializer):

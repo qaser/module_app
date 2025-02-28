@@ -2,7 +2,7 @@ import csv
 
 from django.core.management import BaseCommand
 
-from locations.models import Department, Direction, Location, Station
+from equipments.models import Department, Direction, Location, Station
 from tpa.models import Factory, Valve, ValveImage
 
 

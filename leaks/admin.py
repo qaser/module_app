@@ -7,9 +7,9 @@ from .models import Leak, LeakDocument, LeakImage
 class LeaksAdmin(admin.ModelAdmin):
     empty_value_display = '-'
     list_display = (
-        'direction',
+        # 'direction',
         'place',
-        'location',
+        'equipment',
         'specified_location',
         'description',
         'type_leak',
@@ -31,9 +31,9 @@ class LeaksAdmin(admin.ModelAdmin):
         'is_draft',
     )
     search_fields = (
-        'direction',
+        # 'direction',
         'place',
-        'location',
+        'equipment',
         'specified_location',
         'is_done',
         'detector',
@@ -41,7 +41,7 @@ class LeaksAdmin(admin.ModelAdmin):
         'detection_date',
         'is_draft',
     )
-    list_filter = ('direction', 'place', 'location', 'detection_date', 'is_done', 'is_draft')
+    list_filter = ('place', 'equipment', 'detection_date', 'is_done', 'is_draft')
 
 
 class DocumentAdmin(admin.ModelAdmin):

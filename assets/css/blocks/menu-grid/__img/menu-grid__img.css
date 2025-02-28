@@ -1,0 +1,7 @@
+.menu-grid__img {
+    margin: 0 0 2px 20px;
+    width: 140px;
+    height: 90px;
+    align-self: flex-end;
+    transition: opacity .4s linear .2s;
+}

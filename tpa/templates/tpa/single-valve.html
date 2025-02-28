@@ -1,5 +1,6 @@
 {% extends "module_app/base.html" %}
 {% block title %}Обзор выбранной ТПА{% endblock %}
+{% block app_name %}Техническое обслуживание ТПА{% endblock %}
 
 {% load static %}
 
@@ -8,7 +9,6 @@
 {% endblock %}
 
 {% block sidepanel %}
-<div class="sidebar__panel">
     <a href="{% url 'tpa:index' %}" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_index"></div>
         <h3 class="sidebar__text">Обзор ТПА</h3>
@@ -25,7 +25,6 @@
         <div class="sidebar__icon sidebar__icon_help"></div>
         <h3 class="sidebar__text">Справочная информация</h3>
     </a>
-</div>
 {% endblock %}
 
 {% block content %}
@@ -42,20 +41,8 @@
               </div>
               <div class="card__field" id="valve_info">
                 <div class="card__line">
-                  <p class="card__param">Филиал</p>
-                  <p class="card__value" id="direction"></p>
-                </div>
-                <div class="card__line">
-                  <p class="card__param">КС</p>
-                  <p class="card__value" id="station"></p>
-                </div>
-                <div class="card__line">
-                  <p class="card__param">Подразделение</p>
-                  <p class="card__value" id="department"></p>
-                </div>
-                <div class="card__line">
                   <p class="card__param">Место установки</p>
-                  <p class="card__value" id="location"></p>
+                  <p class="card__value" id="equipment"></p>
                 </div>
                 <div class="card__line">
                   <p class="card__param">Наименование ТПА</p>

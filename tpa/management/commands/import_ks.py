@@ -2,7 +2,7 @@ import csv
 
 from django.core.management import BaseCommand
 
-from locations.models import Direction, Station, Structure
+from equipments.models import Direction, Station, Structure
 
 LPU = [
     ('Ямбургское ЛПУМГ', 'КС Ямбургская'),

@@ -6,7 +6,7 @@ from django_tables2 import SingleTableMixin
 from leaks.forms import LeakForm
 from users.models import Role
 
-from .filters import LeakFilter
+# from .filters import LeakFilter
 from .models import Leak, LeakImage
 from .tables import LeakTable
 
@@ -16,15 +16,15 @@ class LeakView(SingleTableMixin, FilterView):
     table_class = LeakTable
     paginate_by = 20
     template_name = 'leaks/index.html'
-    filterset_class = LeakFilter
+    # filterset_class = LeakFilter
 
-    def get_queryset(self):
-        if (self.request.user.profile.role != Role.ADMIN and self.request.user.profile.role != Role.MANAGER):
-            direction = self.request.user.profile.station.direction
-            queryset = Leak.objects.all().filter(location__department__station__direction=direction)
-        else:
-            queryset = Leak.objects.all()
-        return queryset
+    # def get_queryset(self):
+    #     if (self.request.user.profile.role != Role.ADMIN and self.request.user.profile.role != Role.MANAGER):
+    #         structure = self.request.user.structure
+    #         queryset = Leak.objects.all().filter(location__department__station__direction=direction)
+    #     else:
+    #         queryset = Leak.objects.all()
+    #     return queryset
 
     def get_table_kwargs(self):
        return {'request': self.request}

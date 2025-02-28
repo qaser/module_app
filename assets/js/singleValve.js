@@ -12,6 +12,8 @@ import Tooltip from '../js/components/Tooltip.js';
 import FormValidator from '../js/components/FormValidator.js';
 import FileManager from './components/FileManager.js';
 import HiddenElement from './components/HiddenElement.js';
+import AppMenu from '../js/components/AppMenu.js';
+
 
 const valveId = document.querySelector('.card').id;
 let isUploadButtonAdded = false;
@@ -361,6 +363,7 @@ enableValidation(formFileConfig);
 popupImage.setEventListeners();
 popupWithFormNewFile.setEventListeners();
 new Tooltip();
+new AppMenu();
 
 // промис (заполнение данных пользователя) и (функция загрузки ТПА с сервера)
 Promise.all([api.getMyProfile(), api.getValveItem(valveId)])
@@ -370,8 +373,11 @@ Promise.all([api.getMyProfile(), api.getValveItem(valveId)])
         imageInstance.renderItems(valve.images);
         if (valve.files.length > 0) {
             haveFiles = valve.files.length;
-            cardWithFiles.show()
-            fileInstance.renderItems(valve.files)
+            cardWithFiles.show();
+            fileInstance.renderItems(valve.files);
+        } else {
+            console.log(cardWithFiles)
+            cardWithFiles.hide();
         }
     })
     .catch(err => {

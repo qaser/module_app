@@ -1,0 +1,40 @@
+{% extends "module_app/base.html" %}
+{% block title %}Журнал рационализаторских предложений{% endblock %}
+{% block app_name %}Рационализаторская работа{% endblock %}
+
+{% load static %}
+{% load render_table from django_tables2 %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_objects"></div>
+        <h3 class="sidebar__text">Планирование</h3>
+    </a>
+    <a href="{% url 'rational:proposal_new' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_new"></div>
+        <h3 class="sidebar__text">Внести предложение</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<main class="content">
+  <section class="main" id="main">
+    <h1 class="main__title">Журнал рационализаторских предложений</h1>
+    {% render_table table %}
+  </section>
+</main>
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/indexProposal.js' %}"></script>
+{% endblock %}

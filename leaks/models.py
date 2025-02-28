@@ -1,8 +1,9 @@
 from django.db import models
 
+from equipments.models import Equipment
 from leaks.utils import compress_image
-from locations.models import Direction, Location
 from tpa.models import Valve
+from users.models import ModuleUser
 
 PLACE = (('КЦ', 'КЦ'), ('ЛЧ', 'ЛЧ'),)
 DOCTYPE = (
@@ -13,12 +14,12 @@ FILETYPE = (('video', 'video'), ('image', 'image'))
 
 
 class Leak(models.Model):
-    direction = models.ForeignKey(
-        Direction,
-        verbose_name='Структурное подразделение',
-        related_name='directions',
-        on_delete=models.CASCADE,
-    )
+    # direction = models.ForeignKey(
+    #     Direction,
+    #     verbose_name='Структурное подразделение',
+    #     related_name='directions',
+    #     on_delete=models.CASCADE,
+    # )
     place = models.CharField(
         'Местоположение утечки',
         choices=PLACE,
@@ -26,8 +27,8 @@ class Leak(models.Model):
         blank=False,
         null=False
     )
-    location = models.ForeignKey(
-        Location,
+    equipment = models.ForeignKey(
+        Equipment,
         verbose_name='Наименование объекта',
         related_name='locations',
         on_delete=models.CASCADE
@@ -111,7 +112,7 @@ class Leak(models.Model):
         null=False,
     )
     executor = models.ForeignKey(
-        'users.Profile',
+        ModuleUser,
         on_delete=models.CASCADE,
         verbose_name='Ответственный за устранение',
         related_name='users'

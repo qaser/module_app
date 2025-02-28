@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from locations.models import Location
+from equipments.models import Equipment
 from users.models import Role
 
 from .filters import ValveFilter
@@ -23,15 +23,38 @@ class ValveView(SingleTableMixin, FilterView):
     filterset_class = ValveFilter
 
     def get_queryset(self):
-        if (self.request.user.profile.role != Role.ADMIN and self.request.user.profile.role != Role.MANAGER):
-            station = self.request.user.profile.station
-            queryset = Valve.objects.all().filter(location__department__station=station)
-        else:
-            queryset = Valve.objects.all()
-        return queryset
+        user = self.request.user
+        return filter_valves_by_user_role(user)
 
     def get_table_kwargs(self):
        return {'request': self.request}
+
+
+def filter_valves_by_user_role(user):
+    if user.role == Role.ADMIN:
+        # ADMIN видит всё оборудование
+        return Valve.objects.all()
+    elif user.role == Role.MANAGER:
+        # MANAGER видит всё оборудование своей ветки, начиная со второго уровня
+        if user.equipment:
+            # Получаем корень ветки пользователя
+            root = user.equipment.get_root()
+            # Получаем всех потомков корня (вся ветка)
+            descendants = root.get_descendants(include_self=True)
+            # Фильтруем оборудование, начиная со второго уровня
+            return Valve.objects.filter(equipment__in=descendants, equipment__level__gte=1)
+        else:
+            return Valve.objects.none()
+    elif user.role == Role.EMPLOYEE:
+        # EMPLOYEE видит всё оборудование своей ветки, начиная с уровня своего оборудования
+        if user.equipment:
+            # Получаем всех потомков оборудования пользователя
+            descendants = user.equipment.get_descendants(include_self=True)
+            return Valve.objects.filter(equipment__in=descendants)
+        else:
+            return Valve.objects.none()
+    else:
+        return Valve.objects.none()
 
 
 @login_required
@@ -47,10 +70,13 @@ def single_valve(request, valve_id):
 
 @login_required
 def valve_new(request):
-    form = ValveForm(request.POST or None, user=request.user)
-    if form.is_valid():
-        valve = form.save()
-        return redirect('tpa:single_valve', valve.id)
+    if request.method == 'POST':
+        form = ValveForm(request.POST, user=request.user)
+        if form.is_valid():
+            valve = form.save()
+            return redirect('tpa:single_valve', valve.id)
+    else:
+        form = ValveForm(user=request.user)
     return render(
         request,
         'tpa/form-tpa.html',
@@ -80,9 +106,9 @@ def single_valve_service(request, valve_id):
 
 
 @login_required
-def location_valve_service(request, loc_id):
-    location = get_object_or_404(Location, id=loc_id)
-    valves_queryset = Valve.objects.filter(location=location)
+def equipment_valve_service(request, eq_id):
+    equipment = get_object_or_404(Equipment, id=eq_id)
+    valves_queryset = Valve.objects.filter(equipment=equipment)
     # valves = []
     # services_queryset = Service.objects.filter(valve=valve)
     current_year = dt.datetime.now().year
@@ -102,6 +128,6 @@ def location_valve_service(request, loc_id):
         # valves.append({'valve': valve, 'services': services})
     return render(
         request,
-        'tpa/location-valve-service.html',
-        {'location': location, 'services': services}
+        'tpa/equipment-valve-service.html',
+        {'equipment': equipment, 'services': services}
     )

@@ -1,34 +1,23 @@
 import datetime as dt
 
-from django.forms import ChoiceField, FileField, ImageField, ModelForm, ModelChoiceField
+from django.forms import (
+    ChoiceField, FileField, ImageField, ModelChoiceField, ModelForm)
 from django.forms.widgets import ClearableFileInput, NumberInput, Textarea
 
-from users.models import User, Role, Profile
+from equipments.models import Equipment
 from tpa.models import Valve, ValveImage
-from locations.models import Location, Department, Direction, TypeOfLocation, Station
+from users.models import ModuleUser, Role
 
 from .utils import create_choices
 
 
 class ValveForm(ModelForm):
-    # direction = ChoiceField(label='Филиал', choices=[], required=True)
-    # station = ChoiceField(label='КС', choices=[], required=True)
-    # department = ChoiceField(label='Служба', choices=[], required=True)
-    location = ModelChoiceField(queryset=Location.objects.none(), label="Оборудование")
-
-    def __init__(self, *args, user=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        if user and hasattr(user, 'profile') and user.profile.station:
-            # Фильтруем Location только для станций пользователя
-            self.fields['location'].queryset = Location.objects.filter(department__station=user.profile.station)
+    equipment = ModelChoiceField(queryset=Equipment.objects.none(), label='Место нахождения')
 
     class Meta:
         model = Valve
         fields = (
-            # 'direction',
-            # 'station',
-            # 'department',
-            'location',
+            'equipment',
             'title',
             'diameter',
             'pressure',
@@ -52,3 +41,34 @@ class ValveForm(ModelForm):
         widgets = {
             'description': Textarea(attrs={'rows': 4}),
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Получаем пользователя из kwargs
+        super(ValveForm, self).__init__(*args, **kwargs)
+        if user:
+            base_level = 0  # Базовый уровень для отступов
+            if user.role == Role.ADMIN:
+                # ADMIN может выбирать всё оборудование
+                self.fields['equipment'].queryset = Equipment.objects.all()
+            elif user.role == Role.MANAGER:
+                # MANAGER может выбирать оборудование своей ветки, начиная со второго уровня
+                if user.equipment:
+                    root = user.equipment.get_root()  # Получаем корень ветки
+                    descendants = root.get_descendants(include_self=True)  # Вся ветка
+                    # Фильтруем оборудование, начиная со второго уровня
+                    self.fields['equipment'].queryset = descendants.filter(level__gte=1)
+                    base_level = 1  # Базовый уровень — второй уровень
+                else:
+                    self.fields['equipment'].queryset = Equipment.objects.none()
+            elif user.role == Role.EMPLOYEE:
+                # EMPLOYEE может выбирать оборудование своей ветки, начиная с уровня своего оборудования
+                if user.equipment:
+                    descendants = user.equipment.get_descendants(include_self=True)  # Вся ветка
+                    self.fields['equipment'].queryset = descendants
+                    base_level = user.equipment.level  # Базовый уровень — уровень оборудования пользователя
+                else:
+                    self.fields['equipment'].queryset = Equipment.objects.none()
+            else:
+                self.fields['equipment'].queryset = Equipment.objects.none()
+            # Добавляем отступы для отображения иерархии
+            self.fields['equipment'].label_from_instance = lambda obj: f"{'..' * (obj.level - base_level)} {obj.name}"

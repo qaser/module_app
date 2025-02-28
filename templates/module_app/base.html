@@ -1,48 +1,49 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Регистрация и учёт утечек газа">
-    <meta name="keywords" content="html, css">
-    <meta name="author" content="Сайгин Алексей">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{% block title %}{% endblock %} | Module</title>
-    {% load static %}
-    <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}">
-    {% block style %}{% endblock %}
-  </head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Регистрация и учёт утечек газа">
+        <meta name="keywords" content="html, css">
+        <meta name="author" content="Сайгин Алексей">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>{% block title %}{% endblock %} | Module</title>
+        {% load static %}
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}">
+        {% block style %}{% endblock %}
+    </head>
 
-  <body>
+    <body>
 
-    <div class="page">
-      <!-- loader -->
-      {% include 'module_app/base_ext/loader.html' %}
+        <div class="page">
+        <!-- loader -->
+        {% include 'module_app/base_ext/loader.html' %}
 
-      <!-- хэдер -->
-      {% include 'module_app/base_ext/header.html' with app=request.resolver_match.app_name %}
+        <!-- хэдер -->
+        {% include 'module_app/base_ext/header.html' with app=request.resolver_match.app_name %}
 
-      <!-- боковая панель -->
-      <section  class="sidebar" id="sidebar">
-          {% block sidepanel %}{% endblock %}
-      </section>
-      {% comment %} {% include 'module_app/base_ext/sidebar.html' %} {% endcomment %}
+        <!-- боковая панель -->
+        <section  class="sidebar" id="sidebar">
+            <div class="sidebar__panel">
+                <div class="sidebar__item module-color_{{ request.resolver_match.app_name }}" id="menu-apps">
+                    <div class="sidebar__icon sidebar__icon_app"></div>
+                    <h3 class="sidebar__text">{% block app_name %}{% endblock %}</h3>
+                </div>
+                {% block sidepanel %}{% endblock %}
+            </div>
+        </section>
 
-      <!-- главный контент -->
-      {% block content %}{% endblock %}
+        <!-- главный контент -->
+        {% block content %}{% endblock %}
 
-      {% comment %} {% if page.has_other_pages %}
-        {% include "module_app/base_ext/paginator.html" with app=request.resolver_match.app_name %}
-      {% endif %} {% endcomment %}
+        {% comment %} {% if page.has_other_pages %}
+            {% include "module_app/base_ext/paginator.html" with app=request.resolver_match.app_name %}
+        {% endif %} {% endcomment %}
 
-    </div>
+        </div>
 
+    </body>
 
-    {% comment %} {% include 'module_app/base_ext/footer.html' with app=request.resolver_match.app_name %} {% endcomment %}
-
-    </div>
-  </body>
-
-  {% block script %}{% endblock %}
+    {% block script %}{% endblock %}
 
 </html>

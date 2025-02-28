@@ -1,10 +1,10 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
 
 from .models import (Factory, Service, ServiceType, Valve, ValveDocument,
                      ValveImage, Work, WorkProof, WorkService)
 
 
+@admin.register(Factory)
 class FactoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'country',)
     search_fields = ('name', 'country',)
@@ -16,9 +16,10 @@ class WorksInServiceInline(admin.TabularInline):
     min_num = 1
 
 
+@admin.register(Valve)
 class ValveAdmin(admin.ModelAdmin):
     list_display = (
-        'location',
+        'equipment',
         'title',
         'diameter',
         'pressure',
@@ -38,7 +39,7 @@ class ValveAdmin(admin.ModelAdmin):
         'description',
     )
     search_fields = (
-        'location',
+        'equipment',
         'title',
         'diameter',
         'pressure',
@@ -69,6 +70,7 @@ class ValveAdmin(admin.ModelAdmin):
     empty_value_display = '-'
 
 
+@admin.register(ServiceType)
 class ServiceTypeAdmin(admin.ModelAdmin):
     empty_value_display = '-'
     list_display = ('name', 'period', 'valve_type', 'min_diameter', 'max_diameter')
@@ -76,6 +78,7 @@ class ServiceTypeAdmin(admin.ModelAdmin):
     list_filter = ('valve_type', 'name')
 
 
+@admin.register(Work)
 class WorkAdmin(admin.ModelAdmin):
     empty_value_display = '-'
     list_display = ('description', 'service_type', 'planned')
@@ -83,6 +86,7 @@ class WorkAdmin(admin.ModelAdmin):
     list_filter = ('service_type', 'planned')
 
 
+@admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     empty_value_display = '-'
     list_display = ('service_type', 'valve', 'reg_date', 'prod_date', 'executor',)
@@ -91,6 +95,7 @@ class ServiceAdmin(admin.ModelAdmin):
     inlines = (WorksInServiceInline,)
 
 
+@admin.register(WorkService)
 class WorkServiceAdmin(admin.ModelAdmin):
     empty_value_display = '-'
     list_display = ('service', 'work', 'done', 'faults')
@@ -98,25 +103,17 @@ class WorkServiceAdmin(admin.ModelAdmin):
     list_filter = ('service', 'work', 'done',)
 
 
+@admin.register(ValveDocument)
 class DocumentAdmin(admin.ModelAdmin):
     empty_value_display = '-'
 
 
+@admin.register(WorkProof)
 class WorkProofAdmin(admin.ModelAdmin):
     empty_value_display = '-'
     list_display = ('file', 'name', 'work',)
 
 
+@admin.register(ValveImage)
 class ImageAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
-
-
-admin.site.register(Factory, FactoryAdmin)
-admin.site.register(Valve, ValveAdmin)
-admin.site.register(ValveDocument, DocumentAdmin)
-admin.site.register(ValveImage, ImageAdmin)
-admin.site.register(ServiceType, ServiceTypeAdmin)
-admin.site.register(Work, WorkAdmin)
-admin.site.register(Service, ServiceAdmin)
-admin.site.register(WorkService, WorkServiceAdmin)
-admin.site.register(WorkProof, WorkProofAdmin)

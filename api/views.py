@@ -5,16 +5,19 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from equipments.models import Equipment
 from leaks.models import Leak
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
-from users.models import Profile, User
+from users.models import ModuleUser, Role
 
-from .serializers import (
-    FactorySerializer, LeakSerializer, ServiceSerializer,
-    ServiceTypeSerializer, UserSerializer, ValveDocumentSerializer,
-    ValveImageSerializer, ValveSerializer, WorkServiceSerializer)
+from .serializers import (EquipmentSerializer, FactorySerializer,
+                          LeakSerializer, ServiceSerializer,
+                          ServiceTypeSerializer, UserSerializer,
+                          ValveDocumentSerializer, ValveImageSerializer,
+                          ValveSerializer, WorkServiceSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
@@ -68,7 +71,7 @@ class FactoryViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = ModuleUser.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
 
@@ -95,7 +98,7 @@ class ServiceViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         valve = get_object_or_404(Valve, id=self.request.data['valve'])
-        executor = get_object_or_404(Profile, user=self.request.user)
+        executor = get_object_or_404(ModuleUser, id=self.request.user.id)
         reg_date = dt.datetime.now().strftime('%Y-%m-%d')
         service_type = get_object_or_404(
             ServiceType,
@@ -169,3 +172,12 @@ class ValveServiceViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         self.get_valve().services.all()
         return self.get_valve().services.all()
+
+
+class EquipmentViewSet(viewsets.ViewSet):
+    def list(self, request):
+        parent_id = request.query_params.get('parent_id', None)
+        if parent_id:
+            children = Equipment.objects.filter(parent_id=parent_id).values('id', 'name')
+            return Response(list(children))
+        return Response([])

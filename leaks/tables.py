@@ -9,17 +9,17 @@ from .models import Leak
 
 
 class LeakTable(tables.Table):
-    direction = tables.Column(
-        accessor='location.department.station.direction',
-        verbose_name='Структурное подразделение (ЛПУМГ)',
-    )
+    # direction = tables.Column(
+    #     accessor='location.department.station.direction',
+    #     verbose_name='Структурное подразделение (ЛПУМГ)',
+    # )
 
     class Meta:
         model = Leak
         fields = [
-            'direction',
+            # 'direction',
             'place',
-            'location',
+            'equipment',
             'specified_location',
             'description',
             'type_leak',
@@ -41,8 +41,8 @@ class LeakTable(tables.Table):
         orderable = False
         template_name = 'leaks/leaks_ext/new_table.html'
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs['request'].user
-        super(LeakTable, self).__init__(*args, **kwargs)
-        if (user.profile.role != Role.ADMIN and user.profile.role != Role.MANAGER):
-            self.columns.hide('direction')
+    # def __init__(self, *args, **kwargs):
+    #     user = kwargs['request'].user
+    #     super(LeakTable, self).__init__(*args, **kwargs)
+    #     if (user.role != Role.ADMIN and user.profile.role != Role.MANAGER):
+    #         self.columns.hide('direction')

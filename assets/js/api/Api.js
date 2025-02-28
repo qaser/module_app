@@ -230,6 +230,14 @@ export default class Api {
         .then(this._checkResponse);
     }
 
+    // Получение дочерних объектов оборудования
+    getEquipmentChildren(parentId) {
+        return fetch(`${this._baseUrl}/equipment-search/?parent_id=${parentId}`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();
