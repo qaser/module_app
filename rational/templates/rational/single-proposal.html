@@ -110,6 +110,25 @@
         </div>
     </div>
 
+    <!-- всплывающее окно с формой смены статуса -->
+    <div class="popup" id="popup-status">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup form-popup_wide" name="new-status" id="form-status" enctype="multipart/form-data">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <select class="form-popup__input" id="status" name="status"></select>
+                    <span class="form-popup__input-error" id="status-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <textarea class="form-popup__input" id="note" name="note" rows="5" placeholder="Введите примечание к смене статуса" maxlength="500"></textarea>
+                    <span class="form-popup__input-error" id="note-error"></span>
+                </label>
+                <button class="form-popup__button button button_dark-green" type="submit">Применить</button>
+            </form>
+        </div>
+    </div>
+
     <template class="file-template">
         <div class="card__line" id="">
             <a class="card__value_ext  link" target="_blank" data-tooltip="Открыть файл"></a>

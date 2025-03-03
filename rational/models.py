@@ -1,5 +1,8 @@
+from datetime import datetime, timedelta
+
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import OuterRef, Subquery
+from django.db.models import Exists, OuterRef, Subquery
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -194,7 +197,7 @@ class Status(models.Model):
     class StatusChoices(models.TextChoices):
         REG = 'reg', 'Зарегистрировано'
         RECHECK = 'recheck', 'Повторная заявка'
-        REWORK = 'rework', 'На доработке'  # зациклить с recheck
+        REWORK = 'rework', 'Доработать'
         ACCEPT = 'accept', 'Принято'
         REJECT = 'reject', 'Отклонено'
         APPLY = 'apply', 'Используется'
@@ -226,6 +229,28 @@ class Status(models.Model):
     class Meta:
         verbose_name = 'Статус РП'
         verbose_name_plural = 'Статусы РП'
+
+    def clean(self):
+        # Статусы, которые могут быть добавлены только один раз
+        single_instance_statuses = [
+            self.StatusChoices.REG,
+            self.StatusChoices.ACCEPT,
+            self.StatusChoices.REJECT,
+            self.StatusChoices.APPLY,
+        ]
+        if self.status in single_instance_statuses:
+            # Проверяем, есть ли уже такой статус у предложения
+            if Status.objects.filter(
+                proposal=self.proposal,
+                status=self.status
+            ).exists():
+                raise ValidationError(
+                    f'Статус "{self.get_status_display()}" уже существует для этого РП.'
+                )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
 
 class Plan(MPTTModel):
@@ -275,35 +300,32 @@ class Plan(MPTTModel):
             return f'План на {self.year} год, {self.equipment.name}'
         return f'План на {self.year} год, {self.equipment.name} '
 
-    from django.db.models import OuterRef, Subquery
-
     @property
     def completed(self):
-        """
-        Вычисляемое поле: количество заявок, принятых в рамках плана.
-        """
         if self.is_leaf_node():
             # Определяем диапазон дат для квартала
-            start_date = f'{self.year}-{3 * (self.quarter - 1) + 1:02d}-01'  # Начало квартала
-            end_date = f'{self.year}-{3 * self.quarter:02d}-31'  # Конец квартала
-
-            # Подзапрос для получения последнего статуса каждого предложения
-            latest_statuses = Status.objects.filter(
-                proposal=OuterRef('id')
-            ).order_by('-date_changed').values('status')[:1]
-
-            # Фильтруем предложения, у которых статус REG был в указанном диапазоне,
-            # и последний статус — ACCEPT
-            accepted_proposals = Proposal.objects.annotate(
-                latest_status=Subquery(latest_statuses)
-            ).filter(
+            start_date = datetime(self.year, 3 * (self.quarter - 1) + 1, 1)  # Начало квартала
+            if self.quarter == 4:
+                end_date = datetime(self.year + 1, 1, 1) - timedelta(days=1)  # Конец квартала (31 декабря)
+            else:
+                end_date = datetime(self.year, 3 * self.quarter + 1, 1) - timedelta(days=1)  # Конец квартала
+            # Подзапрос для проверки наличия статуса ACCEPT
+            has_accept_status = Status.objects.filter(
+                proposal=OuterRef('id'),
+                status=Status.StatusChoices.ACCEPT
+            )
+            # Фильтруем предложения, которые получили статус REG в указанный период
+            # и имеют хотя бы один статус ACCEPT
+            accepted_proposals = Proposal.objects.filter(
                 statuses__status=Status.StatusChoices.REG,
                 statuses__date_changed__gte=start_date,
                 statuses__date_changed__lte=end_date,
-                equipment=self.equipment,
-                latest_status=Status.StatusChoices.ACCEPT
+                equipment=self.equipment
+            ).annotate(
+                has_accept=Exists(has_accept_status)
+            ).filter(
+                has_accept=True
             ).distinct().count()
-
             return accepted_proposals
         else:
             # Для нелистовых узлов (годовых планов) суммируем значения из дочерних узлов

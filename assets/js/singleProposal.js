@@ -15,6 +15,7 @@ import StatusManager from '../js/components/StatusManager.js';
 
 
 const proposalId = document.querySelector('.card').id;
+const noteTextarea = document.querySelector('#note');
 let isUploadButtonAdded = false;
 let haveFiles = 0;
 const filesContainer = document.querySelector('.card__files'); // контейнер с файлами
@@ -84,6 +85,44 @@ const popupWithFormNewFile = new PopupWithForm(
         submitFormNewFile(data);
     },
 );
+
+const popupWithStatus = new PopupWithForm(
+    '#popup-status',
+    '#form-status',
+    'Сменить статус РП',
+    (data) => {
+        submitFormChangeStatus(data);
+    },
+);
+
+
+// добавление в селектор формы изменения статуса выбора вида статуса
+function createStatusOptions(possibleStatuses) {
+    const select = document.querySelector('#status');
+    select.innerHTML = ''; // Очищаем старые значения
+    possibleStatuses.forEach((i) => {
+        const option = document.createElement('option');
+        option.value = i.code;
+        option.textContent = i.label;
+        select.appendChild(option);
+    });
+}
+
+
+function submitFormChangeStatus(data) {
+    let formData = new FormData();
+    formData.append('note', data.note);
+    formData.append('proposal_id', proposalId);
+    formData.append('new_status', data.status);
+    api.addNewStatus(formData)
+        .then(() => {
+            popupWithStatus.close();
+            location.reload();
+        })
+        .catch((err) => {
+            console.error(`Ошибка смены статуса: ${err}`);
+        });
+}
 
 
 // функция отправки данных о новом файле, введенных в форму
@@ -245,15 +284,27 @@ const enableValidation = (config) => {
         formValidators[formName] = validator;
         validator.enableValidation();
     });
-  };
+};
+
+
+function setEventToCard(popup, possibleStatuses) {
+    const activeCard = document.querySelector('.status-card_active');
+    if (activeCard) {
+        activeCard.addEventListener('click', () => {
+            createStatusOptions(possibleStatuses); // Загружаем доступные статусы
+            popup.open(); // Открываем popup
+        });
+    }
+}
 
 
 function renderLoading() {
     constant.loadingScreen.classList.toggle('loader_disactive');
-}
+};
 
 enableValidation(formFileConfig);
 popupWithFormNewFile.setEventListeners();
+popupWithStatus.setEventListeners();
 new Tooltip();
 new AppMenu();
 
@@ -269,9 +320,11 @@ Promise.all([api.getMyProfile(), api.getProposalItem(proposalId)])
         } else {
             cardWithFiles.hide();
         }
-        if (proposal.statuses && proposal.statuses.length > 0) {
-            const statusManager = new StatusManager(proposal.statuses, '.status_container');
-            statusManager.render();
+        const statusManager = new StatusManager(proposal.statuses, '.status_container');
+        statusManager.render();
+        const lastStatus = proposal.statuses[proposal.statuses.length - 1]
+        if (lastStatus.possible_statuses.length > 0) {
+            setEventToCard(popupWithStatus, lastStatus.possible_statuses);
         }
     })
     .catch(err => {

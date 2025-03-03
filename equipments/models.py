@@ -62,5 +62,6 @@ class Equipment(MPTTModel):
         verbose_name_plural = 'Оборудование'
 
     def __str__(self) -> str:
-        ancestors = self.get_ancestors(ascending=True, include_self=True)[:2]
-        return ' | '.join(ancestor.name for ancestor in ancestors)
+        return self.name
+        # ancestors = self.get_ancestors(ascending=True, include_self=True)[:2]
+        # return ' | '.join(ancestor.name for ancestor in ancestors)

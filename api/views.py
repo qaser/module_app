@@ -1,7 +1,7 @@
 import datetime as dt
 
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
@@ -17,9 +17,9 @@ from users.models import ModuleUser, Role
 from .serializers import (EquipmentSerializer, FactorySerializer,
                           LeakSerializer, ProposalSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
-                          UserSerializer, ValveDocumentSerializer,
-                          ValveImageSerializer, ValveSerializer,
-                          WorkServiceSerializer)
+                          StatusSerializer, UserSerializer,
+                          ValveDocumentSerializer, ValveImageSerializer,
+                          ValveSerializer, WorkServiceSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
@@ -188,3 +188,25 @@ class EquipmentViewSet(viewsets.ViewSet):
             children = Equipment.objects.filter(parent_id=parent_id).values('id', 'name')
             return Response(list(children))
         return Response([])
+
+
+class StatusViewSet(viewsets.ViewSet):
+    def list(self, request):
+        current_status = request.query_params.get('status')
+        if not current_status:
+            return Response(
+                {'error': 'Параметр "status" обязателен.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = StatusSerializer(current_status)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = StatusSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            status_instance = serializer.save()
+            return Response(
+                {'message': 'Статус успешно добавлен.', 'status_id': status_instance.id},
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

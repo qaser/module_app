@@ -243,20 +243,91 @@ class FactorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class StatusSerializer(serializers.ModelSerializer):
-    date_changed = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
-    owner = UserSerializer()
+class StatusSerializer(serializers.Serializer):
+    current_status = serializers.ChoiceField(choices=Status.StatusChoices.choices, required=False)
+    new_status = serializers.ChoiceField(choices=Status.StatusChoices.choices, required=False)
+    proposal_id = serializers.IntegerField(required=False)
+    note = serializers.CharField(max_length=500, required=False)
 
-    class Meta:
-        model = Status
-        fields = '__all__'
+    def to_representation(self, instance):
+        # Если instance — объект Status, берем его данные
+        if isinstance(instance, Status):
+            current_status = instance.status
+            status_data = {
+                'id': instance.id,
+                'date_changed': instance.date_changed.strftime('%d.%m.%Y, %H:%M'),
+                'status': {
+                    'code': instance.status,
+                    'label': instance.get_status_display()
+                },
+                'owner': {
+                    'id': instance.owner.id,
+                    'last_name': instance.owner.last_name,
+                    'first_name': instance.owner.first_name,
+                    'patronymic': instance.owner.patronymic,
+                    'lastname_and_initials': instance.owner.lastname_and_initials,
+                },
+                'note': instance.note,
+            }
+        else:
+            # Иначе предполагаем, что instance — это значение из Status.StatusChoices
+            current_status = instance
+            status_data = {
+                'status': {
+                    'code': current_status,
+                    'label': Status.StatusChoices(current_status).label
+                },
+                'owner': None,
+                'note': None,
+                'date_changed': None,
+            }
 
-    def get_date_changed(self, obj):
-        return obj.date_changed.strftime('%d.%m.%Y, %H:%M')
+        # Определяем возможные переходы статусов
+        status_transitions = {
+            Status.StatusChoices.REG: [
+                Status.StatusChoices.REWORK,
+                Status.StatusChoices.ACCEPT,
+                Status.StatusChoices.REJECT
+            ],
+            Status.StatusChoices.RECHECK: [
+                Status.StatusChoices.REWORK,
+                Status.StatusChoices.ACCEPT,
+                Status.StatusChoices.REJECT
+            ],
+            Status.StatusChoices.REWORK: [Status.StatusChoices.RECHECK],
+            Status.StatusChoices.ACCEPT: [Status.StatusChoices.APPLY],
+            Status.StatusChoices.REJECT: [],
+            Status.StatusChoices.APPLY: [],
+        }
+        possible_statuses = status_transitions.get(current_status, [])
+        return {
+            'current_status': status_data,  # Все данные текущего статуса
+            'possible_statuses': [
+                {
+                    'code': status,
+                    'label': Status.StatusChoices(status).label
+                } for status in possible_statuses
+            ]
+        }
 
-    def get_status(self, obj):
-        return obj.get_status_display()
+    def validate(self, data):
+        if not data.get('new_status'):
+            raise serializers.ValidationError("Поле 'new_status' обязательно.")
+        if not data.get('proposal_id'):
+            raise serializers.ValidationError("Поле 'proposal_id' обязательно.")
+        return data
+
+    def create(self, validated_data):
+        proposal_id = validated_data['proposal_id']
+        new_status = validated_data['new_status']
+        note = validated_data.get('note', '')
+        status = Status.objects.create(
+            proposal_id=proposal_id,
+            status=new_status,
+            note=note,
+            owner=self.context['request'].user  # Владелец статуса — текущий пользователь
+        )
+        return status
 
 
 class ProposalSerializer(serializers.ModelSerializer):
@@ -265,7 +336,6 @@ class ProposalSerializer(serializers.ModelSerializer):
     reg_date = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     is_economy = serializers.SerializerMethodField()
-    # note = serializers.SerializerMethodField()
     statuses = StatusSerializer(many=True, read_only=True)
 
     class Meta:

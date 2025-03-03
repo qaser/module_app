@@ -308,6 +308,16 @@ export default class Api {
         // .then(this._checkResponse);
     }
 
+    // добавление нового РП
+    addNewStatus(form) {
+        return fetch(`${this._baseUrl}/statuses/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: form
+        })
+        .then(this._checkResponse);
+    }
+
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();

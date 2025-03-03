@@ -1,6 +1,6 @@
 from django.contrib import admin
-from mptt.admin import DraggableMPTTAdmin
 from django.utils.html import format_html
+from mptt.admin import DraggableMPTTAdmin
 
 from .models import Plan, Proposal, ProposalDocument, Status
 
