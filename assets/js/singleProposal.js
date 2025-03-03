@@ -2,10 +2,8 @@ import * as config from '../js/config/config.js';
 import * as constant from '../js/utils/constants.js';
 import Api from '../js/api/Api.js';
 import UserInfo from '../js/components/UserInfo.js';
-import ValveItem from './components/ValveItem.js';
-import Image from './components/Image.js';
+import ProposalItem from './components/ProposalItem.js';
 import Section from '../js/components/Section.js';
-import PopupWithImage from '../js/components/PopupWithImage.js';
 import PopupWithForm from './components/PopupWithForm.js';
 import FormHandler from './components/FormHandler.js';
 import Tooltip from '../js/components/Tooltip.js';
@@ -13,17 +11,17 @@ import FormValidator from '../js/components/FormValidator.js';
 import FileManager from './components/FileManager.js';
 import HiddenElement from './components/HiddenElement.js';
 import AppMenu from '../js/components/AppMenu.js';
+import StatusManager from '../js/components/StatusManager.js';
 
 
-const valveId = document.querySelector('.card').id;
+const proposalId = document.querySelector('.card').id;
 let isUploadButtonAdded = false;
 let haveFiles = 0;
-const imagesContainer = document.querySelector('.card__images'); // контейнер с фото
 const filesContainer = document.querySelector('.card__files'); // контейнер с файлами
 const formValidators = {};
 
 // словарь с селекторами и классами форм, использую при валидации форм
-const formValveConfig = {
+const formProposalConfig = {
   formSelector: '.card__field',
   inputSelector: '.card__input',
   submitButtonSelector: '.card__button_done',
@@ -55,16 +53,6 @@ const cardWithFiles = new HiddenElement('#cardFiles')
 const btnFileAdd = new HiddenElement('.card__button_add')
 
 
-// экземпляр карточки с фото
-const imageInstance = new Section({
-    renderer: (item) => {
-        const newImage = imagesCard(item);
-        imageInstance.setItem(newImage);
-    },
-},
-'.card__images');
-
-
 // экземпляр карточки c файлами
 const fileInstance = new Section({
     renderer: (item) => {
@@ -82,14 +70,10 @@ const newUserInfo = new UserInfo({
 });
 
 
-// создание объекта с данными о ТПА
-const valveInstance = new ValveItem({
+// создание объекта с данными
+const proposalInstance = new ProposalItem({
     card: '.main'
 })
-
-
-// создание объектов со всплывающими окнами
-const popupImage = new PopupWithImage('#popup-image');
 
 
 const popupWithFormNewFile = new PopupWithForm(
@@ -106,7 +90,7 @@ const popupWithFormNewFile = new PopupWithForm(
 function submitFormNewFile(data) {
     let formData = new FormData();
     formData.append('name', data.name);
-    formData.append('valve_id', valveId);
+    formData.append('proposal_id', proposalId);
     // собираем объект из файлов
     if (data.files.length > 0) {
         Object.entries(data.files).map((file) => {
@@ -130,8 +114,8 @@ function submitFormNewFile(data) {
 }
 
 
-// функция отправки данных об изменении ТПА, введенных в форму
-function submitFormEditValve(data) {
+// функция отправки данных, введенных в форму
+function submitFormEditProposal(data) {
     let formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
         if (Array.isArray(value)) {
@@ -141,13 +125,11 @@ function submitFormEditValve(data) {
         }
     });
     // renderLoading()
-    api.changeValve(formData, valveId)
-        .then((valve) => {
+    api.changeProposal(formData, proposalId)
+        .then((proposal) => {
             const formElem = document.querySelector('.card__form');
-            valveInstance.renderItem(valve);
-            valveInstance.replaceToTable();
-            imageClassUploadToggle();
-            imagesClassDeleteToggle();
+            proposalInstance.renderItem(valve);
+            proposalInstance.replaceToTable();
             formElem.replaceWith(constant.btnEdit);
             btnFileAdd.hide()
             filesClassDeleteToggle()
@@ -160,23 +142,6 @@ function submitFormEditValve(data) {
         })
         // .finally(() => renderLoading());
   }
-
-
-function handleImageClick(name, link) {
-    popupImage.open(name, link);
-}
-
-
-function imagesCard(item) {
-    const image = new Image(
-        item,
-        '.image-template',
-        handleImageClick,
-        handleImageDeleteClick
-    );
-    const instance = image.renderImage();
-    return instance;
-}
 
 
 function filesCard(item) {
@@ -204,57 +169,9 @@ function handleFileDeleteClick(evt, fileId) {
 };
 
 
-function handleImageDeleteClick(evt, imageId) {
-    const id = imageId.replace(/\D/g, '')
-    // renderLoading()
-    api.deleteValveImage(id)
-        .then((res) => {
-            if (res.status == 204) {
-                elementDelete(imageId, imagesContainer);
-            }
-        })
-        // .finally(() => renderLoading());
-};
-
-
 function elementDelete(id, container) {
     const elem = container.querySelector(`#${id}`)
     elem.remove()
-}
-
-
-function imagesClassDeleteToggle() {
-    const imageContainers = imagesContainer.querySelectorAll('.card__image-container')
-    const images = imagesContainer.querySelectorAll('.card__image')
-    imageContainers.forEach((item) => {
-        item.classList.toggle('card__image-container_delete')
-        if (item.hasAttribute('data-tooltip')) {
-            item.removeAttribute('data-tooltip');
-        } else {
-            item.setAttribute('data-tooltip', 'Удалить фотографию');
-        }
-    })
-    images.forEach((item) => {
-        item.classList.toggle('card__image_delete')
-    })
-}
-
-
-function imageClassUploadToggle() {
-    if (!isUploadButtonAdded) {
-        imagesContainer.insertAdjacentHTML('afterbegin', constant.uploadImageTemplate);
-        isUploadButtonAdded = true;
-        const addImageBtn = document.querySelector('#imageUpload');
-        addImageBtn.addEventListener('change', (event) => {
-            const file = event.target.files[0]; // Берем первый выбранный файл
-            if (file) {
-                uploadImage(file);
-            }
-        });
-    } else {
-        imagesContainer.removeChild(imagesContainer.firstElementChild);
-        isUploadButtonAdded = false;
-    }
 }
 
 
@@ -266,42 +183,20 @@ function filesClassDeleteToggle() {
 }
 
 
-function uploadImage(file) {
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('valve_id', valveId);
-    // renderLoading()
-    api.addValveImage(formData, valveId)
-        .then((data) => {
-            imageInstance.renderItems([data])
-            const newImageContainer = document.querySelector(`#image-${data.id}`);
-            const newImage = newImageContainer.querySelector('.card__image')
-            newImageContainer.classList.toggle('card__image-container_delete');
-            newImage.classList.toggle('card__image_delete')
-        })
-        // .finally(() => renderLoading());
-}
-
-
-// слушатель кнопки изменения информации о ТПА
+// слушатель кнопки изменения информации об РП
 // функция замены тегов <p> на теги <input>, находится в классе
 constant.btnEdit.addEventListener('click', () => {
     // formValidators['add-avatar'].resetValidation();
-    api.getFactories()
-        .then((factories) => {
-            imagesClassDeleteToggle();
-            imageClassUploadToggle();
-            valveInstance.replaceToForm(constant.formAttrs, factories);
-            constant.btnEdit.replaceWith(createFormEditButtons());
-            const formEditValve = new FormHandler(
-                '.card__form',
-                '#valve_info',
-                '.card__input',
-                '.button card__button card__button_done',
-                (data) => {submitFormEditValve(data)},
-            );
-            formEditValve.setEventListeners();
-        })
+    proposalInstance.replaceToForm(constant.formAttrs);
+    constant.btnEdit.replaceWith(createFormEditButtons());
+    const formEditProposal = new FormHandler(
+        '.card__form',
+        '#valve_info',
+        '.card__input',
+        '.button card__button card__button_done',
+        (data) => {submitFormEditProposal(data)},
+    );
+    formEditProposal.setEventListeners();
 });
 
 
@@ -322,9 +217,7 @@ function createFormEditButtons() {
     formElem.appendChild(btnFormCancel);
     // enableValidation(formValveConfig);
     btnFormCancel.addEventListener('click', () => {
-        valveInstance.replaceToTable();
-        imageClassUploadToggle()
-        imagesClassDeleteToggle();
+        proposalInstance.replaceToTable();
         formElem.replaceWith(constant.btnEdit);
         filesClassDeleteToggle();
         if (haveFiles == 0) {
@@ -360,24 +253,25 @@ function renderLoading() {
 }
 
 enableValidation(formFileConfig);
-popupImage.setEventListeners();
 popupWithFormNewFile.setEventListeners();
 new Tooltip();
 new AppMenu();
 
-// промис (заполнение данных пользователя) и (функция загрузки ТПА с сервера)
-Promise.all([api.getMyProfile(), api.getValveItem(valveId)])
-    .then(([userData, valve]) => {
+// промис (заполнение данных пользователя) и (функция загрузки РП с сервера)
+Promise.all([api.getMyProfile(), api.getProposalItem(proposalId)])
+    .then(([userData, proposal]) => {
         newUserInfo.setUserInfo(userData);
-        valveInstance.renderItem(valve);
-        imageInstance.renderItems(valve.images);
-        if (valve.files.length > 0) {
-            haveFiles = valve.files.length;
+        proposalInstance.renderItem(proposal);
+        if (proposal.files.length > 0) {
+            haveFiles = proposal.files.length;
             cardWithFiles.show();
-            fileInstance.renderItems(valve.files);
+            fileInstance.renderItems(proposal.files);
         } else {
-            console.log(cardWithFiles)
             cardWithFiles.hide();
+        }
+        if (proposal.statuses && proposal.statuses.length > 0) {
+            const statusManager = new StatusManager(proposal.statuses, '.status_container');
+            statusManager.render();
         }
     })
     .catch(err => {

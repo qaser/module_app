@@ -9,15 +9,17 @@ from rest_framework.views import APIView
 
 from equipments.models import Equipment
 from leaks.models import Leak
+from rational.models import Plan, Proposal, ProposalDocument, Status
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
 
 from .serializers import (EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, ServiceSerializer,
-                          ServiceTypeSerializer, UserSerializer,
-                          ValveDocumentSerializer, ValveImageSerializer,
-                          ValveSerializer, WorkServiceSerializer)
+                          LeakSerializer, ProposalSerializer,
+                          ServiceSerializer, ServiceTypeSerializer,
+                          UserSerializer, ValveDocumentSerializer,
+                          ValveImageSerializer, ValveSerializer,
+                          WorkServiceSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
@@ -68,6 +70,11 @@ class ValveViewSet(viewsets.ModelViewSet):
 class FactoryViewSet(viewsets.ModelViewSet):
     queryset = Factory.objects.all()
     serializer_class = FactorySerializer
+
+
+class ProposalViewSet(viewsets.ModelViewSet):
+    queryset = Proposal.objects.all()
+    serializer_class = ProposalSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

@@ -1,0 +1,95 @@
+.status_container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 50%;
+}
+
+@media screen and (max-width: 1200px) {
+    .status_container {
+        width: 100%;
+        margin: 30px auto;
+    }
+}
+
+/* Стили для карточки статуса */
+.status-card {
+    width: 90%;
+    min-height: 75px;
+    background-color: white;
+    border: 1px solid;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    margin-left: 40px;
+}
+
+@media screen and (max-width: 1200px) {
+    .status-card {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+.status-card_active:hover {
+    transform: scale(1.02);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+/* Цветная полоса */
+.status-stripe {
+    width: 16px;
+    background-color: inherit; /* Цвет будет задан через стили */
+    flex-shrink: 0; /* Запрещаем сжатие полосы */
+}
+
+/* Контент карточки */
+.status-content {
+    flex-grow: 1; /* Занимает оставшееся пространство */
+    padding: 10px 14px;
+}
+
+/* Стили для хедера карточки */
+.status-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.status-name {
+    font-size: 16px;
+    font-weight: 900;
+    color: #333;
+}
+
+/* Стили для основной части карточки */
+.status-body {
+    margin-bottom: 10px;
+}
+
+.status-note {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Стили для футера карточки */
+.status-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #666;
+}
+
+.status-date {
+    font-weight: 700;
+}
+
+.status-owner {
+    font-weight: 700;
+}

@@ -13,6 +13,7 @@ router.register('services', views.ServiceViewSet, basename='services')
 router.register('service-types', views.ServiceTypeViewSet, basename='service-types')
 router.register('works', views.WorkServiceView, basename='works')
 router.register('factories', views.FactoryViewSet, basename='factories')
+router.register('rational', views.ProposalViewSet, basename='rational')
 router.register(r'equipment-search', views.EquipmentViewSet, basename='equipment-search')
 router.register(r'valves/(?P<valve_id>\d+)/services', views.ValveServiceViewSet, basename='valve-services')
 

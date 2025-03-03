@@ -21,6 +21,10 @@ class ValveTable(tables.Table):
     tech_number = tables.Column(verbose_name='Техн. номер')
     diameter = tables.Column(verbose_name='Диаметр (мм)')
     pressure = tables.Column(verbose_name='Давление (кгс/см²)')
+    # factory_number = tables.Column(attrs={'class': 'column-minor'},)
+    # year_exploit = tables.Column(attrs={'class': 'column-minor'},)
+    # year_made = tables.Column(attrs={'class': 'column-minor'},)
+    # drive_factory = tables.Column(attrs={'class': 'column-minor'},)
 
     class Meta:
         model = Valve
@@ -32,14 +36,29 @@ class ValveTable(tables.Table):
             'diameter',
             'pressure',
             'valve_type',
+            'factory_number',
             'factory',
-            'drive_type',
+            # 'year_made',
+            # 'year_exploit',
+            'remote',
             'design',
+            'drive_type',
+            # 'drive_factory',
         ]
         attrs = {'class': 'table table_tpa'}
         row_attrs = {'id': lambda record: record.id}
         orderable = False
         template_name = 'module_app/table/new_table.html'
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Извлекаем пользователя
+        super().__init__(*args, **kwargs)
+
+        if user and user.role == Role.ADMIN:
+            # Делаем 'ks' первым, удаляя его из остальных мест
+            self.sequence = ['ks'] + [col for col in self.sequence if col != 'ks']
+        else:
+            self.exclude = ('ks',)  # Скрываем колонку
 
     def render_ks(self, record):
         ks = record.get_ks()

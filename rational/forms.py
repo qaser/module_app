@@ -5,10 +5,10 @@ from django.forms import (
 from django.forms.widgets import ClearableFileInput, NumberInput, Textarea
 
 from equipments.models import Equipment
-from .models import Proposal
+from module_app.utils import create_choices
 from users.models import ModuleUser, Role
 
-from .utils import create_choices
+from .models import Proposal
 
 
 class ProposalForm(ModelForm):

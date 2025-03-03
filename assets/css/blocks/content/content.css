@@ -3,3 +3,13 @@
     min-height: calc(100vh - 60px); /* прижимаю футер к низу экрана */
     overflow-x: auto;
 }
+
+@media screen and (max-width: 800px) {
+    .sidebar {
+        width: 100%; /* на мобильных устройствах sidebar занимает всю ширину */
+    }
+
+    .content {
+        width: 100%; /* на мобильных устройствах content занимает всю ширину */
+    }
+}

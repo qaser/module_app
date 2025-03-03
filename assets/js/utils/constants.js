@@ -1,6 +1,6 @@
 // кнопки формы редактирования ТПА
-export const btnValveEdit = document.querySelector('.card__button_edit');
-export const btnValveDone = document.querySelector('.card__button_done');
+export const btnEdit = document.querySelector('.card__button_edit');
+export const btnDone = document.querySelector('.card__button_done');
 export const btnCancel = document.querySelector('.card__button_cancel');
 
 

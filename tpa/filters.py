@@ -2,10 +2,10 @@ import django_filters as df
 from django.db.models import Q
 
 from equipments.models import Equipment
+from module_app.utils import create_choices
 from users.models import Role
 
 from .models import Valve
-from .utils import create_choices
 
 
 class ValveFilter(df.FilterSet):

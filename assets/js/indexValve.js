@@ -7,7 +7,6 @@ import FormFilter from './components/FormFilter.js';
 import Tooltip from '../js/components/Tooltip.js';
 import AppMenu from '../js/components/AppMenu.js';
 
-
 // создание объекта api
 const api = new Api({
     baseUrl: config.apiConfig.url,
@@ -25,10 +24,7 @@ const newUserInfo = new UserInfo({
 });
 
 // создание объекта таблицы со строками ссылками
-const newTable = new Table({
-    table: '.table__body',
-});
-newTable.setClickEvent();
+const newTable = new Table({table: '.table__body'});
 
 
 function renderLoading(isLoading) {
@@ -39,6 +35,7 @@ function renderLoading(isLoading) {
 
 new Tooltip();
 new AppMenu();
+newTable.init()
 
 
 api.getMyProfile()

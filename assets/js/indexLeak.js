@@ -25,10 +25,7 @@ const newUserInfo = new UserInfo({
 });
 
 // создание объекта таблицы со строками ссылками
-const newTable = new Table({
-    table: '.table__body',
-});
-newTable.setClickEvent();
+const newTable = new Table({table: '.table__body'});
 
 
 function renderLoading(isLoading) {
@@ -39,6 +36,7 @@ function renderLoading(isLoading) {
 
 new Tooltip();
 new AppMenu();
+newTable.init();
 
 
 api.getMyProfile()

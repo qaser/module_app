@@ -1,4 +1,5 @@
 .sidebar {
     grid-area: sidebar;
     position: relative;
+    width: 280px; /* фиксированная ширина sidebar */
 }

@@ -3,6 +3,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from mptt.models import MPTTModel, TreeForeignKey
 
+STRUCTURE = (
+    ('Административная структура', 'Административная структура'),
+    ('Материальная структура', 'Материальная структура'),
+)
+
 
 class TypeOfEquipment(models.Model):
     name = models.CharField(
@@ -41,9 +46,16 @@ class Equipment(MPTTModel):
         null=True,
         blank=True
     )
+    structure = models.CharField(
+        verbose_name='Тип структуры',
+        choices=STRUCTURE,
+        max_length=50,
+        blank=False,
+        null=False
+    )
 
     class MPTTMeta:
-        order_insertion_by = ['name']  # Сортировка по имени
+        order_insertion_by = ['name']
 
     class Meta:
         verbose_name = 'Оборудование'

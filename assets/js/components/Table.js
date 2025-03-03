@@ -9,7 +9,7 @@ export default class Table {
         return this._arrayRows;
     }
 
-    setClickEvent() {
+    init() {
         this._arrRows = this._getArrayRows()
         this._arrRows.forEach((row) => {
             row.addEventListener('click', () => {

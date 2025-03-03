@@ -1,105 +1,112 @@
 import django_filters as df
-from django.db.models import Q
+from django.db.models import OuterRef, Q, Subquery
+from django.forms.widgets import Select
 
 from equipments.models import Equipment
 from users.models import Role
 
-from .models import Proposal
-from .utils import create_choices
+from .models import CATEGORY, Proposal, Status
 
 
 class ProposalFilter(df.FilterSet):
-    pass
-    # equipment = df.ModelChoiceFilter(
-    #     queryset=Equipment.objects.none(),
-    #     method='filter_by_equipment',
-    #     label='Структура предприятия'
-    # )
-    # title = df.ChoiceFilter(
-    #     choices=create_choices(
-    #         Proposal.objects.values_list('title', flat=True).distinct().order_by('title')
-    #     )
-    # )
-    # diameter = df.ChoiceFilter(
-    #     choices=create_choices(
-    #         Proposal.objects.values_list('diameter', flat=True).distinct().order_by('diameter')
-    #     )
-    # )
-    # pressure = df.ChoiceFilter(
-    #     choices=create_choices(
-    #         Proposal.objects.values_list('pressure', flat=True).distinct().order_by('pressure')
-    #     )
-    # )
-    # tech_number = df.ChoiceFilter(
-    #     choices=create_choices(
-    #         Proposal.objects.values_list('tech_number', flat=True).distinct().order_by('tech_number')
-    #     )
-    # )
-    # design = df.ChoiceFilter(
-    #     choices=create_choices(
-    #         Proposal.objects.values_list('design', flat=True).distinct().order_by('design')
-    #     )
-    # )
+    authors = df.CharFilter(
+        label='Автор',
+        method='filter_by_author',
+        lookup_expr='icontains'
+    )
+    category = df.ChoiceFilter(
+        choices=CATEGORY,
+        label='Классификатор'
+    )
+    is_economy = df.BooleanFilter(
+        label='Экономический эффект',
+        widget=Select(
+            choices=[('', '---------'), (True, 'Есть'), (False, 'Нет')]
+        )
+    )
+    equipment = df.ModelChoiceFilter(
+        queryset=Equipment.objects.none(),
+        method='filter_by_equipment',
+        label='Структурное подразделение'
+    )
+    status = df.ChoiceFilter(
+        choices=Status.StatusChoices.choices,
+        method='filter_by_status',
+        label='Статус'
+    )
 
+    class Meta:
+        model = Proposal
+        fields = ['equipment', 'category', 'is_economy', 'authors', 'status']
 
-    # def __init__(self, *args, **kwargs):
-    #     user = kwargs['request'].user
-    #     super(ProposalFilter, self).__init__(*args, **kwargs)
+    def filter_by_author(self, queryset, name, value):
+        if value:
+            return queryset.filter(authors__last_name__icontains=value) | \
+                   queryset.filter(authors__first_name__icontains=value) | \
+                   queryset.filter(authors__patronymic__icontains=value)
+        return queryset
 
-    #     base_level = 0  # Базовый уровень для отступов
+    def filter_by_status(self, queryset, name, value):
+        """Фильтрация по последнему статусу"""
+        if value == Status.StatusChoices.ACCEPT:
+            # Если выбран статус ACCEPT, включаем также APPLY
+            latest_status = Status.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
+            return queryset.annotate(
+                latest_status=Subquery(latest_status)
+            ).filter(
+                latest_status__in=[Status.StatusChoices.ACCEPT, Status.StatusChoices.APPLY]
+            )
+        else:
+            # Для других статусов фильтруем как обычно
+            latest_status = Status.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
+            return queryset.annotate(
+                latest_status=Subquery(latest_status)
+            ).filter(
+                latest_status=value
+            )
 
-    #     if user.role == Role.ADMIN:
-    #         self.base_queryset = Equipment.objects.all()
-    #         self.filters['equipment'].field.queryset = Equipment.objects.all()
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('request').user
+        super().__init__(*args, **kwargs)
+        base_level = 0  # Базовый уровень отступов
 
-    #     elif user.role == Role.MANAGER:
-    #         if user.equipment:
-    #             # Получаем корень ветки, к которой принадлежит пользователь
-    #             root = user.equipment.get_root()
-    #             # Фильтруем все оборудование от корня (вся ветка пользователя)
-    #             self.base_queryset = root.get_descendants(include_self=True)
-    #             # Показываем в фильтре только оборудование с одним родителем, но из своей ветки
-    #             self.filters['equipment'].field.queryset = self.base_queryset.filter(parent__isnull=False)
-    #             base_level = root.level
-    #         else:
-    #             self.filters['equipment'].field.queryset = Equipment.objects.none()
-    #             self.base_queryset = Equipment.objects.none()
+        # Базовый QuerySet без 'Материальной структуры'
+        equipment_queryset = Equipment.objects.exclude(structure="Материальная структура")
 
-    #     elif user.role == Role.EMPLOYEE:
-    #         if user.equipment:
-    #             descendants = user.equipment.get_descendants(include_self=True)
-    #             self.filters['equipment'].field.queryset = Equipment.objects.filter(id__in=descendants.values('id'))
-    #             self.base_queryset = Equipment.objects.filter(id__in=descendants.values('id'))
-    #             base_level = user.equipment.level
-    #         else:
-    #             self.filters['equipment'].field.queryset = Equipment.objects.none()
-    #             self.base_queryset = Equipment.objects.none()
+        if user.role == Role.ADMIN:
+            self.base_queryset = equipment_queryset
+            self.filters['equipment'].field.queryset = equipment_queryset
+        elif user.role == Role.MANAGER:
+            if user.equipment:
+                root = user.equipment.get_root()
+                self.base_queryset = equipment_queryset.filter(tree_id=root.tree_id)
+                self.filters['equipment'].field.queryset = self.base_queryset.filter(parent__isnull=False)
+                base_level = root.level
+            else:
+                self.filters['equipment'].field.queryset = Equipment.objects.none()
+                self.base_queryset = Equipment.objects.none()
+        elif user.role == Role.EMPLOYEE:
+            if user.equipment:
+                descendants = user.equipment.get_descendants(include_self=True)
+                self.base_queryset = equipment_queryset.filter(id__in=descendants.values('id'))
+                self.filters['equipment'].field.queryset = self.base_queryset
+                base_level = user.equipment.level
+            else:
+                self.filters['equipment'].field.queryset = Equipment.objects.none()
+                self.base_queryset = Equipment.objects.none()
 
-    #     # Отображаем иерархию в поле выбора
-    #     if 'equipment' in self.filters:
-    #         self.filters['equipment'].field.queryset = self.filters['equipment'].field.queryset.order_by('tree_id', 'lft')
-    #         self.filters['equipment'].field.label_from_instance = lambda obj: f"{'..' * (obj.level - base_level)} {obj.name}"
+        # Убираем "Материальную структуру" и применяем иерархический отступ
+        if 'equipment' in self.filters:
+            self.filters['equipment'].field.queryset = self.filters['equipment'].field.queryset.order_by('tree_id', 'lft')
+            self.filters['equipment'].field.label_from_instance = lambda obj: f"{'..' * (obj.level - base_level)} {obj.name}"
 
-    # def filter_by_equipment(self, queryset, name, value):
-    #     try:
-    #         if value and self.base_queryset:
-    #             descendants = value.get_descendants(include_self=True)
-    #             queryset = queryset.filter(equipment__in=descendants & self.base_queryset)
-    #         else:
-    #             queryset = queryset.none()
-    #     except Equipment.DoesNotExist:
-    #         queryset = queryset.none()
-    #     return queryset
-
-    # class Meta:
-    #     model = Proposal
-    #     fields = [
-    #         'equipment',
-    #         'title',
-    #         'diameter',
-    #         'pressure',
-    #         'valve_type',
-    #         'factory',
-    #         'tech_number',
-    #         'drive_type'
-    #     ]
+    def filter_by_equipment(self, queryset, name, value):
+        try:
+            if value and self.base_queryset:
+                descendants = value.get_descendants(include_self=True)
+                queryset = queryset.filter(equipment__in=descendants & self.base_queryset)
+            else:
+                queryset = queryset.none()
+        except Equipment.DoesNotExist:
+            queryset = queryset.none()
+        return queryset

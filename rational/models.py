@@ -1,10 +1,12 @@
 from django.db import models
-from django.db.models.signals import m2m_changed
+from django.db.models import OuterRef, Subquery
+from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
-from mptt.models import MPTTModel, TreeForeignKey
 from django.utils import timezone
+from mptt.models import MPTTModel, TreeForeignKey
 
 from equipments.models import Equipment
+from module_app.utils import compress_image
 from users.models import ModuleUser
 
 CATEGORY = (
@@ -18,7 +20,6 @@ CATEGORY = (
     ('Экономия газа', 'Экономия газа'),
     ('Экономия теплоэнергии', 'Экономия теплоэнергии'),
     ('Экономия электроэнергии', 'Экономия электроэнергии'),
-    ('Экология', 'Экология'),
     ('Экология', 'Экология'),
 )
 YEAR_CHOICES = [(year, year) for year in range(2025, 2031)]  # Выбор года
@@ -34,30 +35,10 @@ class Proposal(models.Model):
     reg_num = models.CharField(
         'Регистрационный номер',
         max_length=50,
-        blank=False,
-        null=False,
-    )
-    reg_date = models.DateField(
-        'Дата регистрации',
-        default=timezone.now,
-        blank=False,
-        null=False,
-    )
-    check_date = models.DateField(
-        'Дата проверки',
-        blank=True,
         null=True,
-    )
-    accept_date = models.DateField(
-        'Дата признания рационализаторским',
         blank=True,
-        null=True,
     )
-    reject_date = models.DateField(
-        'Дата отклонения',
-        blank=True,
-        null=True,
-    )
+    reg_date = models.DateTimeField('Дата регистрации', auto_now_add=True,)
     authors = models.ManyToManyField(
         ModuleUser,
         related_name='proposals',
@@ -69,7 +50,7 @@ class Proposal(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name='Структура предприятия'
+        verbose_name='Подразделение'
     )
     category = models.CharField(
         verbose_name='Классификатор',
@@ -96,21 +77,9 @@ class Proposal(models.Model):
     )
     economy_size = models.FloatField(
         'Экономический эффект, руб',
+        default=0,
         null=True,
         blank=True,
-    )
-    is_apply = models.BooleanField(
-        'Принято к использованию',
-        default=False
-    )
-    is_reject = models.BooleanField(
-        'Отклонено',
-        default=False
-    )
-    apply_date = models.DateField(
-        'Дата начала использования',
-        blank=True,
-        null=True,
     )
     note = models.CharField(
         'Примечание',
@@ -126,7 +95,22 @@ class Proposal(models.Model):
         verbose_name_plural = 'Рационализаторские предложения'
 
     def __str__(self):
-        return f'№{self.reg_num}, {self.equipment}'
+        return f'№{self.reg_num}, {self.title}'
+
+    def get_ks(self):
+        """
+        Возвращает корневой элемент второго уровня для текущего оборудования.
+        """
+        if self.equipment:
+            # Получаем корень ветки
+            root = self.equipment.get_root()
+            # Получаем всех потомков корня
+            descendants = root.get_descendants(include_self=True)
+            # Фильтруем элементы второго уровня
+            second_level = descendants.filter(level=1)
+            if second_level.exists():
+                return second_level.first()
+        return None
 
 
 @receiver(m2m_changed, sender=Proposal.authors.through)
@@ -136,6 +120,55 @@ def set_equipment_from_author(sender, instance, action, **kwargs):
             first_author = instance.authors.first()
             instance.equipment = first_author.equipment
             instance.save()
+
+@receiver(m2m_changed, sender=Proposal.authors.through)
+def create_status_with_owner(sender, instance, action, **kwargs):
+    if action == "post_add" and not instance.statuses.exists():
+        Status.objects.create(
+            proposal=instance,
+            status=Status.StatusChoices.REG,
+            owner=instance.authors.first(),
+            note=instance.note,
+        )
+
+@receiver(post_save, sender=Proposal)
+def set_proposal_reg_num(sender, instance, created, **kwargs):
+    """Автоматически устанавливает reg_num после создания Proposal."""
+    if created and not instance.reg_num:  # Только для новых объектов без номера
+        year = instance.reg_date.year  # Берем год из даты регистрации
+        count = Proposal.objects.count()  # Количество записей в БД
+        economy_suffix = '-Э' if instance.is_economy else ''
+        instance.reg_num = f'2430-{count}-{year}{economy_suffix}'
+        instance.save(update_fields=['reg_num'])  # Обновляем только reg_num
+
+
+class ProposalImage(models.Model):
+    image = models.ImageField(
+        'Фото РП',
+        upload_to='rational/images',
+        blank=True,
+        null=True,
+    )
+    name = models.CharField(
+        'Наименование фотографии',
+        max_length=50,
+        blank=True,
+        null=True,
+    )
+    proposal = models.ForeignKey(
+        Proposal,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+
+    class Meta:
+        verbose_name = 'Фотоматериалы по РП'
+        verbose_name_plural = 'Фотоматериалы по РП'
+
+    def save(self, *args, **kwargs):  # сжатие фото перед сохранением
+        super(ProposalImage, self).save(*args, **kwargs)
+        if self.image:
+            compress_image(self.image)
 
 
 class ProposalDocument(models.Model):
@@ -155,6 +188,44 @@ class ProposalDocument(models.Model):
     class Meta:
         verbose_name = 'Документация РП'
         verbose_name_plural = 'Документация РП'
+
+
+class Status(models.Model):
+    class StatusChoices(models.TextChoices):
+        REG = 'reg', 'Зарегистрировано'
+        RECHECK = 'recheck', 'Повторная заявка'
+        REWORK = 'rework', 'На доработке'  # зациклить с recheck
+        ACCEPT = 'accept', 'Принято'
+        REJECT = 'reject', 'Отклонено'
+        APPLY = 'apply', 'Используется'
+
+    proposal = models.ForeignKey(
+        Proposal,
+        on_delete=models.CASCADE,
+        related_name='statuses',
+        verbose_name='РП',
+    )
+    status = models.CharField(max_length=20, choices=StatusChoices.choices)
+    date_changed = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(
+        ModuleUser,
+        related_name='owners',
+        on_delete=models.SET_NULL,
+        verbose_name='Автор(ы)',
+        blank=True,
+        null=True,
+    )
+    note = models.CharField(
+        'Примечание',
+        default='',
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Статус РП'
+        verbose_name_plural = 'Статусы РП'
 
 
 class Plan(MPTTModel):
@@ -204,19 +275,36 @@ class Plan(MPTTModel):
             return f'План на {self.year} год, {self.equipment.name}'
         return f'План на {self.year} год, {self.equipment.name} '
 
+    from django.db.models import OuterRef, Subquery
+
     @property
     def completed(self):
-        # Вычисляемое поле: количество заявок, зарегистрированных в рамках плана.
+        """
+        Вычисляемое поле: количество заявок, принятых в рамках плана.
+        """
         if self.is_leaf_node():
-            # Для квартальных планов
+            # Определяем диапазон дат для квартала
             start_date = f'{self.year}-{3 * (self.quarter - 1) + 1:02d}-01'  # Начало квартала
             end_date = f'{self.year}-{3 * self.quarter:02d}-31'  # Конец квартала
 
-            return Proposal.objects.filter(
-                accept_date__gte=start_date,
-                accept_date__lte=end_date,
+            # Подзапрос для получения последнего статуса каждого предложения
+            latest_statuses = Status.objects.filter(
+                proposal=OuterRef('id')
+            ).order_by('-date_changed').values('status')[:1]
+
+            # Фильтруем предложения, у которых статус REG был в указанном диапазоне,
+            # и последний статус — ACCEPT
+            accepted_proposals = Proposal.objects.annotate(
+                latest_status=Subquery(latest_statuses)
+            ).filter(
+                statuses__status=Status.StatusChoices.REG,
+                statuses__date_changed__gte=start_date,
+                statuses__date_changed__lte=end_date,
                 equipment=self.equipment,
-            ).count()
+                latest_status=Status.StatusChoices.ACCEPT
+            ).distinct().count()
+
+            return accepted_proposals
         else:
-            # Для нелистовых узлов (годовых планов)
+            # Для нелистовых узлов (годовых планов) суммируем значения из дочерних узлов
             return sum(child.completed for child in self.get_children())

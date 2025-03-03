@@ -2,7 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from equipments.models import Equipment
-from tpa.utils import compress_image
+from module_app.utils import compress_image
 from users.models import ModuleUser
 
 DRIVETYPE = (

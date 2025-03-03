@@ -238,6 +238,76 @@ export default class Api {
         .then(response => response.json());
     }
 
+    // загрузка РП с сервера
+    getProposals() {
+        return fetch(`${this._baseUrl}/rational/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    // загрузка одного РП с сервера
+    getProposalItem(id) {
+        return fetch(`${this._baseUrl}/rational/${id}`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    // добавление нового РП
+    addNewProposal(proposal) {
+        return fetch(`${this._baseUrl}/rational/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: JSON.stringify({
+                name: proposal.name,
+                link: proposal.link
+            })
+        })
+        .then(this._checkResponse);
+    }
+
+    // удаление РП
+    deleteProposal(id) {
+        return fetch(`${this._baseUrl}/rational/${id}/`, {
+            method: 'DELETE',
+            headers: this._headers,
+        })
+        .then(this._checkResponse);
+    }
+
+    // изменить РП
+    changeProposal(form, id) {
+        // delete this._headers['Content-Type']
+        return fetch(`${this._baseUrl}/rational/${id}/`, {
+            method: 'PATCH',
+            headers: this._headers,
+            body: form
+        })
+        .then(response => response.json());
+    }
+
+
+    // добавление нового файла РП
+    addProposalFile(form) {
+        // delete this._headers['Content-Type']
+        return fetch(`${this._baseUrl}/rational-docs/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: form
+        })
+        .then(response => response.json());
+    }
+
+    // удаление файла РП
+    deleteProposalFile(id) {
+        return fetch(`${this._baseUrl}/rational-docs/${id}/`, {
+            method: 'DELETE',
+            headers: this._headers,
+        })
+        // .then(this._checkResponse);
+    }
+
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();

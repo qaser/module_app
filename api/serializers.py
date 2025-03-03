@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from equipments.models import Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
+from rational.models import Plan, Proposal, ProposalDocument, Status
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
 from users.models import ModuleUser
@@ -18,6 +19,12 @@ class LeakImageSerializer(serializers.ModelSerializer):
 class LeakDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeakDocument
+        fields = ('id', 'doc', 'name',)
+
+
+class ProposalDocumentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProposalDocument
         fields = ('id', 'doc', 'name',)
 
 
@@ -55,32 +62,13 @@ class LeakSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Leak
-        fields = (
-            'id',
-            'place',
-            'equipment',
-            'specified_location',
-            'is_valve',
-            'description',
-            'type_leak',
-            'volume',
-            'volume_dinamic',
-            'gas_losses',
-            'reason',
-            'detection_date',
-            'planned_date',
-            'fact_date',
-            'method',
-            'detector',
-            'executor',
-            'plan_work',
-            'doc_name',
-            'protocol',
-            'is_done',
-            'note',
-            'images',
-            'files'
-        )
+    fields = (
+        'id', 'place', 'equipment', 'specified_location', 'is_valve',
+        'description', 'type_leak', 'volume', 'volume_dinamic',
+        'gas_losses', 'reason', 'detection_date', 'planned_date',
+        'fact_date', 'method', 'detector', 'executor', 'plan_work',
+        'doc_name', 'protocol', 'is_done', 'note', 'images', 'files'
+    )
 
     def get_images(self, obj):
         selected_images = LeakImage.objects.filter(leak=obj)
@@ -253,3 +241,50 @@ class FactorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Factory
         fields = '__all__'
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    date_changed = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    owner = UserSerializer()
+
+    class Meta:
+        model = Status
+        fields = '__all__'
+
+    def get_date_changed(self, obj):
+        return obj.date_changed.strftime('%d.%m.%Y, %H:%M')
+
+    def get_status(self, obj):
+        return obj.get_status_display()
+
+
+class ProposalSerializer(serializers.ModelSerializer):
+    authors = UserSerializer(many=True, read_only=True)
+    equipment = serializers.SerializerMethodField()
+    reg_date = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+    is_economy = serializers.SerializerMethodField()
+    # note = serializers.SerializerMethodField()
+    statuses = StatusSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Proposal
+        fields = [
+            'id', 'reg_num', 'reg_date', 'authors', 'equipment',
+            'category', 'title', 'description', 'is_economy',
+            'economy_size', 'note', 'files', 'statuses'
+        ]
+
+    def get_reg_date(self, obj):
+        return obj.reg_date.strftime('%d.%m.%Y')
+
+    def get_is_economy(self, obj):
+        return 'Да' if obj.is_economy else 'Нет'
+
+    def get_equipment(self, obj):
+        return obj.equipment.name if obj.equipment else None
+
+    def get_files(self, obj):
+        selected_files = ProposalDocument.objects.filter(proposal=obj)
+        return ProposalDocumentSerializer(selected_files, many=True).data

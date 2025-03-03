@@ -27,7 +27,7 @@ class ValveView(SingleTableMixin, FilterView):
         return filter_valves_by_user_role(user)
 
     def get_table_kwargs(self):
-       return {'request': self.request}
+       return {'user': self.request.user}
 
 
 def filter_valves_by_user_role(user):

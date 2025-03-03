@@ -10,33 +10,31 @@
     padding: 0;
     background-color: #F8F8F8;
     display: grid;
-    /* grid-template-columns: 280px calc(100% - 280px); */
-    grid-template-columns: calc((100% - 1600px) / 2) 280px 1320px calc((100% - 1600px) / 2);
+    grid-template-columns: 280px 1fr; /* sidebar занимает 280px, content - всё остальное */
     grid-template-areas:
-    "header header header header"
-    ". sidebar content .";
-    justify-content: center;
+        "header header"
+        "sidebar content";
+    min-height: 100vh; /* растягиваем на весь экран */
 }
 
 @media screen and (max-width: 1600px) {
     .page {
-        grid-template-columns: 280px calc(100% - 280px);
+        grid-template-columns: 280px 1fr; /* sidebar занимает 280px, content - всё остальное */
         grid-template-areas:
-        "header header"
-        "sidebar content";
+            "header header"
+            "sidebar content";
     }
 }
 
 @media screen and (max-width: 800px) {
     .page {
-        grid-template-columns: 50% 50%;
+        grid-template-columns: 1fr; /* на мобильных устройствах sidebar и content занимают всю ширину */
         grid-template-areas:
-        "header header"
-        "sidebar sidebar"
-        "content content";
+            "header"
+            "sidebar"
+            "content";
     }
 }
-
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

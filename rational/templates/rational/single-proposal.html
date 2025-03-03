@@ -1,0 +1,124 @@
+{% extends "module_app/base.html" %}
+{% block title %}Обзор рационализаторского предложения{% endblock %}
+{% block app_name %}Рационализаторская работа{% endblock %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/single-proposal.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="{% url 'rational:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Журнал РП</h3>
+    </a>
+    <a href="{% url 'rational:proposal_new' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_new"></div>
+        <h3 class="sidebar__text">Внести предложение</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_objects"></div>
+        <h3 class="sidebar__text">Планирование</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+      <!-- основная панель -->
+      <section class="main" id="main">
+        <h1 class="main__title"></h1>
+        <div class="card" id="{{ proposal_id }}">
+          <div class="card__container">
+              <div class="card__header card__header_{{ request.resolver_match.app_name }}">
+                  <h3 class="card__title">Информация об РП</h3>
+                  <button class="button card__button card__button_edit" data-tooltip="Редактировать информацию"></button>
+              </div>
+              <div class="card__field" id="proposal_info">
+                <div class="card__line">
+                  <p class="card__param">Регистрационный номер</p>
+                  <p class="card__value" id="reg_num"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Дата регистрации</p>
+                  <p class="card__value" id="reg_date"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Автор(ы) предложения</p>
+                  <p class="card__value" id="authors"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Подразделение</p>
+                  <p class="card__value" id="equipment"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Наименование предложения</p>
+                  <p class="card__value" id="title"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">С экономическим эффектом</p>
+                  <p class="card__value" id="is_economy"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Экономический эффект, руб</p>
+                  <p class="card__value" id="economy_size"></p>
+                </div>
+                <div class="card__line">
+                    <p class="card__param">Описание предложения</p>
+                    <p class="card__value" id="description"></p>
+                </div>
+              </div>
+              <div class="card__header hidden card__header_{{ request.resolver_match.app_name }}" id="cardFiles">
+                <h3 class="card__title">Документация</h3>
+                <button class="button card__button card__button_add hidden" data-tooltip="Добавить файл"></button>
+              </div>
+                <div class="card__files"></div>
+              </div>
+        <div class="status_container"></div>
+        <div class="status-tooltip"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- всплывающее окно с формой добавления файла -->
+    <div class="popup" id="popup-file">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup form-popup_wide" name="new-file" id="form-newfile" enctype="multipart/form-data">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4"></input>
+                    <span class="form-popup__input-error" id="file-name-error"></span>
+                </label>
+                <label class="form-popup__file-field">
+                    <span class="form-popup__file-title">Файл:</span>
+                    <input class="form-popup__input" type="file" id="work-files" name="files" accept="image/*, application/pdf">
+                    <span class="form-popup__input-error" id="work-files-error"></span>
+                </label>
+                <progress id="progressBar" value="0" max="100"></progress>
+                <div class="form-popup__container">
+                    <span class="form-popup__status" id="uploadForm_Status"></span>
+                    <span id="uploadForm_Size"></span>
+                </div>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <template class="file-template">
+        <div class="card__line" id="">
+            <a class="card__value_ext  link" target="_blank" data-tooltip="Открыть файл"></a>
+            <button class="card__delete hidden" type="button" data-tooltip="Удалить файл">✖</button>
+        </div>
+    </template>
+
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/singleProposal.js' %}"></script>
+{% endblock %}

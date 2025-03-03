@@ -20,14 +20,14 @@ class ProposalView(SingleTableMixin, FilterView):
     table_class = ProposalTable
     paginate_by = 39
     template_name = 'rational/index.html'
-    # filterset_class = ProposalFilter
+    filterset_class = ProposalFilter
 
     def get_queryset(self):
         user = self.request.user
         return filter_proposal_by_user_role(user)
 
     def get_table_kwargs(self):
-       return {'request': self.request}
+       return {'user': self.request.user}
 
 
 def filter_proposal_by_user_role(user):
@@ -64,7 +64,7 @@ def single_proposal(request, proposal_id):
     return render(
         request,
         'rational/single-proposal.html',
-        {'proposal_id': proposal_id, 'proposal': proposal.model._meta.fields}
+        {'proposal_id': proposal_id, 'proposal': proposal}
     )
 
 

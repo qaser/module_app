@@ -5,10 +5,9 @@ from django.forms import (
 from django.forms.widgets import ClearableFileInput, NumberInput, Textarea
 
 from equipments.models import Equipment
+from module_app.utils import create_choices
 from tpa.models import Valve, ValveImage
 from users.models import ModuleUser, Role
-
-from .utils import create_choices
 
 
 class ValveForm(ModelForm):

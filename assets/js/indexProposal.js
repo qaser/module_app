@@ -25,11 +25,7 @@ const newUserInfo = new UserInfo({
 });
 
 // создание объекта таблицы со строками ссылками
-const newTable = new Table({
-    table: '.table__body',
-});
-newTable.setClickEvent();
-
+const newTable = new Table({table: '.table__body'});
 
 function renderLoading(isLoading) {
   if (isLoading) {
@@ -39,18 +35,18 @@ function renderLoading(isLoading) {
 
 new Tooltip();
 new AppMenu();
-
+newTable.init();
 
 api.getMyProfile()
     .then((userData) => {
         newUserInfo.setUserInfo(userData);
-        // new FormFilter(
-        //     api.getEquipmentChildren.bind(api),
-        //     'filter_submit',
-        //     'id_equipment',
-        //     'equipment',
-        //     'sidebar__form-input',
-        // );
+        new FormFilter(
+            api.getEquipmentChildren.bind(api),
+            'filter_submit',
+            'id_equipment',
+            'equipment',
+            'sidebar__form-input',
+        );
         const targetField = document.querySelector('#id_equipment')
         targetField.setAttribute('data-tooltip', constant.tooltipFormField)
     })

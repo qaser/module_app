@@ -1,5 +1,5 @@
 .card__images {
-    width: 45%;
+    width: 50%;
     margin: 0 0 0 20px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -11,6 +11,5 @@
     .card__images {
         width: 100%;
         margin: 10px auto;
-
     }
 }

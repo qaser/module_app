@@ -5,7 +5,6 @@ from django.urls import path
 
 from module_app import settings
 
-
 # handler404 = 'service_pages.views.page_not_found'  # noqa
 # handler500 = 'service_pages.views.server_error'  # noqa
 # handler400 = 'service_pages.views.bad_request'  # noqa
