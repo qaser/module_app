@@ -7,7 +7,7 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from equipments.models import Equipment
-from users.models import Role
+from users.models import ModuleUser, Role
 
 from .filters import ProposalFilter
 from .forms import ProposalForm
@@ -73,12 +73,38 @@ def proposal_new(request):
     if request.method == 'POST':
         form = ProposalForm(request.POST, user=request.user)
         if form.is_valid():
-            proposal = form.save()
+            # Проверяем поля authors
+            authors_ids = [
+                request.POST.get('authors_1'),
+                request.POST.get('authors_2'),
+                request.POST.get('authors_3'),
+                request.POST.get('authors_4'),
+            ]
+            authors_ids = [int(author_id) for author_id in authors_ids if author_id]  # Убираем пустые значения
+
+            if not authors_ids:
+                form.add_error(None, "Необходимо выбрать хотя бы одного автора.")
+                return render(request, 'create_proposal.html', {'form': form})
+
+            # Проверяем, что выбранные авторы существуют
+            authors = ModuleUser.objects.filter(id__in=authors_ids)
+            if authors.count() != len(authors_ids):
+                form.add_error(None, "Один или несколько выбранных авторов не найдены.")
+                return render(request, 'create_proposal.html', {'form': form})
+
+            # Проверяем поле economy_size
+            economy_size = form.cleaned_data.get('economy_size', 0)
+            is_economy = economy_size != 0
+
+            # Создаем объект Proposal
+            proposal = form.save(commit=False)
+            proposal.is_economy = is_economy
+            proposal.save()
+
+            # Добавляем авторов
+            proposal.authors.set(authors)
+
             return redirect('rational:single_proposal', proposal.id)
     else:
         form = ProposalForm(user=request.user)
-    return render(
-        request,
-        'rational/form-proposal.html',
-        {'form': form,}
-    )
+    return render(request, 'rational/new-proposal.html', {'form': form})

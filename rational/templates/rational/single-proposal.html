@@ -33,9 +33,9 @@
       <!-- основная панель -->
       <section class="main" id="main">
         <h1 class="main__title"></h1>
-        <div class="card" id="{{ proposal_id }}">
+        <div class="card" id="{{ proposal_id }}" app-name="{{ request.resolver_match.app_name }}">
           <div class="card__container">
-              <div class="card__header card__header_{{ request.resolver_match.app_name }}">
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
                   <h3 class="card__title">Информация об РП</h3>
                   <button class="button card__button card__button_edit" data-tooltip="Редактировать информацию"></button>
               </div>

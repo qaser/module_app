@@ -1,0 +1,5 @@
+.form__input_textarea {
+    resize: vertical;
+    outline: none;
+    margin: 0 10px;
+}

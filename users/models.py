@@ -5,6 +5,11 @@ from django.dispatch.dispatcher import receiver
 from rest_framework.authtoken.models import Token
 
 from equipments.models import Equipment
+from django.apps import apps
+
+
+def get_installed_apps():
+    return [app_config.name for app_config in apps.get_app_configs()]
 
 
 class Role(models.TextChoices):
@@ -40,10 +45,7 @@ class ModuleUser(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    # представление пользователя в виде Фамилия И.О.
-    # с учетом отсутствия Отчества
-    @property
-    def lastname_and_initials(self):
+    def user_display(self):
         lastname = self.last_name
         initial_name = self.first_name[0]
         if self.patronymic is not None:
@@ -54,10 +56,39 @@ class ModuleUser(AbstractUser):
             lastname_and_initials = f'{lastname} {initial_name}.'
         return lastname_and_initials
 
+    # представление пользователя в виде Фамилия И.О.
+    # с учетом отсутствия Отчества
+    @property
+    def lastname_and_initials(self):
+        return self.user_display()
+
     # @receiver(post_save, sender=User)
     # def create_auth_token(sender, instance=None, created=False, **kwargs):
     #     if created:
     #         Token.objects.create(user=instance)
 
     def __str__(self) -> str:
-        return self.get_full_name()
+        return self.user_display()
+
+
+class NotificationAppRoute(models.Model):
+    APP_CHOICES = [(app, app) for app in get_installed_apps()]
+
+    app_name = models.CharField(
+        'Приложение',
+        max_length=50,
+        choices=APP_CHOICES,  # Ограничиваем выбор только установленными приложениями
+    )
+    user = models.ForeignKey(
+        ModuleUser,
+        related_name='apps',
+        on_delete=models.SET_NULL,
+        verbose_name='Ответственный за приложение',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        ordering = ('app_name',)
+        verbose_name = 'Ответственный работник'
+        verbose_name_plural = 'Ответственные работники'

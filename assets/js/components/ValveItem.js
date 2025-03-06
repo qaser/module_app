@@ -60,8 +60,9 @@ export default class ValveItem {
         const eq = valve.equipment;
         const type = valve.valve_type;
         const diam = valve.diameter;
+        const pressure = valve.pressure;
         const num = valve.tech_number;
-        this._title.textContent = `${eq} | ${type} | Ду${diam} | №${num}`;
+        this._title.textContent = `${eq} | ${type} Ду${diam}, Ру${pressure} | №${num}`;
         this._values.forEach((item) => {
             item.textContent = valve[item.id];
         });

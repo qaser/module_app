@@ -1,0 +1,10 @@
+.form__group_plural {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Две колонки */
+    gap: 10px; /* Отступы между элементами */
+    width: 100%;
+}
+
+.form__group_plural .form__label {
+    grid-column: span 2; /* Занимает всю ширину */
+}

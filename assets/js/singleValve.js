@@ -376,7 +376,6 @@ Promise.all([api.getMyProfile(), api.getValveItem(valveId)])
             cardWithFiles.show();
             fileInstance.renderItems(valve.files);
         } else {
-            console.log(cardWithFiles)
             cardWithFiles.hide();
         }
     })

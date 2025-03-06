@@ -1,16 +1,18 @@
 from datetime import datetime, timedelta
-
+from django.core.mail import send_mail
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Exists, OuterRef, Subquery
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_save, post_init
 from django.dispatch import receiver
 from django.utils import timezone
 from mptt.models import MPTTModel, TreeForeignKey
 
 from equipments.models import Equipment
+from module_app.notifications import NotificationService
 from module_app.utils import compress_image
-from users.models import ModuleUser
+from users.models import ModuleUser, NotificationAppRoute
+
 
 CATEGORY = (
     ('Использование списанного оборудования', 'Использование списанного оборудования'),
@@ -214,7 +216,7 @@ class Status(models.Model):
         ModuleUser,
         related_name='owners',
         on_delete=models.SET_NULL,
-        verbose_name='Автор(ы)',
+        verbose_name='Автор',
         blank=True,
         null=True,
     )
@@ -251,6 +253,30 @@ class Status(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+
+@receiver(post_save, sender=Status)
+def send_notification(sender, instance, created, **kwargs):
+    recipients = []
+    # 1. Отправляем ответственному за приложение, если статус reg или recheck
+    if instance.status in [instance.StatusChoices.REG, instance.StatusChoices.RECHECK]:
+        app_route = NotificationAppRoute.objects.filter(app_name='rational').first()
+        if app_route and app_route.user:
+            recipients.append(app_route.user.email)
+    # 2. Отправляем авторам, если статус rework, accept, reject, apply
+    if instance.status in [instance.StatusChoices.REWORK, instance.StatusChoices.ACCEPT, instance.StatusChoices.REJECT, instance.StatusChoices.APPLY]:
+        recipients += list(instance.proposal.authors.values_list('email', flat=True))
+    # Отправка email
+    if recipients:
+        subject = f'Изменение статуса РП №{instance.proposal.reg_num}'
+        message = (
+            f'Статус рационализаторского предложения №{instance.proposal.reg_num} изменен.\n'
+            f'Новый статус: {instance.get_status_display()}\n'
+            f"Дата изменения: {instance.date_changed.strftime('%d.%m.%Y, %H:%M')}\n"
+            f"Примечание: {instance.note or 'Без примечаний'}"
+        )
+        print(instance.status, recipients)
+        # self.send_email(self.owner.email, subject, message)
 
 
 class Plan(MPTTModel):

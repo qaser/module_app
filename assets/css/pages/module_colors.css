@@ -3,8 +3,3 @@
 @import url(../blocks/module-color/_rational/module-color_rational.css);
 @import url(../blocks/module-color/_oil/module-color_oil.css);
 @import url(../blocks/module-color/_tpa/module-color_tpa.css);
-
-@import url(../blocks/card/__header/_leaks/card__header_leaks.css);
-@import url(../blocks/card/__header/_oil/card__header_oil.css);
-@import url(../blocks/card/__header/_tpa/card__header_tpa.css);
-@import url(../blocks/card/__header/_rational/card__header_rational.css);

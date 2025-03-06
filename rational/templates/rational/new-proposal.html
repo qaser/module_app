@@ -1,0 +1,136 @@
+{% extends "module_app/base.html" %}
+{% block title %}Оформить заявку на рационализаторское предложение{% endblock %}
+{% block app_name %}Рационализаторская работа{% endblock %}
+
+{% load static %}
+{% load rational_filters %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/new-proposal.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+<a href="{% url 'rational:index' %}" class="sidebar__item">
+    <div class="sidebar__icon sidebar__icon_index"></div>
+    <h3 class="sidebar__text">Журнал РП</h3>
+</a>
+<a href="" class="sidebar__item">
+    <div class="sidebar__icon sidebar__icon_objects"></div>
+    <h3 class="sidebar__text">Планирование</h3>
+</a>
+<a href="" class="sidebar__item">
+    <div class="sidebar__icon sidebar__icon_help"></div>
+    <h3 class="sidebar__text">Справочная информация</h3>
+</a>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+        <section class="main" id="main">
+
+            <!-- блок формы -->
+
+                <form class="form" method="post" enctype="multipart/form-data" id="form-new-proposal">
+                    <div class="form__header module-color__header_{{ request.resolver_match.app_name }}">
+                        <h3 class="form__title">Оформление заявки на рационализаторское предложение</h3>
+                    </div>
+                    {% csrf_token %}
+
+                    {% with form.title as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                            {{ field|addclass:'form__input form__input_textarea' }}
+                            {% include 'rational/rational_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    <div class="form__group form__group_plural" aria-required="true">
+                        <label for="id_authors" class="form__label">Автор(ы) предложения</label>
+
+                        <!-- Первое поле с текущим пользователем -->
+                        <select name="authors_1" class="form__input form__input_plural" id="authors_1">
+                            {% for user in form.fields.authors.queryset %}
+                                <option value="{{ user.id }}" {% if user.id == request.user.id %}selected{% endif %}>
+                                    {{ user }}
+                                </option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- Остальные поля с пустыми значениями -->
+                        <select name="authors_2" class="form__input form__input_plural" id="authors_2">
+                            <option value="">---------</option>
+                            {% for user in form.fields.authors.queryset %}
+                                <option value="{{ user.id }}">{{ user }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="authors_3" class="form__input form__input_plural" id="authors_3">
+                            <option value="">---------</option>
+                            {% for user in form.fields.authors.queryset %}
+                                <option value="{{ user.id }}">{{ user }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="authors_4" class="form__input form__input_plural" id="authors_4">
+                            <option value="">---------</option>
+                            {% for user in form.fields.authors.queryset %}
+                                <option value="{{ user.id }}">{{ user }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {% with form.equipment as field %}
+                    <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                        {{ field|addclass:'form__input' }}
+                        {% include 'rational/rational_ext/form_extend/error.html' with field=field %}
+                    </div>
+                    {% endwith %}
+
+                    {% with form.category as field %}
+                    <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                        {{ field|addclass:'form__input' }}
+                        {% include 'rational/rational_ext/form_extend/error.html' with field=field %}
+                    </div>
+                    {% endwith %}
+
+                    {% with form.economy_size as field %}
+                    <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                        {{ field|addclass:'form__input' }}
+                        {% include 'rational/rational_ext/form_extend/error.html' with field=field %}
+                    </div>
+                    {% endwith %}
+
+                    {% with form.description as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                            {{ field|addclass:'form__input form__input_textarea' }}
+                            {% include 'rational/rational_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% with form.note as field %}
+                        <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                            {{ field|addclass:'form__input form__input_textarea' }}
+                            {% include 'rational/rational_ext/form_extend/error.html' with field=field %}
+                        </div>
+                    {% endwith %}
+
+                    {% include "rational/rational_ext/button_ext/save_button.html" %}
+                </form>
+
+            <!-- конец блока формы -->
+
+        </section>
+    </main>
+{% endblock %}
+
+
+{% block script %}
+    <script type="module" src="{% static 'js/newProposal.js' %}"></script>
+{% endblock %}

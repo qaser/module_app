@@ -77,11 +77,7 @@ def valve_new(request):
             return redirect('tpa:single_valve', valve.id)
     else:
         form = ValveForm(user=request.user)
-    return render(
-        request,
-        'tpa/form-tpa.html',
-        {'form': form,}
-    )
+    return render(request, 'tpa/form-tpa.html', {'form': form,})
 
 
 @login_required

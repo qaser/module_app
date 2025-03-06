@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta name="description" content="Проект Module">
+        <meta name="keywords" content="модуль, производство, охрана труда, безопасность, контроль, газпром">
+        <meta name="author" content="Сайгин Алексей">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Войти в систему | Module</title>
+        {% load static %}
+        <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'css/pages/login-form.css'%}">
+    </head>
+
+
+    <body>
+        <div class="page">
+
+            <main class="enter-site">
+                <img class="enter-site__logo" src="{% static 'img/logo-full-large.png' %}" alt="Логотип">
+                <h1 class="enter-site__disclaimer">Это корпоративная информационная система. Самостоятельная регистрация новых пользователей не доступна.</h1>
+                <h2 class="enter-site__disclaimer">Чтобы войти используйте Логин и Пароль, выданные Вам администратором системы.</h2>
+
+
+                <h3 class="enter-site__disclaimer">Есть вопросы или хотите зарегистрироваться?</h3>
+                <a class="enter-site__link" href="mailto:huji@mail.ru">Свяжитесь с администратором</a>
+            </main>
+
+        </div>
+    </body>
+</html>

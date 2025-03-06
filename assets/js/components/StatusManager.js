@@ -1,7 +1,8 @@
 export default class StatusManager {
-    constructor(statusesData, containerSelector) {
+    constructor(statusesData, containerSelector, user) {
         this.statuses = statusesData.map(status => this._createStatus(status.current_status));
         this.container = document.querySelector(containerSelector);
+        this.user = user;
     }
 
     _createStatus({ id, date_changed, status, owner, note }) {
@@ -52,7 +53,21 @@ export default class StatusManager {
         if (cards.length > 0) {
             const lastCard = cards[cards.length - 1];
             const status = lastCard.getAttribute('data-status');
-            if (status !== 'apply' && status !== 'reject') {
+
+            // Статусы, для которых нужно проверить наличие приложения "rational"
+            const statusesToCheck = ['reg', 'recheck', 'accept'];
+
+            // Проверяем, что статус не равен apply или reject
+            const isStatusAllowed = status !== 'apply' && status !== 'reject';
+
+            // Проверяем, что если статус reg, recheck или accept, то у пользователя есть приложение "rational"
+            const hasRationalApp = this.user.apps.includes('rational');
+            const isRationalAppRequired = statusesToCheck.includes(status);
+
+            // Добавляем класс только если:
+            // 1. Статус не apply или reject
+            // 2. Если статус reg, recheck или accept, то у пользователя должно быть приложение "rational"
+            if (isStatusAllowed && (!isRationalAppRequired || hasRationalApp)) {
                 lastCard.classList.add('status-card_active');
             }
         }

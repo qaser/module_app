@@ -7,7 +7,7 @@ from leaks.models import Leak, LeakDocument, LeakImage
 from rational.models import Plan, Proposal, ProposalDocument, Status
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
-from users.models import ModuleUser
+from users.models import ModuleUser, NotificationAppRoute, Role
 
 
 class LeakImageSerializer(serializers.ModelSerializer):
@@ -84,13 +84,20 @@ class LeakSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    apps = serializers.SerializerMethodField()
+
     class Meta:
         model = ModuleUser
         fields = (
             'id', 'last_name', 'first_name', 'patronymic',
             'lastname_and_initials', 'username', 'email',
-            'job_position', 'role', 'equipment',
+            'job_position', 'role', 'equipment', 'apps',
         )
+
+    def get_apps(self, obj):
+        """Возвращает список приложений, за которые отвечает пользователь"""
+        apps = obj.apps.values_list('app_name', flat=True)
+        return list(apps) if apps else []
 
 
 class ValveSerializer(serializers.ModelSerializer):
@@ -311,10 +318,39 @@ class StatusSerializer(serializers.Serializer):
         }
 
     def validate(self, data):
-        if not data.get('new_status'):
-            raise serializers.ValidationError("Поле 'new_status' обязательно.")
-        if not data.get('proposal_id'):
-            raise serializers.ValidationError("Поле 'proposal_id' обязательно.")
+        request_user = self.context['request'].user
+        proposal_id = data.get('proposal_id')
+        new_status = data.get('new_status')
+        if not proposal_id or not new_status:
+            raise serializers.ValidationError("Поля 'proposal_id' и 'new_status' обязательны.")
+        proposal = Proposal.objects.get(id=proposal_id)
+        # Получаем статус REG
+        reg_status = proposal.statuses.filter(status=Status.StatusChoices.REG).first()
+        reg_owner = reg_status.owner  # Владелец статуса REG
+        # Проверяем, является ли пользователь ответственным за приложение
+        is_app_responsible = NotificationAppRoute.objects.filter(
+            app_name='rational',
+            user=request_user
+        ).exists()
+        # Проверяем, является ли пользователь владельцем REG
+        is_reg_owner = reg_owner == request_user
+        # Проверяем, является ли пользователь MANAGER в том же equipment или дочерних
+        is_manager_same_branch = (
+            request_user.role == Role.MANAGER and
+            request_user.equipment and
+            reg_owner and
+            request_user.equipment.get_root() == reg_owner.equipment.get_root()
+        )
+        if new_status in [Status.StatusChoices.REWORK, Status.StatusChoices.ACCEPT, Status.StatusChoices.REJECT]:
+            if not is_app_responsible:
+                raise serializers.ValidationError(
+                    "Назначать статусы 'REWORK', 'ACCEPT' и 'REJECT' может только ответственный за приложение."
+                )
+        elif new_status == Status.StatusChoices.RECHECK:
+            if not (is_reg_owner or is_manager_same_branch):
+                raise serializers.ValidationError(
+                    "Назначать статус 'RECHECK' может только владелец статуса 'REG'"
+                )
         return data
 
     def create(self, validated_data):
@@ -325,7 +361,7 @@ class StatusSerializer(serializers.Serializer):
             proposal_id=proposal_id,
             status=new_status,
             note=note,
-            owner=self.context['request'].user  # Владелец статуса — текущий пользователь
+            owner=self.context['request'].user
         )
         return status
 

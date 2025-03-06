@@ -320,7 +320,7 @@ Promise.all([api.getMyProfile(), api.getProposalItem(proposalId)])
         } else {
             cardWithFiles.hide();
         }
-        const statusManager = new StatusManager(proposal.statuses, '.status_container');
+        const statusManager = new StatusManager(proposal.statuses, '.status_container', userData);
         statusManager.render();
         const lastStatus = proposal.statuses[proposal.statuses.length - 1]
         if (lastStatus.possible_statuses.length > 0) {
