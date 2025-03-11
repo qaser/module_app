@@ -110,21 +110,21 @@ class Valve(models.Model):
     )
     tech_number =  models.CharField(
         'Технологический номер',
-        max_length=10,
+        max_length=50,
         null=False,
         blank=False,
     )
     factory_number = models.CharField(
         'Заводской номер',
         default='',
-        max_length=20,
+        max_length=50,
         null=True,
         blank=True,
     )
     inventory_number = models.CharField(
         'Инвентарный номер',
         default='',
-        max_length=20,
+        max_length=50,
         null=True,
         blank=True,
     )
@@ -176,7 +176,7 @@ class Valve(models.Model):
         blank=True,
         null=True
     )
-    description = models.CharField(
+    note = models.CharField(
         'Примечание',
         default='',
         max_length=500,

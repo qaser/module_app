@@ -82,7 +82,7 @@
             {% if table.page.has_previous or table.page.has_next %}
             {% block pagination.range %}
                 {% for p in table.page|table_page_range:table.paginator %}
-                    <li class="table__pagination-item{% if p == table.page.number %} table__pagination-item_active{% endif %}">
+                    <li class="table__pagination-item{% if p == table.page.number %} module-color_{{ request.resolver_match.app_name }}{% endif %}">
                         {% if p == '...' %}
                             <a class="table__pagination-link">{{ p }}</a>
                         {% else %}

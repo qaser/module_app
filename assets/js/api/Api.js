@@ -231,8 +231,8 @@ export default class Api {
     }
 
     // Получение дочерних объектов оборудования
-    getEquipmentChildren(parentId) {
-        return fetch(`${this._baseUrl}/equipment-search/?parent_id=${parentId}`, {
+    getEquipmentChildren(parentId, structureEnable) {
+        return fetch(`${this._baseUrl}/equipment-search/?parent_id=${parentId}&filter_structure=${structureEnable}`, {
             headers: this._headers,
         })
         .then(response => response.json());

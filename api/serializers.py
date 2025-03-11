@@ -23,9 +23,13 @@ class LeakDocumentSerializer(serializers.ModelSerializer):
 
 
 class ProposalDocumentSerializer(serializers.ModelSerializer):
+    proposal_id = serializers.PrimaryKeyRelatedField(
+        queryset=Proposal.objects.all(),
+        source='proposal'
+    )
     class Meta:
         model = ProposalDocument
-        fields = ('id', 'doc', 'name',)
+        fields = ('id', 'doc', 'name', 'proposal_id')
 
 
 class ValveImageSerializer(serializers.ModelSerializer):
@@ -115,7 +119,7 @@ class ValveSerializer(serializers.ModelSerializer):
                   'factory', 'year_made', 'year_exploit', 'tech_number',
                   'factory_number', 'inventory_number', 'lifetime',
                   'remote', 'label', 'material', 'design', 'drive_type',
-                  'drive_factory', 'drive_year_exploit', 'description',
+                  'drive_factory', 'drive_year_exploit', 'note',
                   'images', 'files', 'latest_service')
 
     def get_images(self, obj):
@@ -288,7 +292,6 @@ class StatusSerializer(serializers.Serializer):
                 'note': None,
                 'date_changed': None,
             }
-
         # Определяем возможные переходы статусов
         status_transitions = {
             Status.StatusChoices.REG: [
@@ -327,9 +330,14 @@ class StatusSerializer(serializers.Serializer):
         # Получаем статус REG
         reg_status = proposal.statuses.filter(status=Status.StatusChoices.REG).first()
         reg_owner = reg_status.owner  # Владелец статуса REG
+        # Находим корневой equipment для proposal.equipment
+        root_equipment = proposal.equipment
+        while root_equipment.parent:
+            root_equipment = root_equipment.parent
         # Проверяем, является ли пользователь ответственным за приложение
         is_app_responsible = NotificationAppRoute.objects.filter(
             app_name='rational',
+            equipment=root_equipment,  # Используем корневой equipment
             user=request_user
         ).exists()
         # Проверяем, является ли пользователь владельцем REG
@@ -341,7 +349,11 @@ class StatusSerializer(serializers.Serializer):
             reg_owner and
             request_user.equipment.get_root() == reg_owner.equipment.get_root()
         )
-        if new_status in [Status.StatusChoices.REWORK, Status.StatusChoices.ACCEPT, Status.StatusChoices.REJECT]:
+        if new_status in [
+            Status.StatusChoices.REWORK,
+            Status.StatusChoices.ACCEPT,
+            Status.StatusChoices.REJECT
+        ]:
             if not is_app_responsible:
                 raise serializers.ValidationError(
                     "Назначать статусы 'REWORK', 'ACCEPT' и 'REJECT' может только ответственный за приложение."
@@ -371,7 +383,6 @@ class ProposalSerializer(serializers.ModelSerializer):
     equipment = serializers.SerializerMethodField()
     reg_date = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
-    is_economy = serializers.SerializerMethodField()
     statuses = StatusSerializer(many=True, read_only=True)
 
     class Meta:
@@ -381,12 +392,10 @@ class ProposalSerializer(serializers.ModelSerializer):
             'category', 'title', 'description', 'is_economy',
             'economy_size', 'note', 'files', 'statuses'
         ]
+        read_only_fields = ['reg_date', 'authors', 'equipment']
 
     def get_reg_date(self, obj):
         return obj.reg_date.strftime('%d.%m.%Y')
-
-    def get_is_economy(self, obj):
-        return 'Да' if obj.is_economy else 'Нет'
 
     def get_equipment(self, obj):
         return obj.equipment.name if obj.equipment else None
@@ -394,3 +403,18 @@ class ProposalSerializer(serializers.ModelSerializer):
     def get_files(self, obj):
         selected_files = ProposalDocument.objects.filter(proposal=obj)
         return ProposalDocumentSerializer(selected_files, many=True).data
+
+    def validate(self, data):
+        is_economy = data.get('is_economy')
+        economy_size = data.get('economy_size')
+        if is_economy and (economy_size is not None and economy_size == 0):
+            data['is_economy'] = False
+        if economy_size is not None and economy_size > 0 and not is_economy:
+            data['is_economy'] = True
+        return data
+
+
+class PlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Plan
+        fields = '__all__'

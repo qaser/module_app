@@ -56,8 +56,10 @@ class PlanAdmin(DraggableMPTTAdmin):
         'year',
         'quarter',
         'equipment',
-        'target',
-        'completed'
+        'target_proposal',
+        'target_economy',
+        'completed',
+        'economy',
     )
     list_display_links = ('indented_title',)
     list_filter = ('year', 'quarter', 'equipment')

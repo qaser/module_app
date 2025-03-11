@@ -14,9 +14,11 @@ router.register('service-types', views.ServiceTypeViewSet, basename='service-typ
 router.register('works', views.WorkServiceView, basename='works')
 router.register('factories', views.FactoryViewSet, basename='factories')
 router.register('rational', views.ProposalViewSet, basename='rational')
+router.register('rational-docs', views.ProposalDocumentViewSet, basename='rational-docs')
 router.register(r'equipment-search', views.EquipmentViewSet, basename='equipment-search')
 router.register('statuses', views.StatusViewSet, basename='statuses')
 router.register(r'valves/(?P<valve_id>\d+)/services', views.ValveServiceViewSet, basename='valve-services')
+router.register(r'plans', views.PlanViewSet)
 
 
 urlpatterns = [

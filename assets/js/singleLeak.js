@@ -119,7 +119,7 @@ constant.btnEdit.addEventListener('click', () => {
     //         constant.btnValveEdit.replaceWith(createFormEditButtons());
     //     })
     imagesClassDelete();
-    leakInstance.replaceToForm(constant.formAttrs);
+    leakInstance.replaceToForm(constant.formAttrsLeak);
     constant.btnEdit.replaceWith(createFormEditButtons());
 });
 

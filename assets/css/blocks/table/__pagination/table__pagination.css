@@ -33,14 +33,13 @@
 }
 
 .table__pagination-item:hover {
-    background-color: #9AC999;
+    background-color: gainsboro;
 }
 
 .table__pagination-item_active {
     background-color: #648763;
     color: white;
 }
-
 
 .table__pagination-item:first-child{
     margin-left: 0;

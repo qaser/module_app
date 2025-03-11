@@ -21,51 +21,31 @@ export const tooltipFormField = 'Можно выбирать последова�
 
 export const BYTES_IN_MB = 1048576;
 
-// атрибуты преобразования формы данных об утечке
-export const formAttrs = {
+// атрибуты преобразования формы данных о ТПА
+export const formAttrsValve = {
     'id': {
         'tag': 'input',
         'tagAttrs': {
             'class': 'card__value card__input',
             'disabled': '',
-      }
-    },
-    'direction': {
-        'tag': 'input',
-        'tagAttrs': {
-            'class': 'card__value card__input',
-            'disabled': '',
-      }
-    },
-    'station': {
-        'tag': 'input',
-        'tagAttrs': {
-            'class': 'card__value card__input',
-            'disabled': '',
-      }
-    },
-    'department': {
-        'tag': 'input',
-        'tagAttrs': {
-            'class': 'card__value card__input',
-            'disabled': '',
-      }
+        }
     },
     'equipment': {
         'tag': 'input',
         'tagAttrs': {
             'class': 'card__value card__input',
             'disabled': '',
-      }
+        }
     },
     'title': {
-        'tag': 'input',
+        'tag': 'textarea',
         'tagAttrs': {
             'class': 'card__value card__input',
             'type': 'text',
             'minlength': 3,
             'maxlength': 50,
             'required': '',
+            'rows': 1,
         }
     },
     'diameter': {
@@ -100,7 +80,6 @@ export const formAttrs = {
         'tagAttrs': {
             'class': 'card__value card__input',
             'required': '',
-            'required': '',
         }
     },
     'factory': {
@@ -134,7 +113,7 @@ export const formAttrs = {
             'class': 'card__value card__input',
             'type': 'text',
             'minlength': 1,
-            'maxlength': 10,
+            'maxlength': 50,
             'required': '',
         }
     },
@@ -144,7 +123,7 @@ export const formAttrs = {
             'class': 'card__value card__input',
             'type': 'text',
             'minlength': 1,
-            'maxlength': 20,
+            'maxlength': 50,
         }
     },
     'inventory_number': {
@@ -153,7 +132,7 @@ export const formAttrs = {
             'class': 'card__value card__input',
             'type': 'text',
             'minlength': 1,
-            'maxlength': 20,
+            'maxlength': 50,
         }
 
     },
@@ -235,15 +214,18 @@ export const formAttrs = {
             'max': 3000,
         }
     },
-    'description': {
+    'note': {
         'tag': 'textarea',
         'tagAttrs': {
             'class': 'card__value card__input',
             'type': 'text',
             'maxlength': 500,
-            'rows': 1
+            'rows': 4
         }
     },
+}
+
+export const formAttrsLeak = {
     'place': {
         'tag': 'select',
         'options': [
@@ -272,7 +254,7 @@ export const formAttrs = {
             'class': 'card__value card__input',
             'type': 'text',
             'maxlength': 100,
-            'rows': 1
+            'rows': 2
         }
     },
     'type_leak': {
@@ -375,7 +357,7 @@ export const formAttrs = {
             'class': 'card__value card__input',
             'type': 'text',
             'maxlength': 500,
-            'rows': 1
+            'rows': 2
         }
     },
     'doc_name': {
@@ -413,7 +395,7 @@ export const formAttrs = {
             'class': 'card__value card__input',
             'type': 'text',
             'maxlength': 500,
-            'rows': 1
+            'rows': 3,
         }
     },
     'is_draft': {
@@ -432,6 +414,106 @@ export const formAttrs = {
         'tagAttrs': {
             'class': 'card__value card__input',
             'required': '',
+        }
+    },
+}
+
+export const formAttrsProposal = {
+    'reg_num': {
+        'tag': 'input',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'type': 'text',
+            'maxlength': 50,
+            'required': '',
+        }
+    },
+    'reg_date': {
+        'tag': 'input',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'disabled': '',
+        }
+    },
+    'authors': {
+        'tag': 'input',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'required': '',
+            'disabled': '',
+        }
+    },
+    'equipment': {
+        'tag': 'input',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'disabled': '',
+        }
+    },
+    'category': {
+        'tag': 'select',
+        'options': [
+            'Использование списанного оборудования',
+            'Повышение безопасности труда',
+            'Повышение надежности работы оборудования',
+            'Снижение трудозатрат',
+            'Улучшение условий труда',
+            'Улучшение условий труда',
+            'Экономия МТР',
+            'Экономия газа',
+            'Экономия теплоэнергии',
+            'Экономия электроэнергии',
+            'Экология',
+        ],
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'required': '',
+        }
+    },
+    'title': {
+        'tag': 'textarea',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'type': 'text',
+            'maxlength': 500,
+            'rows': 4
+        }
+    },
+    'description': {
+        'tag': 'textarea',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'type': 'text',
+            'maxlength': 2000,
+            'rows': 20
+        }
+    },
+    'is_economy': {
+        'tag': 'select',
+        'options': [
+            'Да',
+            'Нет',
+        ],
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'required': '',
+        }
+    },
+    'economy_size': {
+        'tag': 'input',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'type': 'number',
+            'required': '',
+        }
+    },
+    'note': {
+        'tag': 'textarea',
+        'tagAttrs': {
+            'class': 'card__value card__input',
+            'type': 'text',
+            'maxlength': 500,
+            'rows': 4
         }
     },
 }

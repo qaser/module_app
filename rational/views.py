@@ -9,10 +9,10 @@ from django_tables2 import SingleTableMixin
 from equipments.models import Equipment
 from users.models import ModuleUser, Role
 
-from .filters import ProposalFilter
+from .filters import ProposalFilter, PlanFilter
 from .forms import ProposalForm
-from .models import Proposal
-from .tables import ProposalTable
+from .models import Plan, Proposal
+from .tables import ProposalTable, PlanTable
 
 
 class ProposalView(SingleTableMixin, FilterView):
@@ -57,7 +57,6 @@ def filter_proposal_by_user_role(user):
         return Proposal.objects.none()
 
 
-
 @login_required
 def single_proposal(request, proposal_id):
     proposal = Proposal.objects.filter(id=proposal_id)
@@ -73,38 +72,29 @@ def proposal_new(request):
     if request.method == 'POST':
         form = ProposalForm(request.POST, user=request.user)
         if form.is_valid():
-            # Проверяем поля authors
-            authors_ids = [
-                request.POST.get('authors_1'),
-                request.POST.get('authors_2'),
-                request.POST.get('authors_3'),
-                request.POST.get('authors_4'),
-            ]
-            authors_ids = [int(author_id) for author_id in authors_ids if author_id]  # Убираем пустые значения
-
-            if not authors_ids:
-                form.add_error(None, "Необходимо выбрать хотя бы одного автора.")
-                return render(request, 'create_proposal.html', {'form': form})
-
-            # Проверяем, что выбранные авторы существуют
-            authors = ModuleUser.objects.filter(id__in=authors_ids)
-            if authors.count() != len(authors_ids):
-                form.add_error(None, "Один или несколько выбранных авторов не найдены.")
-                return render(request, 'create_proposal.html', {'form': form})
-
-            # Проверяем поле economy_size
-            economy_size = form.cleaned_data.get('economy_size', 0)
-            is_economy = economy_size != 0
-
-            # Создаем объект Proposal
             proposal = form.save(commit=False)
-            proposal.is_economy = is_economy
+            economy_size = form.cleaned_data.get('economy_size', 0)
+            proposal.is_economy = economy_size != 0
             proposal.save()
-
-            # Добавляем авторов
+            authors = form.cleaned_data.get('authors', [])
             proposal.authors.set(authors)
 
             return redirect('rational:single_proposal', proposal.id)
+        else:
+            # Если форма не прошла валидацию, выводим ошибки
+            print("Форма не прошла валидацию. Ошибки:", form.errors)
     else:
         form = ProposalForm(user=request.user)
     return render(request, 'rational/new-proposal.html', {'form': form})
+
+
+class PlanView(SingleTableMixin, FilterView):
+    model = Plan
+    table_class = PlanTable
+    paginate_by = 39
+    template_name = 'rational/index-plans.html'
+    filterset_class = PlanFilter
+
+    def get_queryset(self):
+        # Фильтруем планы, оставляя только корневые (parent=None)
+        return Plan.objects.filter(parent__isnull=True)

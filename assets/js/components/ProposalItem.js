@@ -3,16 +3,17 @@ export default class ProposalItem {
         this._card = document.querySelector(data.card);
         this._title = this._card.querySelector('.main__title');
         this._values = this._card.querySelectorAll('.card__value');
-        // this._service_type = document.getElementById('service_type');
-        // this._service_date = document.getElementById('prod_date');
     }
 
     replaceToForm(formAttrs) {
         this._values.forEach((value) => {
             const formElem = document.createElement(formAttrs[value.id]['tag']);
             const spanElem = document.createElement('span');
-            // spanElem.setAttribute('class', 'form-popup__input-error');
-            // spanElem.setAttribute('id', `${value.id}-error`);
+            spanElem.setAttribute('class', 'form-popup__input-error');
+            spanElem.setAttribute('id', `${value.id}-error`);
+            if (formAttrs[value.id]['tag'] === 'textarea') {
+                formElem.textContent = value.textContent; // Вставляем текст
+            }
             if (formAttrs[value.id]['tag'] == 'select') {
                 formAttrs[value.id]['options'].forEach((i) => {
                     const option = document.createElement('option');
@@ -26,11 +27,11 @@ export default class ProposalItem {
             }
             for (const [name, val] of Object.entries(formAttrs[value.id]['tagAttrs'])) {
                 formElem.setAttribute(name, val);
-                formElem.setAttribute('form', 'valve-edit');
+                formElem.setAttribute('form', 'proposal-edit');
                 formElem.setAttribute('value', value.textContent);
                 formElem.setAttribute('id', value.id);
             };
-            // value.parentElement.insertBefore(spanElem, value.nextSibling);
+            value.parentElement.insertBefore(spanElem, value.nextSibling);
             value.replaceWith(formElem);
         });
     }
@@ -51,7 +52,11 @@ export default class ProposalItem {
             if (item.id === 'authors') {
                 const authors = proposal.authors.map(author => author.lastname_and_initials).join(', ');
                 item.textContent = authors;
+            } else if (item.id === 'is_economy') {
+                // Преобразование is_economy (true/false) в "Да"/"Нет"
+                item.textContent = proposal[item.id] ? "Да" : "Нет";
             } else {
+                // Остальные поля
                 item.textContent = proposal[item.id];
             }
         });

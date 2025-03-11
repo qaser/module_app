@@ -12,6 +12,7 @@ import FileManager from './components/FileManager.js';
 import HiddenElement from './components/HiddenElement.js';
 import AppMenu from '../js/components/AppMenu.js';
 import StatusManager from '../js/components/StatusManager.js';
+import PermissionChecker from './components/PermissionChecker.js';
 
 
 const proposalId = document.querySelector('.card').id;
@@ -49,10 +50,8 @@ const api = new Api({
     },
 });
 
-
 const cardWithFiles = new HiddenElement('#cardFiles')
 const btnFileAdd = new HiddenElement('.card__button_add')
-
 
 // экземпляр карточки c файлами
 const fileInstance = new Section({
@@ -63,19 +62,16 @@ const fileInstance = new Section({
 },
 '.card__files');
 
-
 // создание объекта с данными пользователя
 const newUserInfo = new UserInfo({
     name: '.header__username',
     job: '.header__user-proff',
 });
 
-
 // создание объекта с данными
 const proposalInstance = new ProposalItem({
     card: '.main'
 })
-
 
 const popupWithFormNewFile = new PopupWithForm(
     '#popup-file',
@@ -137,7 +133,7 @@ function submitFormNewFile(data) {
         });
     }
     popupWithFormNewFile.renderLoading(true);
-    api.addValveFile(formData)
+    api.addProposalFile(formData)
         .then((file) => {
             fileInstance.renderItems([file]);
             const fileCard = document.querySelector(`#file-${file.id}`);
@@ -155,6 +151,9 @@ function submitFormNewFile(data) {
 
 // функция отправки данных, введенных в форму
 function submitFormEditProposal(data) {
+    if (data.is_economy) {
+        data.is_economy = data.is_economy === "Да";
+    }
     let formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
         if (Array.isArray(value)) {
@@ -167,7 +166,7 @@ function submitFormEditProposal(data) {
     api.changeProposal(formData, proposalId)
         .then((proposal) => {
             const formElem = document.querySelector('.card__form');
-            proposalInstance.renderItem(valve);
+            proposalInstance.renderItem(proposal);
             proposalInstance.replaceToTable();
             formElem.replaceWith(constant.btnEdit);
             btnFileAdd.hide()
@@ -197,7 +196,7 @@ function filesCard(item) {
 function handleFileDeleteClick(evt, fileId) {
     const id = fileId.replace(/\D/g, '')
     // renderLoading()
-    api.deleteValveFile(id)
+    api.deleteProposalFile(id)
         .then((res) => {
             if (res.status == 204) {
                 elementDelete(fileId, filesContainer);
@@ -226,11 +225,11 @@ function filesClassDeleteToggle() {
 // функция замены тегов <p> на теги <input>, находится в классе
 constant.btnEdit.addEventListener('click', () => {
     // formValidators['add-avatar'].resetValidation();
-    proposalInstance.replaceToForm(constant.formAttrs);
+    proposalInstance.replaceToForm(constant.formAttrsProposal);
     constant.btnEdit.replaceWith(createFormEditButtons());
     const formEditProposal = new FormHandler(
         '.card__form',
-        '#valve_info',
+        '#proposal_info',
         '.card__input',
         '.button card__button card__button_done',
         (data) => {submitFormEditProposal(data)},
@@ -245,7 +244,7 @@ function createFormEditButtons() {
     const btnFormDone = document.createElement('button');
     const btnFormCancel = document.createElement('button');
     formElem.setAttribute('class', 'card__form');
-    formElem.setAttribute('name', 'valve-edit');
+    formElem.setAttribute('name', 'proposal-edit');
     btnFormDone.setAttribute('class', 'button card__button card__button_done');
     btnFormDone.setAttribute('type', 'submit');
     btnFormDone.setAttribute('data-tooltip', 'Сохранить изменения');
@@ -308,6 +307,7 @@ popupWithStatus.setEventListeners();
 new Tooltip();
 new AppMenu();
 
+
 // промис (заполнение данных пользователя) и (функция загрузки РП с сервера)
 Promise.all([api.getMyProfile(), api.getProposalItem(proposalId)])
     .then(([userData, proposal]) => {
@@ -322,6 +322,8 @@ Promise.all([api.getMyProfile(), api.getProposalItem(proposalId)])
         }
         const statusManager = new StatusManager(proposal.statuses, '.status_container', userData);
         statusManager.render();
+        const permissionChecker = new PermissionChecker(userData, proposal, '.card__button_edit', '.card');
+        permissionChecker.init();
         const lastStatus = proposal.statuses[proposal.statuses.length - 1]
         if (lastStatus.possible_statuses.length > 0) {
             setEventToCard(popupWithStatus, lastStatus.possible_statuses);

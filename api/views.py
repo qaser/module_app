@@ -15,11 +15,12 @@ from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
 from users.models import ModuleUser, Role
 
 from .serializers import (EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, ProposalSerializer,
-                          ServiceSerializer, ServiceTypeSerializer,
-                          StatusSerializer, UserSerializer,
-                          ValveDocumentSerializer, ValveImageSerializer,
-                          ValveSerializer, WorkServiceSerializer)
+                          LeakSerializer, ProposalDocumentSerializer,
+                          ProposalSerializer, ServiceSerializer,
+                          ServiceTypeSerializer, StatusSerializer,
+                          UserSerializer, ValveDocumentSerializer,
+                          ValveImageSerializer, ValveSerializer,
+                          WorkServiceSerializer, PlanSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
@@ -40,6 +41,15 @@ class ValveDocumentViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 
+class ProposalDocumentViewSet(viewsets.ModelViewSet):
+    queryset = ProposalDocument.objects.all()
+    serializer_class = ProposalDocumentSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+
 class LeaksViewSet(viewsets.ModelViewSet):
     queryset = Leak.objects.all()
     serializer_class = LeakSerializer
@@ -51,20 +61,21 @@ class ValveViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
 
     def perform_update(self, serializer):
-            factory_str = self.request.data.get("factory")
-            drive_factory_str = self.request.data.get("drive_factory")
+        factory_str = self.request.data.get("factory")
+        drive_factory_str = self.request.data.get("drive_factory")
 
-            def get_existing_factory(factory_str):
-                if not factory_str:
-                    return None
-                parts = factory_str.split(", ")
-                name, country = parts
-                return Factory.objects.get(name=name, country=country)
-            # Преобразуем строки в объекты Factory перед сохранением
-            factory = get_existing_factory(factory_str) if factory_str else None
-            drive_factory = get_existing_factory(drive_factory_str) if drive_factory_str else None
-            # Вызываем метод save() с обновленными полями
-            serializer.save(factory=factory, drive_factory=drive_factory)
+        def get_existing_factory(factory_str):
+            if not factory_str:
+                return None
+            parts = factory_str.split(", ")
+            name, country = parts
+            return Factory.objects.get(name=name, country=country)
+
+        # Преобразуем строки в объекты Factory перед сохранением
+        factory = get_existing_factory(factory_str) if factory_str else None
+        drive_factory = get_existing_factory(drive_factory_str) if drive_factory_str else None
+        # Вызываем метод save() с обновленными полями
+        serializer.save(factory=factory, drive_factory=drive_factory)
 
 
 class FactoryViewSet(viewsets.ModelViewSet):
@@ -184,10 +195,17 @@ class ValveServiceViewSet(viewsets.ModelViewSet):
 class EquipmentViewSet(viewsets.ViewSet):
     def list(self, request):
         parent_id = request.query_params.get('parent_id', None)
+        filter_structure = request.query_params.get('filter_structure', 'true')  # По умолчанию фильтруем
+        queryset = Equipment.objects.all()
+        # Применяем фильтр по parent_id, если он указан
         if parent_id:
-            children = Equipment.objects.filter(parent_id=parent_id).values('id', 'name')
-            return Response(list(children))
-        return Response([])
+            queryset = queryset.filter(parent_id=parent_id)
+        # Применяем фильтр по structure, если filter_structure=True
+        if filter_structure.lower() == 'true':
+            queryset = queryset.filter(structure='Административная структура')
+        # Возвращаем данные в формате JSON
+        children = queryset.values('id', 'name')
+        return Response(list(children))
 
 
 class StatusViewSet(viewsets.ViewSet):
@@ -210,3 +228,14 @@ class StatusViewSet(viewsets.ViewSet):
                 status=status.HTTP_201_CREATED
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PlanViewSet(viewsets.ModelViewSet):
+    queryset = Plan.objects.all()
+    serializer_class = PlanSerializer
+
+    def get_queryset(self):
+        year = self.request.query_params.get('year')
+        if year:
+            return self.queryset.filter(year=year).select_related('equipment').prefetch_related('children')
+        return self.queryset

@@ -5,7 +5,7 @@ from django.forms.widgets import Select
 from equipments.models import Equipment
 from users.models import Role
 
-from .models import CATEGORY, Proposal, Status
+from .models import CATEGORY, Proposal, Status, Plan
 
 
 class ProposalFilter(df.FilterSet):
@@ -34,10 +34,51 @@ class ProposalFilter(df.FilterSet):
         method='filter_by_status',
         label='Статус'
     )
+    year = df.ChoiceFilter(
+        choices=[
+            (year, year)
+            for year in Proposal.objects.dates('reg_date', 'year')
+            .values_list('reg_date__year', flat=True)
+            .distinct()
+        ],
+        label='Год',
+        method='filter_by_year'
+    )
+    quarter = df.ChoiceFilter(
+        choices=[
+            (1, '1 квартал'),
+            (2, '2 квартал'),
+            (3, '3 квартал'),
+            (4, '4 квартал')
+        ],
+        label='Квартал',
+        method='filter_by_quarter'
+    )
 
     class Meta:
         model = Proposal
-        fields = ['equipment', 'category', 'is_economy', 'authors', 'status']
+        fields = [
+            'equipment',
+            'category',
+            'is_economy',
+            'authors',
+            'status',
+            'year',
+            'quarter'
+        ]
+
+    def filter_by_year(self, queryset, name, value):
+        if value:
+            return queryset.filter(reg_date__year=value)
+        return queryset
+
+    def filter_by_quarter(self, queryset, name, value):
+        if value:
+            value = int(value)
+            start_month = 3 * (value - 1) + 1
+            end_month = start_month + 2
+            return queryset.filter(reg_date__month__gte=start_month, reg_date__month__lte=end_month)
+        return queryset
 
     def filter_by_author(self, queryset, name, value):
         if value:
@@ -49,7 +90,6 @@ class ProposalFilter(df.FilterSet):
     def filter_by_status(self, queryset, name, value):
         """Фильтрация по последнему статусу"""
         if value == Status.StatusChoices.ACCEPT:
-            # Если выбран статус ACCEPT, включаем также APPLY
             latest_status = Status.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
             return queryset.annotate(
                 latest_status=Subquery(latest_status)
@@ -57,7 +97,6 @@ class ProposalFilter(df.FilterSet):
                 latest_status__in=[Status.StatusChoices.ACCEPT, Status.StatusChoices.APPLY]
             )
         else:
-            # Для других статусов фильтруем как обычно
             latest_status = Status.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
             return queryset.annotate(
                 latest_status=Subquery(latest_status)
@@ -68,11 +107,8 @@ class ProposalFilter(df.FilterSet):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('request').user
         super().__init__(*args, **kwargs)
-        base_level = 0  # Базовый уровень отступов
-
-        # Базовый QuerySet без 'Материальной структуры'
+        base_level = 0
         equipment_queryset = Equipment.objects.exclude(structure="Материальная структура")
-
         if user.role == Role.ADMIN:
             self.base_queryset = equipment_queryset
             self.filters['equipment'].field.queryset = equipment_queryset
@@ -94,8 +130,6 @@ class ProposalFilter(df.FilterSet):
             else:
                 self.filters['equipment'].field.queryset = Equipment.objects.none()
                 self.base_queryset = Equipment.objects.none()
-
-        # Убираем "Материальную структуру" и применяем иерархический отступ
         if 'equipment' in self.filters:
             self.filters['equipment'].field.queryset = self.filters['equipment'].field.queryset.order_by('tree_id', 'lft')
             self.filters['equipment'].field.label_from_instance = lambda obj: f"{'..' * (obj.level - base_level)} {obj.name}"
@@ -110,3 +144,22 @@ class ProposalFilter(df.FilterSet):
         except Equipment.DoesNotExist:
             queryset = queryset.none()
         return queryset
+
+
+class PlanFilter(df.FilterSet):
+    equipment = df.ModelChoiceFilter(
+        queryset=Equipment.objects.filter(parent__isnull=True),
+        label='Филиалы'
+    )
+    year = df.ChoiceFilter(
+        choices=[
+            (year, year)
+            for year in Plan.objects.values_list('year', flat=True)
+            .distinct().order_by('year')
+        ],
+        label='Год',
+        field_name='year'
+    )
+    class Meta:
+        model = Plan
+        fields = ['equipment', 'year']

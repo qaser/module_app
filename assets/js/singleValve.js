@@ -291,7 +291,7 @@ constant.btnEdit.addEventListener('click', () => {
         .then((factories) => {
             imagesClassDeleteToggle();
             imageClassUploadToggle();
-            valveInstance.replaceToForm(constant.formAttrs, factories);
+            valveInstance.replaceToForm(constant.formAttrsValve, factories);
             constant.btnEdit.replaceWith(createFormEditButtons());
             const formEditValve = new FormHandler(
                 '.card__form',

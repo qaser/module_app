@@ -40,14 +40,6 @@ newTable.init();
 api.getMyProfile()
     .then((userData) => {
         newUserInfo.setUserInfo(userData);
-        new FormFilter(
-            api.getEquipmentChildren.bind(api),
-            'filter_submit',
-            'id_equipment',
-            'equipment',
-            'sidebar__form-input',
-            'true',  // использовать фиотрацию по структуре
-        );
         const targetField = document.querySelector('#id_equipment')
         targetField.setAttribute('data-tooltip', constant.tooltipFormField)
     })

@@ -35,7 +35,7 @@
         <h1 class="main__title"></h1>
         <div class="card" id="{{ valve_id }}">
           <div class="card__container">
-              <div class="card__header card__header_{{ request.resolver_match.app_name }}">
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
                   <h3 class="card__title">Информация о ТПА</h3>
                   <button class="button card__button card__button_edit" data-tooltip="Редактировать информацию"></button>
               </div>
@@ -118,10 +118,10 @@
                 </div>
                 <div class="card__line">
                   <p class="card__param">Примечание</p>
-                  <p class="card__value" id="description"></p>
+                  <p class="card__value" id="note"></p>
                 </div>
               </div>
-              <div class="card__header card__header_{{ request.resolver_match.app_name }}">
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
                   <h3 class="card__title">Информация о последнем ТОиР</h3>
               </div>
               <div class="card__field" id="service_info">
@@ -134,7 +134,7 @@
                   <p class="card__value_unique" id="prod_date"></p>
                 </div>
               </div>
-              <div class="card__header hidden card__header_{{ request.resolver_match.app_name }}" id="cardFiles">
+              <div class="card__header hidden module-color__header_{{ request.resolver_match.app_name }}" id="cardFiles">
                 <h3 class="card__title">Документация</h3>
                 <button class="button card__button card__button_add hidden" data-tooltip="Добавить файл"></button>
               </div>

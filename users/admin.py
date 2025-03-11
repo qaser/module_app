@@ -1,14 +1,20 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import ModuleUser
-from django.contrib import admin
-from .models import NotificationAppRoute
+from equipments.models import Equipment
+
+from .models import ModuleUser, NotificationAppRoute
 
 
 @admin.register(NotificationAppRoute)
 class NotificationAppRouteAdmin(admin.ModelAdmin):
-    list_display = ('app_name', 'user')
+    list_display = ('app_name', 'user', 'equipment')
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        # Если поле - equipment, фильтруем queryset, чтобы отображались только корневые элементы
+        if db_field.name == 'equipment':
+            kwargs['queryset'] = Equipment.objects.filter(parent__isnull=True)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(ModuleUser)

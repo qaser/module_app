@@ -35,10 +35,10 @@ class ValveForm(ModelForm):
             'drive_type',
             'drive_factory',
             'drive_year_exploit',
-            'description',
+            'note',
         )
         widgets = {
-            'description': Textarea(attrs={'rows': 4}),
+            'note': Textarea(attrs={'rows': 4}),
         }
 
     def __init__(self, *args, **kwargs):

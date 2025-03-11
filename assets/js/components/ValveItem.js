@@ -13,6 +13,9 @@ export default class ValveItem {
             const spanElem = document.createElement('span');
             // spanElem.setAttribute('class', 'form-popup__input-error');
             // spanElem.setAttribute('id', `${value.id}-error`);
+            if (formAttrs[value.id]['tag'] === 'textarea') {
+                formElem.textContent = value.textContent; // Вставляем текст
+            }
             if (formAttrs[value.id]['tag'] == 'select') {
                 if (value.id == 'factory' || value.id == 'drive_factory') {
                     factories.forEach((i)=> {

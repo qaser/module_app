@@ -6,7 +6,7 @@ from django.utils.html import format_html
 from equipments.models import Equipment
 from users.models import Role
 
-from .models import Proposal
+from .models import Proposal, Plan
 
 
 class ProposalTable(tables.Table):
@@ -73,3 +73,55 @@ class ProposalTable(tables.Table):
     def render_reg_date(self, value):
         """Отображение даты без времени"""
         return value.strftime('%d.%m.%Y') if value else '-'
+
+
+class PlanTable(tables.Table):
+    equipment = tables.Column(verbose_name='Филиал')
+    target_proposal = tables.Column(verbose_name='Плановое количество РП')
+    target_economy = tables.Column(verbose_name='Плановая эк. эфф., руб.')
+    percentage_complete = tables.Column(
+        verbose_name='Выполнения плана РП, %',
+        empty_values=(),
+        orderable=False
+    )
+    percentage_economy = tables.Column(
+        verbose_name='Выполнение плана эк. эфф., %',
+        empty_values=(),
+        orderable=False
+    )
+
+    class Meta:
+        model = Plan
+        fields = [
+            'equipment',
+            'year',
+            'target_proposal',
+            'target_economy',
+        ]
+        attrs = {'class': 'table table_rational'}
+        row_attrs = {'id': lambda record: record.id}
+        orderable = False
+        template_name = 'module_app/table/new_table.html'
+
+    def render_equipment(self, value):
+        return value.name if value else ''
+
+    def render_percentage_complete(self, value, record):
+        """Расчет процента выполнения заявок"""
+        try:
+            if record.target_proposal == 0:
+                return "0%"
+            percentage = (record.completed / record.target_proposal) * 100
+            return f"{round(percentage, 2)}%"
+        except (TypeError, AttributeError, ZeroDivisionError):
+            return "0%"
+
+    def render_percentage_economy(self, value, record):
+        """Расчет процента экономии"""
+        try:
+            if record.target_economy == 0:
+                return "0%"
+            percentage = (record.economy / record.target_economy) * 100
+            return f"{round(percentage, 2)}%"
+        except (TypeError, AttributeError, ZeroDivisionError):
+            return "0%"

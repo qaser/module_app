@@ -36,7 +36,7 @@ class ValveAdmin(admin.ModelAdmin):
         'drive_type',
         'drive_factory',
         'drive_year_exploit',
-        'description',
+        'note',
     )
     search_fields = (
         'equipment',

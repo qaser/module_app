@@ -1,7 +1,8 @@
 from django import forms
-from django.forms import ModelForm, ModelChoiceField, Textarea, Select
-from .models import Proposal, Equipment, ModuleUser
 from django.core.exceptions import ValidationError
+from django.forms import ModelChoiceField, ModelForm, Select, Textarea
+
+from .models import Equipment, ModuleUser, Proposal, Plan
 
 
 class IndentedModelChoiceField(ModelChoiceField):
@@ -12,15 +13,19 @@ class IndentedModelChoiceField(ModelChoiceField):
 
 class ProposalForm(ModelForm):
     equipment = IndentedModelChoiceField(queryset=Equipment.objects.none(), label='Структурное подразделение')
+    author_1 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 1', required=False)
+    author_2 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 2', required=False)
+    author_3 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 3', required=False)
+    author_4 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 4', required=False)
 
     class Meta:
         model = Proposal
         fields = (
             'title',
-            'authors',
             'equipment',
             'category',
             'economy_size',
+            'is_economy',
             'description',
             'note',
         )
@@ -28,13 +33,11 @@ class ProposalForm(ModelForm):
             'description': Textarea(attrs={'rows': 20}),
             'title': Textarea(attrs={'rows': 3}),
             'note': Textarea(attrs={'rows': 4}),
-            'authors': Select(attrs={'multiple': False}),
         }
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Получаем текущего пользователя
         super().__init__(*args, **kwargs)
-
         if user:
             if user.role == 'employee':
                 equipment_queryset = user.equipment.get_descendants(include_self=True).filter(
@@ -52,30 +55,30 @@ class ProposalForm(ModelForm):
                 else:
                     equipment_queryset = Equipment.objects.none()
                 authors_queryset = ModuleUser.objects.filter(equipment__in=equipment_queryset)
-                authors_queryset = ModuleUser.objects.filter(equipment__in=equipment_queryset)
             elif user.role == 'admin':
                 equipment_queryset = Equipment.objects.filter(structure='Административная структура')
                 authors_queryset = ModuleUser.objects.all()
-
-            # Применяем queryset для полей authors и equipment
-            self.fields['authors'].queryset = authors_queryset.order_by('last_name', 'first_name')
+            self.fields['author_1'].queryset = authors_queryset.order_by('last_name', 'first_name')
+            self.fields['author_2'].queryset = authors_queryset.order_by('last_name', 'first_name')
+            self.fields['author_3'].queryset = authors_queryset.order_by('last_name', 'first_name')
+            self.fields['author_4'].queryset = authors_queryset.order_by('last_name', 'first_name')
             self.fields['equipment'].queryset = equipment_queryset
-
-            # Устанавливаем начальные значения
-            self.fields['authors'].initial = user.id
+            self.fields['author_1'].initial = user.id
             self.fields['equipment'].initial = user.equipment
 
     def clean(self):
         cleaned_data = super().clean()
-        # Проверка полей authors
-        authors_fields = [cleaned_data.get(f'authors_{i}') for i in range(1, 5)]
-        filled_authors = [author for author in authors_fields if author]
-        if len(filled_authors) == 0:
-            raise ValidationError("Необходимо указать хотя бы одного автора.")
-        # Устанавливаем значение is_economy
+        authors = [
+            cleaned_data.get('author_1'),
+            cleaned_data.get('author_2'),
+            cleaned_data.get('author_3'),
+            cleaned_data.get('author_4'),
+        ]
+        authors = [author for author in authors if author]
+        unique_authors = list(set(authors))
+        if not unique_authors:
+            raise ValidationError("Необходимо выбрать хотя бы одного автора.")
+        cleaned_data['authors'] = unique_authors
         economy_size = cleaned_data.get('economy_size', 0)
-        if economy_size != 0:
-            cleaned_data['is_economy'] = True
-        else:
-            cleaned_data['is_economy'] = False
+        cleaned_data['is_economy'] = economy_size != 0
         return cleaned_data

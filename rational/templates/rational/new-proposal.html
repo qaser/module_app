@@ -15,7 +15,7 @@
     <div class="sidebar__icon sidebar__icon_index"></div>
     <h3 class="sidebar__text">Журнал РП</h3>
 </a>
-<a href="" class="sidebar__item">
+<a href="{% url 'rational:index_plan' %}" class="sidebar__item">
     <div class="sidebar__icon sidebar__icon_objects"></div>
     <h3 class="sidebar__text">Планирование</h3>
 </a>
@@ -49,33 +49,33 @@
                     <div class="form__group form__group_plural" aria-required="true">
                         <label for="id_authors" class="form__label">Автор(ы) предложения</label>
 
-                        <!-- Первое поле с текущим пользователем -->
-                        <select name="authors_1" class="form__input form__input_plural" id="authors_1">
-                            {% for user in form.fields.authors.queryset %}
+                        <!-- Поля для выбора авторов -->
+                        <select name="author_1" class="form__input form__input_plural" id="author_1">
+                            <option value="">---------</option>
+                            {% for user in form.fields.author_1.queryset %}
                                 <option value="{{ user.id }}" {% if user.id == request.user.id %}selected{% endif %}>
                                     {{ user }}
                                 </option>
                             {% endfor %}
                         </select>
 
-                        <!-- Остальные поля с пустыми значениями -->
-                        <select name="authors_2" class="form__input form__input_plural" id="authors_2">
+                        <select name="author_2" class="form__input form__input_plural" id="author_2">
                             <option value="">---------</option>
-                            {% for user in form.fields.authors.queryset %}
+                            {% for user in form.fields.author_2.queryset %}
                                 <option value="{{ user.id }}">{{ user }}</option>
                             {% endfor %}
                         </select>
 
-                        <select name="authors_3" class="form__input form__input_plural" id="authors_3">
+                        <select name="author_3" class="form__input form__input_plural" id="author_3">
                             <option value="">---------</option>
-                            {% for user in form.fields.authors.queryset %}
+                            {% for user in form.fields.author_3.queryset %}
                                 <option value="{{ user.id }}">{{ user }}</option>
                             {% endfor %}
                         </select>
 
-                        <select name="authors_4" class="form__input form__input_plural" id="authors_4">
+                        <select name="author_4" class="form__input form__input_plural" id="author_4">
                             <option value="">---------</option>
-                            {% for user in form.fields.authors.queryset %}
+                            {% for user in form.fields.author_4.queryset %}
                                 <option value="{{ user.id }}">{{ user }}</option>
                             {% endfor %}
                         </select>

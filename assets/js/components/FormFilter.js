@@ -1,8 +1,9 @@
 export default class FormFilter {
-    constructor(apiMethod, formSelectorId, fieldId, fieldName, fieldClass) {
+    constructor(apiMethod, formSelectorId, fieldId, fieldName, fieldClass, structureEnable) {
         this._getElementChildren = apiMethod  // Передаем экземпляр Api в FormFilter
         this._form = document.getElementById(formSelectorId);
         this._field = document.getElementById(fieldId);
+        this._structureEnable = structureEnable
         this._fieldName = fieldName
         this._fieldClass = fieldClass
         this.init();
@@ -20,7 +21,7 @@ export default class FormFilter {
     }
 
     _fetchChildren(parentId, targetSelect) {
-        this._getElementChildren(parentId)
+        this._getElementChildren(parentId, this._structureEnable)
             .then(data => {
                 if (data.length > 0) {
                     this._restructureFields(targetSelect, data);

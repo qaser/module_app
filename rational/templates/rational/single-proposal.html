@@ -17,7 +17,7 @@
         <div class="sidebar__icon sidebar__icon_new"></div>
         <h3 class="sidebar__text">Внести предложение</h3>
     </a>
-    <a href="" class="sidebar__item">
+    <a href="{% url 'rational:index_plan' %}" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_objects"></div>
         <h3 class="sidebar__text">Планирование</h3>
     </a>
@@ -37,7 +37,7 @@
           <div class="card__container">
               <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
                   <h3 class="card__title">Информация об РП</h3>
-                  <button class="button card__button card__button_edit" data-tooltip="Редактировать информацию"></button>
+                  <button class="button card__button card__button_edit hidden" data-tooltip="Редактировать информацию"></button>
               </div>
               <div class="card__field" id="proposal_info">
                 <div class="card__line">
@@ -61,6 +61,10 @@
                   <p class="card__value" id="title"></p>
                 </div>
                 <div class="card__line">
+                  <p class="card__param">Классификатор</p>
+                  <p class="card__value" id="category"></p>
+                </div>
+                <div class="card__line">
                   <p class="card__param">С экономическим эффектом</p>
                   <p class="card__value" id="is_economy"></p>
                 </div>
@@ -73,8 +77,8 @@
                     <p class="card__value" id="description"></p>
                 </div>
               </div>
-              <div class="card__header hidden card__header_{{ request.resolver_match.app_name }}" id="cardFiles">
-                <h3 class="card__title">Документация</h3>
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}" id="cardFiles">
+                <h3 class="card__title">Документация и фотоматериалы</h3>
                 <button class="button card__button card__button_add hidden" data-tooltip="Добавить файл"></button>
               </div>
                 <div class="card__files"></div>

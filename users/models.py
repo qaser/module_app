@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save
@@ -5,7 +6,6 @@ from django.dispatch.dispatcher import receiver
 from rest_framework.authtoken.models import Token
 
 from equipments.models import Equipment
-from django.apps import apps
 
 
 def get_installed_apps():
@@ -45,7 +45,10 @@ class ModuleUser(AbstractUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    def user_display(self):
+    # представление пользователя в виде Фамилия И.О.
+    # с учетом отсутствия Отчества
+    @property
+    def lastname_and_initials(self):
         lastname = self.last_name
         initial_name = self.first_name[0]
         if self.patronymic is not None:
@@ -56,11 +59,15 @@ class ModuleUser(AbstractUser):
             lastname_and_initials = f'{lastname} {initial_name}.'
         return lastname_and_initials
 
-    # представление пользователя в виде Фамилия И.О.
+    # представление пользователя в виде Фамилия Имя Отчество
     # с учетом отсутствия Отчества
     @property
-    def lastname_and_initials(self):
-        return self.user_display()
+    def fio(self):
+        if self.patronymic is not None:
+            fio = f'{self.last_name} {self.first_name} {self.patronymic}'
+        else:
+            fio = f'{self.last_name} {self.first_name}'
+        return fio
 
     # @receiver(post_save, sender=User)
     # def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -68,7 +75,7 @@ class ModuleUser(AbstractUser):
     #         Token.objects.create(user=instance)
 
     def __str__(self) -> str:
-        return self.user_display()
+        return self.lastname_and_initials
 
 
 class NotificationAppRoute(models.Model):
@@ -79,10 +86,17 @@ class NotificationAppRoute(models.Model):
         max_length=50,
         choices=APP_CHOICES,  # Ограничиваем выбор только установленными приложениями
     )
+    equipment = models.ForeignKey(
+        Equipment,
+        on_delete=models.CASCADE,
+        verbose_name='ЛПУМГ',
+        blank=False,
+        null=False,
+    )
     user = models.ForeignKey(
         ModuleUser,
         related_name='apps',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name='Ответственный за приложение',
         blank=True,
         null=True,

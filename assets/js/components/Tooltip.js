@@ -41,11 +41,11 @@ export default class Tooltip {
         this.tooltipElement.querySelector('.tooltip-content').textContent = tooltipText;
         const rect = element.getBoundingClientRect();
         const tooltipRect = this.tooltipElement.getBoundingClientRect();
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
         let left = rect.left + window.scrollX + rect.width / 2 - tooltipRect.width / 2;
         let top = rect.top + window.scrollY - tooltipRect.height - 12;
-
-        if (left + tooltipRect.width > window.innerWidth) {
-            left = window.innerWidth - tooltipRect.width - 10;
+        if (left + tooltipRect.width > window.innerWidth - scrollbarWidth) {
+            left = window.innerWidth - tooltipRect.width - scrollbarWidth - 10;
         }
         if (left < 0) {
             left = 10;
@@ -56,7 +56,6 @@ export default class Tooltip {
         } else {
             this.tooltipElement.classList.remove('tooltip-bottom');
         }
-
         this.tooltipElement.style.left = `${left}px`;
         this.tooltipElement.style.top = `${top}px`;
         this.tooltipElement.classList.add('tooltip-visible');

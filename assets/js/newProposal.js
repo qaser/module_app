@@ -2,7 +2,6 @@ import * as config from './config/config.js';
 import * as constant from './utils/constants.js';
 import Api from './api/Api.js';
 import UserInfo from './components/UserInfo.js';
-import Table from './components/Table.js';
 import FormFilter from './components/FormFilter.js';
 import Tooltip from '../js/components/Tooltip.js';
 import AppMenu from '../js/components/AppMenu.js';
@@ -24,8 +23,6 @@ const newUserInfo = new UserInfo({
     job: '.header__user-proff',
 });
 
-// создание объекта таблицы со строками ссылками
-const newTable = new Table({table: '.table__body'});
 
 function renderLoading(isLoading) {
   if (isLoading) {
@@ -35,7 +32,6 @@ function renderLoading(isLoading) {
 
 new Tooltip();
 new AppMenu();
-newTable.init();
 
 api.getMyProfile()
     .then((userData) => {
@@ -45,8 +41,8 @@ api.getMyProfile()
             'filter_submit',
             'id_equipment',
             'equipment',
-            'sidebar__form-input',
-            'true',  // использовать фиотрацию по структуре
+            'form__input',
+            'true',
         );
         const targetField = document.querySelector('#id_equipment')
         targetField.setAttribute('data-tooltip', constant.tooltipFormField)
