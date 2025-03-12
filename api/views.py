@@ -6,21 +6,24 @@ from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
+from django.http import JsonResponse
 
 from equipments.models import Equipment
 from leaks.models import Leak
-from rational.models import Plan, Proposal, ProposalDocument, Status
+from rational.models import AnnualPlan, QuarterlyPlan, Proposal, ProposalDocument, Status
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
 
-from .serializers import (EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, ProposalDocumentSerializer,
-                          ProposalSerializer, ServiceSerializer,
+from .serializers import (AnnualPlanSerializer, EquipmentSerializer,
+                          FactorySerializer, LeakSerializer,
+                          ProposalDocumentSerializer, ProposalSerializer,
+                          QuarterlyPlanSerializer, ServiceSerializer,
                           ServiceTypeSerializer, StatusSerializer,
                           UserSerializer, ValveDocumentSerializer,
                           ValveImageSerializer, ValveSerializer,
-                          WorkServiceSerializer, PlanSerializer)
+                          WorkServiceSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
@@ -230,12 +233,46 @@ class StatusViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PlanViewSet(viewsets.ModelViewSet):
-    queryset = Plan.objects.all()
-    serializer_class = PlanSerializer
+class AnnualPlanViewSet(viewsets.ModelViewSet):
+    queryset = AnnualPlan.objects.all()
+    serializer_class = AnnualPlanSerializer
 
-    def get_queryset(self):
-        year = self.request.query_params.get('year')
-        if year:
-            return self.queryset.filter(year=year).select_related('equipment').prefetch_related('children')
-        return self.queryset
+
+class QuarterlyPlanViewSet(viewsets.ModelViewSet):
+    queryset = QuarterlyPlan.objects.all()
+    serializer_class = QuarterlyPlanSerializer
+
+
+
+# def annual_plans_list(request):
+#     """Выдает все годовые планы в виде иерархии."""
+#     def serialize_plan(plan):
+#         children = plan.equipment.get_children()
+#         return {
+#             "id": plan.id,
+#             "equipment": {"id": plan.equipment.id, "name": plan.equipment.name},
+#             "year": plan.year,
+#             "total_proposals": plan.total_proposals,
+#             "total_economy": plan.total_economy,
+#             "children": [serialize_plan(AnnualPlan.objects.get(equipment=child, year=plan.year)) for child in children if AnnualPlan.objects.filter(equipment=child, year=plan.year).exists()]
+#         }
+
+#     root_plans = AnnualPlan.objects.filter(equipment__parent__isnull=True)
+#     return JsonResponse([serialize_plan(plan) for plan in root_plans], safe=False)
+
+# def quarterly_plan_detail(request, annual_plan_id):
+#     """Выдает квартальный план для указанного годового плана."""
+#     annual_plan = get_object_or_404(AnnualPlan, id=annual_plan_id)
+#     quarterly_plans = QuarterlyPlan.objects.filter(annual_plan=annual_plan)
+
+#     result = []
+#     for plan in quarterly_plans:
+#         result.append({
+#             "equipment_name": plan.annual_plan.equipment.name,
+#             "q1": plan.planned_proposals if plan.quarter == 1 else 0,
+#             "q2": plan.planned_proposals if plan.quarter == 2 else 0,
+#             "q3": plan.planned_proposals if plan.quarter == 3 else 0,
+#             "q4": plan.planned_proposals if plan.quarter == 4 else 0,
+#         })
+
+#     return JsonResponse(result, safe=False)

@@ -1,5 +1,5 @@
 {% extends "module_app/base.html" %}
-{% block title %}Формирование годового плана РП{% endblock %}
+{% block title %}Выполнение плана рационализаторской работы{% endblock %}
 {% block app_name %}Рационализаторская работа{% endblock %}
 
 {% load static %}
@@ -20,6 +20,12 @@
         <div class="sidebar__icon sidebar__icon_new"></div>
         <h3 class="sidebar__text">Внести предложение</h3>
     </a>
+    {% if user.role == 'admin' or user.role == 'manager' %}
+        <a href="{% url 'rational:index_plan' %}" class="sidebar__item">
+            <div class="sidebar__icon sidebar__icon_objects"></div>
+            <h3 class="sidebar__text">Планирование</h3>
+        </a>
+    {% endif %}
     <a href="" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_help"></div>
         <h3 class="sidebar__text">Справочная информация</h3>
@@ -43,9 +49,8 @@
     <main class="content">
         <section class="main" id="main">
 
-            <h1 class="main__title">Планирование рационализаторской работы</h1>
+            <h1 class="main__title">Выполнение плана рационализаторской работы</h1>
             {% render_table table %}
-
 
         </section>
     </main>

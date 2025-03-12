@@ -1,11 +1,11 @@
 import django_filters as df
-from django.db.models import OuterRef, Q, Subquery
+from django.db.models import OuterRef, Subquery
 from django.forms.widgets import Select
 
 from equipments.models import Equipment
 from users.models import Role
 
-from .models import CATEGORY, Proposal, Status, Plan
+from .models import CATEGORY, AnnualPlan, Proposal, Status
 
 
 class ProposalFilter(df.FilterSet):
@@ -146,7 +146,7 @@ class ProposalFilter(df.FilterSet):
         return queryset
 
 
-class PlanFilter(df.FilterSet):
+class AnnualPlanFilter(df.FilterSet):
     equipment = df.ModelChoiceFilter(
         queryset=Equipment.objects.filter(parent__isnull=True),
         label='Филиалы'
@@ -154,12 +154,12 @@ class PlanFilter(df.FilterSet):
     year = df.ChoiceFilter(
         choices=[
             (year, year)
-            for year in Plan.objects.values_list('year', flat=True)
+            for year in AnnualPlan.objects.values_list('year', flat=True)
             .distinct().order_by('year')
         ],
         label='Год',
         field_name='year'
     )
     class Meta:
-        model = Plan
+        model = AnnualPlan
         fields = ['equipment', 'year']

@@ -4,6 +4,30 @@ export default class Api {
         this._headers = options.headers;
     }
 
+    // Получение годовых корневых планов
+    getAnnualPlans() {
+        return fetch(`${this._baseUrl}/rational-plans/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    // получение годового плана с дочерними годовыми планами
+    getAnnualPlanWithChildren(planId) {
+        return fetch(`${this._baseUrl}/rational-plans/${planId}/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    // Получение квартальных планов для годового плана
+    getQuarterlyPlans(annualPlanId) {
+        return fetch(`${this._baseUrl}/plans/quarterly/${annualPlanId}/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
     // загрузка данных пользователя
     getMyProfile() {
         return fetch(`${this._baseUrl}/users/me/`, {
@@ -35,7 +59,7 @@ export default class Api {
 
     // загрузка одной утечки с сервера
     getLeakItem(id) {
-        return fetch(`${this._baseUrl}/leaks/${id}`, {
+        return fetch(`${this._baseUrl}/leaks/${id}/`, {
             headers: this._headers,
         })
         .then(response => response.json())

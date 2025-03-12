@@ -1,22 +1,20 @@
 import django_tables2 as tables
-from django.db.models import OuterRef, Subquery
-from django.urls import reverse
-from django.utils.html import format_html
 
 from equipments.models import Equipment
 from users.models import Role
 
-from .models import Proposal, Plan
+from .models import AnnualPlan, Proposal
 
 
 class ProposalTable(tables.Table):
-    ks = tables.Column(
+    equipment_root = tables.Column(
         empty_values=(),
-        verbose_name='КС',
-        accessor='equipment__get_ks',
+        verbose_name='Филиал',
+        accessor='equipment_root_name',  # Используем аннотацию
     )
     equipment = tables.Column(verbose_name='Подразделение')
-    is_economy = tables.BooleanColumn(verbose_name='Эк. эфф.')
+    # is_economy = tables.BooleanColumn(verbose_name='Эк. эфф.')
+    economy_size = tables.Column(verbose_name='Эк. эфф.')
     status = tables.Column(empty_values=(), verbose_name='Статус')
 
     class Meta:
@@ -27,8 +25,9 @@ class ProposalTable(tables.Table):
             'title',
             'authors',
             'equipment',
+            'equipment_root',  # Добавляем новую колонку
             'category',
-            'is_economy',
+            # 'is_economy',
             'economy_size',
             'status',
         ]
@@ -40,30 +39,14 @@ class ProposalTable(tables.Table):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)  # Извлекаем пользователя
         super().__init__(*args, **kwargs)
-
         if user and user.role == Role.ADMIN:
-            # Делаем 'ks' первым, удаляя его из остальных мест
-            self.sequence = ['ks'] + [col for col in self.sequence if col != 'ks']
+            self.sequence = ['equipment_root'] + [col for col in self.sequence if col != 'equipment_root']
         else:
-            self.exclude = ('ks',)  # Скрываем колонку
+            self.exclude = ('equipment_root',)  # Скрываем колонку
 
-    def render_ks(self, record):
-        """Отображение значения КС"""
-        ks = record.get_ks()
-        return ks.name if ks else '-'
-
-    def order_ks(self, queryset, is_descending):
-        """Сортировка по корневому элементу второго уровня"""
-        queryset = queryset.annotate(
-            ks_name=Subquery(
-                Equipment.objects.filter(
-                    tree_id=OuterRef('equipment__tree_id'),
-                    level=1
-                ).values('name')[:1]
-            )
-        )
-        queryset = queryset.order_by('-ks_name' if is_descending else 'ks_name')
-        return queryset, True
+    def render_equipment_root(self, value):
+        """Отображение корневого оборудования"""
+        return value if value else '-'
 
     def render_status(self, record):
         """Отображение последнего статуса"""
@@ -75,28 +58,38 @@ class ProposalTable(tables.Table):
         return value.strftime('%d.%m.%Y') if value else '-'
 
 
-class PlanTable(tables.Table):
+class AnnualPlanTable(tables.Table):
     equipment = tables.Column(verbose_name='Филиал')
-    target_proposal = tables.Column(verbose_name='Плановое количество РП')
-    target_economy = tables.Column(verbose_name='Плановая эк. эфф., руб.')
+    total_proposals = tables.Column(verbose_name='Плановое количество РП')
+    completed_proposals = tables.Column(
+        verbose_name='Факт. количество РП',
+        accessor='completed_proposals'
+    )
     percentage_complete = tables.Column(
-        verbose_name='Выполнения плана РП, %',
-        empty_values=(),
-        orderable=False
+        verbose_name='Выполнения плана по количеству РП',
+        empty_values=()
+    )
+    total_economy = tables.Column(verbose_name='Плановая эк. эфф., руб.')
+    sum_economy = tables.Column(
+        verbose_name='Факт. эк. эфф., руб.',
+        accessor='sum_economy'
     )
     percentage_economy = tables.Column(
-        verbose_name='Выполнение плана эк. эфф., %',
-        empty_values=(),
-        orderable=False
+        verbose_name='Выполнения плана эк. эфф.',
+        empty_values=()
     )
 
     class Meta:
-        model = Plan
+        model = AnnualPlan
         fields = [
             'equipment',
             'year',
-            'target_proposal',
-            'target_economy',
+            'total_proposals',
+            'completed_proposals',
+            'percentage_complete',
+            'total_economy',
+            'sum_economy',
+            'percentage_economy',
         ]
         attrs = {'class': 'table table_rational'}
         row_attrs = {'id': lambda record: record.id}
@@ -106,22 +99,12 @@ class PlanTable(tables.Table):
     def render_equipment(self, value):
         return value.name if value else ''
 
-    def render_percentage_complete(self, value, record):
-        """Расчет процента выполнения заявок"""
-        try:
-            if record.target_proposal == 0:
-                return "0%"
-            percentage = (record.completed / record.target_proposal) * 100
-            return f"{round(percentage, 2)}%"
-        except (TypeError, AttributeError, ZeroDivisionError):
-            return "0%"
+    def render_percentage_complete(self, record):
+        if record.total_proposals:
+            return f'{(record.completed_proposals / record.total_proposals * 100):.1f}%'
+        return '0%'
 
-    def render_percentage_economy(self, value, record):
-        """Расчет процента экономии"""
-        try:
-            if record.target_economy == 0:
-                return "0%"
-            percentage = (record.economy / record.target_economy) * 100
-            return f"{round(percentage, 2)}%"
-        except (TypeError, AttributeError, ZeroDivisionError):
-            return "0%"
+    def render_percentage_economy(self, record):
+        if record.total_economy:
+            return f'{(record.sum_economy / record.total_economy * 100):.1f}%'
+        return '0%'

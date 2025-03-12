@@ -20,10 +20,12 @@
         <div class="sidebar__icon sidebar__icon_new"></div>
         <h3 class="sidebar__text">Внести предложение</h3>
     </a>
-    <a href="{% url 'rational:index_plan' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_objects"></div>
-        <h3 class="sidebar__text">Планирование</h3>
-    </a>
+    {% if user.role == 'admin' or user.role == 'manager' %}
+        <a href="{% url 'rational:index_plan' %}" class="sidebar__item">
+            <div class="sidebar__icon sidebar__icon_objects"></div>
+            <h3 class="sidebar__text">Планирование</h3>
+        </a>
+    {% endif %}
     <a href="" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_help"></div>
         <h3 class="sidebar__text">Справочная информация</h3>

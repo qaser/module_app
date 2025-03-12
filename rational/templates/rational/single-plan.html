@@ -1,0 +1,72 @@
+{% extends "module_app/base.html" %}
+{% block title %}Обзор плана РП на {{ plan.year }} год | {{ plan.equipment }}{% endblock %}
+{% block app_name %}Рационализаторская работа{% endblock %}
+
+{% load static %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/single-plan.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="{% url 'rational:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Журнал РП</h3>
+    </a>
+    <a href="{% url 'rational:proposal_new' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_new"></div>
+        <h3 class="sidebar__text">Внести предложение</h3>
+    </a>
+    {% if user.role == 'admin' or user.role == 'manager' %}
+        <a href="{% url 'rational:index_plan' %}" class="sidebar__item">
+            <div class="sidebar__icon sidebar__icon_objects"></div>
+            <h3 class="sidebar__text">Планирование</h3>
+        </a>
+    {% endif %}
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content" id="{{ plan.id }}">
+      <!-- основная панель -->
+      <section class="main" id="main">
+        <h1 class="main__title">Обзор плана РП на {{ plan.year }} год | {{ plan.equipment }}</h1>
+
+
+        <div class="annual-plan" id="annual-plan-{{ plan.id }}">
+            <div class="annual-plan__header">
+              <div class="annual-plan__tab" style="background-color: {{ plan.equipment.color }};"></div>
+              <div class="annual-plan__info">
+                <div class="annual-plan__name">{{ plan.equipment.name }}</div>
+                <div class="annual-plan__stats">
+                  <div class="annual-plan__proposals">{{ plan.completed_proposals }} / {{ plan.total_proposals }}</div>
+                  <div class="annual-plan__economy">{{ plan.sum_economy }}₽ / {{ plan.total_economy }}₽</div>
+                </div>
+              </div>
+            </div>
+            <div class="annual-plan__quarters">
+              {% for quarter in annual_plan.quarterly_plans.all %}
+                <div class="quarter">
+                  <div class="quarter__number">Q{{ quarter.quarter }}</div>
+                  <div class="quarter__stats">
+                    <div class="quarter__proposals">{{ quarter.completed_proposals }} / {{ quarter.planned_proposals }}</div>
+                    <div class="quarter__economy">{{ quarter.sum_economy }}₽ / {{ quarter.planned_economy }}₽</div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+
+      </section>
+    </main>
+
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/singlePlan.js' %}"></script>
+{% endblock %}

@@ -1,13 +1,47 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from mptt.admin import DraggableMPTTAdmin
 
-from .models import Plan, Proposal, ProposalDocument, Status
+from .models import AnnualPlan, Proposal, ProposalDocument, Status
+from django.contrib import admin
+from .models import AnnualPlan, QuarterlyPlan
 
 
-class PlanInline(admin.TabularInline):
-    model = Plan
-    extra = 4
+class QuarterlyPlanInline(admin.TabularInline):
+    model = QuarterlyPlan
+    extra = 0  # Не добавлять пустые строки
+    readonly_fields = ('quarter',)  # Запрещаем изменять квартал вручную
+
+    def get_fields(self, request, obj=None):
+        return (
+            'quarter',
+            'planned_proposals',
+            'planned_economy',
+        )
+
+
+@admin.register(AnnualPlan)
+class AnnualPlanAdmin(admin.ModelAdmin):
+    list_filter = ('year', 'equipment')  # Фильтрация
+    search_fields = ('equipment__name',)  # Поиск по названию подразделения
+    inlines = [QuarterlyPlanInline]  # Встроенный квартальный план
+    list_display = (
+        'indented_equipment',
+        'year',
+        'total_proposals',
+        'total_economy',
+        'sum_economy',
+        'completed_proposals',
+    )
+
+    def indented_equipment(self, obj):
+        indent = '...' * obj.equipment.level  # Генерируем отступы
+        return f"{indent} {obj.equipment.name}"
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        # Сортируем по tree_id и lft для правильного отображения иерархии
+        queryset = queryset.order_by('equipment__tree_id', 'equipment__lft')
+        return queryset
 
 
 @admin.register(Proposal)
@@ -20,7 +54,6 @@ class ProposalAdmin(admin.ModelAdmin):
         'title',
         'category',
         'is_economy',
-        # 'latest_status',
     )
     list_filter = (
         'category',
@@ -47,26 +80,6 @@ class ProposalAdmin(admin.ModelAdmin):
 
     get_latest_status.short_description = 'Статус'
     get_authors.short_description = 'Авторы'
-
-
-@admin.register(Plan)
-class PlanAdmin(DraggableMPTTAdmin):
-    list_display = (
-        'indented_title',
-        'year',
-        'quarter',
-        'equipment',
-        'target_proposal',
-        'target_economy',
-        'completed',
-        'economy',
-    )
-    list_display_links = ('indented_title',)
-    list_filter = ('year', 'quarter', 'equipment')
-    search_fields = ('equipment__name',)
-    ordering = ('tree_id', 'lft')  # ВАЖНО: сортируем по MPTT полям
-    mptt_level_indent = 20  # Отступы в дереве
-    inlines = [PlanInline]  # Добавляем inline для дочернего оборудования
 
 
 @admin.register(ProposalDocument)

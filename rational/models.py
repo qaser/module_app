@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.mail import send_mail
 from django.db import models
-from django.db.models import Exists, OuterRef, Sum
+from django.db.models import Exists, OuterRef, Sum, Count, Q
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -351,121 +351,156 @@ def send_notification(sender, instance, created, **kwargs):
         # self.send_email(self.owner.email, subject, message)
 
 
-class Plan(MPTTModel):
-    year = models.IntegerField(
-        'Год',
-        choices=YEAR_CHOICES,
-        blank=False,
-        null=False,
-    )
-    quarter = models.IntegerField(
-        'Квартал',
-        choices=QUARTER_CHOICES,
-        blank=True,
-        null=True,  # Если план на год, а не на квартал
-    )
-    equipment = models.ForeignKey(
+class AnnualPlan(models.Model):
+    equipment = TreeForeignKey(
         Equipment,
         on_delete=models.CASCADE,
-        verbose_name='Подразделение',
-        blank=True,
-        null=True,
+        related_name='plans',
+        verbose_name='Подразделение'
     )
-    target_proposal = models.IntegerField(
-        'Плановое количество предложений',
-        blank=False,
-        null=False,
+    year = models.PositiveIntegerField(
+        verbose_name='Год планирования',
+        choices=[(y, y) for y in range(datetime.now().year, datetime.now().year + 6)]
     )
-    target_economy = models.FloatField(
-        'Плановая экономическая эффективность, руб',
-        blank=False,
-        null=False,
+    total_proposals = models.PositiveIntegerField(
+        verbose_name='Запланированное количество РП',
+        default=0
     )
-    parent = TreeForeignKey(
-        'self',
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='children',
-        verbose_name='Родительский план'
+    total_economy = models.FloatField(
+        verbose_name='Ожидаемый экономический эффект, руб.',
+        default=0.0,
     )
 
     class Meta:
-        verbose_name = 'План'
-        verbose_name_plural = 'Планы'
-        unique_together = ('year', 'quarter', 'equipment', 'parent')
-
-    class MPTTMeta:
-        order_insertion_by = ['year', 'quarter']
+        unique_together = ('equipment', 'year')
+        verbose_name = 'Годовой план'
+        verbose_name_plural = 'Годовые планы'
 
     def __str__(self):
-        if self.quarter:
-            return f'План на {self.year} год, {self.equipment.name}'
-        return f'План на {self.year} год, {self.equipment.name} '
+        return f'{self.equipment.name} - {self.year}'
 
-    def _calculate_metric(self, metric_type):
-        """
-        Общий метод для подсчета completed или economy.
-        :param metric_type: 'completed' для подсчета количества предложений,
-        'economy' для подсчета суммы экономии.
-        :return: Количество предложений или сумма экономии.
-        """
-        if self.is_leaf_node():
-            # Если это листовой узел (квартальный план), проверяем, что quarter не None
-            if self.quarter is None:
-                return 0  # Если квартал не указан, возвращаем 0
+    @property
+    def completed_proposals(self):
+        """Возвращает количество предложений, зарегистрированных и принятых в данном году для данного оборудования и его дочерних элементов."""
+        return sum(quarter.completed_proposals for quarter in self.quarterly_plans.all())
 
-            # Определяем диапазон дат для квартала
-            start_date = datetime(self.year, 3 * (self.quarter - 1) + 1, 1)  # Начало квартала
-            if self.quarter == 4:
-                end_date = datetime(self.year + 1, 1, 1) - timedelta(days=1)  # Конец квартала (31 декабря)
-            else:
-                end_date = datetime(self.year, 3 * self.quarter + 1, 1) - timedelta(days=1)  # Конец квартала
+    @property
+    def sum_economy(self):
+        """Возвращает сумму экономии всех предложений, зарегистрированных и принятых в данном году для данного оборудования и его дочерних элементов."""
+        return sum(quarter.sum_economy for quarter in self.quarterly_plans.all())
 
-            # Получаем все дочерние equipment для текущего equipment плана
-            equipment_list = self.equipment.get_descendants(include_self=True)
 
-            # Подзапрос для проверки наличия статуса ACCEPT
-            has_accept_status = Status.objects.filter(
-                proposal=OuterRef('id'),
-                status=Status.StatusChoices.ACCEPT
+class QuarterlyPlan(models.Model):
+    """
+    Квартальный план, привязанный к годовому.
+    """
+    annual_plan = models.ForeignKey(
+        AnnualPlan,
+        on_delete=models.CASCADE,
+        related_name='quarterly_plans',
+        verbose_name='Годовой план'
+    )
+    quarter = models.PositiveSmallIntegerField(
+        verbose_name='Квартал',
+        choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4')]
+    )
+    planned_proposals = models.PositiveIntegerField(
+        verbose_name='Запланированное количество РП',
+        default=0
+    )
+    planned_economy = models.FloatField(
+        verbose_name='Ожидаемый экономический эффект, руб.',
+        default=0.0
+    )
+
+    class Meta:
+        unique_together = ('annual_plan', 'quarter')
+        verbose_name = 'Квартальный план'
+        verbose_name_plural = 'Квартальные планы'
+
+    def get_quarter_date_range(self):
+        """Возвращает диапазон дат для заданного квартала."""
+        year = self.annual_plan.year
+        quarter = self.quarter
+        if quarter == 1:
+            start_date = datetime(year, 1, 1)
+            end_date = datetime(year, 3, 31)
+        elif quarter == 2:
+            start_date = datetime(year, 4, 1)
+            end_date = datetime(year, 6, 30)
+        elif quarter == 3:
+            start_date = datetime(year, 7, 1)
+            end_date = datetime(year, 9, 30)
+        elif quarter == 4:
+            start_date = datetime(year, 10, 1)
+            end_date = datetime(year, 12, 31)
+        return start_date, end_date
+
+    @property
+    def completed_proposals(self):
+        """Возвращает количество предложений, зарегистрированных и принятых в данном квартале для данного оборудования и его дочерних элементов."""
+        start_date, end_date = self.get_quarter_date_range()
+        # Получаем все дочерние элементы текущего оборудования с structure='Административная структура'
+        equipment_ids = self.annual_plan.equipment.get_descendants(include_self=True).filter(
+            structure='Административная структура'
+        ).values_list('id', flat=True)
+        # Фильтруем предложения по equipment и статусам
+        proposals = Proposal.objects.filter(
+            reg_date__range=(start_date, end_date),
+            equipment__id__in=equipment_ids,  # Только для текущего оборудования и его дочерних элементов
+            statuses__status=Status.StatusChoices.REG,
+        ).filter(
+            statuses__status=Status.StatusChoices.ACCEPT
+        ).distinct()
+        return proposals.count()
+
+    @property
+    def sum_economy(self):
+        """Возвращает сумму экономии всех предложений, зарегистрированных и принятых в данном квартале для данного оборудования и его дочерних элементов."""
+        start_date, end_date = self.get_quarter_date_range()
+        # Получаем все дочерние элементы текущего оборудования с structure='Административная структура'
+        equipment_ids = self.annual_plan.equipment.get_descendants(include_self=True).filter(
+            structure='Административная структура'
+        ).values_list('id', flat=True)
+        # Фильтруем предложения по equipment и статусам
+        proposals = Proposal.objects.filter(
+            reg_date__range=(start_date, end_date),
+            equipment__id__in=equipment_ids,  # Только для текущего оборудования и его дочерних элементов
+            statuses__status=Status.StatusChoices.REG,
+        ).filter(
+            statuses__status=Status.StatusChoices.ACCEPT
+        ).distinct()
+        return proposals.aggregate(total_economy=Sum('economy_size'))['total_economy'] or 0
+
+
+@receiver(post_save, sender=AnnualPlan)
+def create_quarterly_plans(sender, instance, created, **kwargs):
+    """
+    Автоматически создаем квартальные планы после создания годового плана,
+    только для оборудования с structure='Административная структура'.
+    """
+    if created and instance.equipment.structure == 'Административная структура':
+        for quarter in range(1, 5):
+            QuarterlyPlan.objects.create(
+                annual_plan=instance,
+                quarter=quarter,
+                planned_proposals=instance.total_proposals // 4,
+                planned_economy=instance.total_economy / 4
             )
 
-            # Фильтруем предложения, которые получили статус REG в указанный период
-            # и имеют хотя бы один статус ACCEPT
-            accepted_proposals = Proposal.objects.filter(
-                statuses__status=Status.StatusChoices.REG,
-                statuses__date_changed__gte=start_date,
-                statuses__date_changed__lte=end_date,
-                equipment__in=equipment_list  # Фильтруем по всем дочерним equipment
-            ).annotate(
-                has_accept=Exists(has_accept_status)
-            ).filter(
-                has_accept=True
-            ).distinct()
 
-            if metric_type == 'completed':
-                return accepted_proposals.count()
-            elif metric_type == 'economy':
-                total_economy = accepted_proposals.aggregate(total_economy=Sum('economy_size'))['total_economy']
-                return total_economy if total_economy else 0
-            else:
-                raise ValueError("Неподдерживаемый тип метрики. Используйте 'completed' или 'economy'.")
-        else:
-            # Для нелистовых узлов (годовых планов) суммируем значения из всех дочерних узлов
-            total_metric = 0
-            for child in self.get_descendants(include_self=True):
-                if child.is_leaf_node():  # Учитываем только листовые узлы (квартальные планы)
-                    if metric_type == 'completed':
-                        total_metric += child.completed if child.completed is not None else 0
-                    elif metric_type == 'economy':
-                        total_metric += child.economy if child.economy is not None else 0
-            return total_metric
-
-    @property
-    def completed(self):
-        return self._calculate_metric('completed')
-
-    @property
-    def economy(self):
-        return self._calculate_metric('economy')
+@receiver(post_save, sender=AnnualPlan)
+def create_subdivision_plans(sender, instance, created, **kwargs):
+    """
+    Автоматически создаем годовые планы для дочерних подразделений,
+    только для оборудования с structure='Административная структура'.
+    """
+    if created and instance.equipment.structure == 'Административная структура':
+        children = instance.equipment.get_children().filter(structure='Административная структура')
+        for child in children:
+            AnnualPlan.objects.create(
+                equipment=child,
+                year=instance.year,
+                total_proposals=instance.total_proposals // len(children) if children else 0,
+                total_economy=instance.total_economy / len(children) if children else 0
+            )

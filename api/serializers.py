@@ -4,7 +4,8 @@ from rest_framework import serializers
 
 from equipments.models import Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
-from rational.models import Plan, Proposal, ProposalDocument, Status
+from rational.models import (AnnualPlan, Proposal, ProposalDocument,
+                             QuarterlyPlan, Status)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
 from users.models import ModuleUser, NotificationAppRoute, Role
@@ -414,7 +415,16 @@ class ProposalSerializer(serializers.ModelSerializer):
         return data
 
 
-class PlanSerializer(serializers.ModelSerializer):
+class QuarterlyPlanSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Plan
-        fields = '__all__'
+        model = QuarterlyPlan
+        fields = ['quarter', 'planned_proposals', 'planned_economy']
+
+
+class AnnualPlanSerializer(serializers.ModelSerializer):
+    quarterly_plans = QuarterlyPlanSerializer(many=True, read_only=True)
+    equipment_name = serializers.CharField(source='equipment.name', read_only=True)
+
+    class Meta:
+        model = AnnualPlan
+        fields = ['id', 'equipment', 'equipment_name', 'year', 'total_proposals', 'total_economy', 'quarterly_plans']

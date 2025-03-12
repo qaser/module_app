@@ -9,7 +9,6 @@ from docx.oxml.text.paragraph import CT_P
 from docx.table import Table, _Cell, _Row
 from docx.text.paragraph import Paragraph
 
-
 PROPOSAL_DOC_TEMPLATE = os.path.join(
     settings.BASE_DIR,
     'rational',
