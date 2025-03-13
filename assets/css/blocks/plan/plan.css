@@ -1,0 +1,60 @@
+.plan {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+@media screen and (max-width: 1200px) {
+    .plan {
+        width: 100%;
+    }
+}
+
+
+/* Стили для квартального плана */
+.quarter {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #EBDA9D;
+    text-align: center;
+}
+
+.quarter__number {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.quarter__stats {
+    font-size: 12px;
+}
+
+.connectors-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Чтобы коннекторы не перехватывали клики */
+    transition: opacity 1.0s ease; /* Плавное изменение прозрачности */
+}
+
+.connectors-container.hidden {
+    opacity: 0; /* Прозрачность при скрытии */
+}
+
+.connector {
+    position: absolute;
+    background-color: #EBDA9D; /* Цвет линии */
+    transition: opacity 1.0s ease; /* Плавное изменение прозрачности */
+}
+
+.vertical-connector {
+    width: 2px; /* Толщина вертикальной линии */
+}
+
+.horizontal-connector {
+    height: 2px; /* Толщина горизонтальной линии */
+}

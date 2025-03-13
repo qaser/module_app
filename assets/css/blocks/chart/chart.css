@@ -1,0 +1,21 @@
+.chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 40%;
+    margin-left: 20px;
+}
+
+
+@media screen and (max-width: 1200px) {
+    .chart {
+        width: 100%;
+        margin: 30px auto;
+    }
+}
+
+.chart__item {
+    display: flex;
+    justify-content: center;
+}

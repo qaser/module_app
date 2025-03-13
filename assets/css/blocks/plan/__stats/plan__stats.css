@@ -1,0 +1,15 @@
+.plan__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Расстояние между блоками */
+    font-size: 12px;
+    align-items: end;
+}
+
+.plan__proposals {
+    color: #256CB8;
+}
+
+.plan__economy {
+    color: #247837;
+}

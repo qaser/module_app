@@ -1,0 +1,18 @@
+.chart__inline {
+    display: flex;
+    /* flex-wrap: wrap; */
+    /* justify-content: space-between; */
+    gap: 10px; /* Расстояние между элементами */
+}
+
+@media (max-width: 1350px) {
+    .chart__inline {
+        flex-direction: row; /* Элементы выстраиваются в строку */
+        flex-wrap: wrap; /* Разрешаем перенос на новую строку */
+        justify-content:space-evenly;
+    }
+
+    .chart__inline > div {
+        width: 50%; /* Ширина каждого элемента */
+    }
+}

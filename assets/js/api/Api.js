@@ -13,7 +13,7 @@ export default class Api {
     }
 
     // получение годового плана с дочерними годовыми планами
-    getAnnualPlanWithChildren(planId) {
+    getPlanWithChildren(planId) {
         return fetch(`${this._baseUrl}/rational-plans/${planId}/`, {
             headers: this._headers,
         })

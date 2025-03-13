@@ -31,35 +31,60 @@
 
 {% block content %}
     {% csrf_token %}
-    <main class="content" id="{{ plan.id }}">
+    <main class="content">
       <!-- основная панель -->
       <section class="main" id="main">
-        <h1 class="main__title">Обзор плана РП на {{ plan.year }} год | {{ plan.equipment }}</h1>
+        <h1 class="main__title">Обзор плана РП на {{ plan.year }} год</h1>
+        <div class="card" id="{{ plan.id }}" app-name="{{ request.resolver_match.app_name }}">
+            <div class="plan">
 
+                <div class="plan__container" id="plan__container">
+                <!-- Сюда будут динамически добавляться планы -->
+                </div>
 
-        <div class="annual-plan" id="annual-plan-{{ plan.id }}">
-            <div class="annual-plan__header">
-              <div class="annual-plan__tab" style="background-color: {{ plan.equipment.color }};"></div>
-              <div class="annual-plan__info">
-                <div class="annual-plan__name">{{ plan.equipment.name }}</div>
-                <div class="annual-plan__stats">
-                  <div class="annual-plan__proposals">{{ plan.completed_proposals }} / {{ plan.total_proposals }}</div>
-                  <div class="annual-plan__economy">{{ plan.sum_economy }}₽ / {{ plan.total_economy }}₽</div>
+            </div>
+            <div class="chart">
+                <div class="chart__title">График выполнения годового плана</div>
+                <div id="chart-annual"></div>
+                <div class="chart__title">Графики выполнения квартальных планов</div>
+                <div class="chart__inline">
+                    <div  class="chart__item" id="chart-q1"></div>
+                    <div class="chart__item" id="chart-q2"></div>
+                    <div class="chart__item" id="chart-q3"></div>
+                    <div class="chart__item" id="chart-q4"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Шаблон для карточки годового плана -->
+        <template id="plan-template">
+          <div class="plan__card">
+            <div class="plan__ribbon module-color_{{ request.resolver_match.app_name }}"></div> <!-- Ляссе -->
+            <div class="plan__content">
+              <div class="plan__info">
+                <div class="plan__name"></div>
+                <div class="plan__stats">
+                  <div class="plan__proposals"></div>
+                  <div class="plan__economy"></div>
                 </div>
               </div>
-            </div>
-            <div class="annual-plan__quarters">
-              {% for quarter in annual_plan.quarterly_plans.all %}
-                <div class="quarter">
-                  <div class="quarter__number">Q{{ quarter.quarter }}</div>
-                  <div class="quarter__stats">
-                    <div class="quarter__proposals">{{ quarter.completed_proposals }} / {{ quarter.planned_proposals }}</div>
-                    <div class="quarter__economy">{{ quarter.sum_economy }}₽ / {{ quarter.planned_economy }}₽</div>
-                  </div>
-                </div>
-              {% endfor %}
+              <div class="plan__quarters">
+                <!-- Сюда будут добавляться квартальные планы -->
+              </div>
             </div>
           </div>
+        </template>
+
+        <!-- Шаблон для квартального плана -->
+        <template id="quarterly-template">
+          <div class="quarter">
+            <div class="quarter__number"></div>
+            <div class="quarter__stats">
+              <div class="quarter__proposals"></div>
+              <div class="quarter__economy"></div>
+            </div>
+          </div>
+        </template>
 
 
       </section>

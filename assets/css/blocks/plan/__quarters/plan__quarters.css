@@ -1,0 +1,14 @@
+.plan__quarters {
+    display: flex;
+    gap: 10px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+    padding: 0 10px;
+}
+
+
+.plan__card.expanded .plan__quarters {
+    max-height: 100px; /* Высота для отображения кварталов */
+    padding: 10px 0;
+  }

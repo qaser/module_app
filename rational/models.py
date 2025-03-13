@@ -49,7 +49,11 @@ class Proposal(models.Model):
         null=True,
         blank=True,
     )
-    reg_date = models.DateTimeField('Дата регистрации', auto_now_add=True,)
+    reg_date = models.DateTimeField(
+        'Дата регистрации',
+        auto_now_add=True,
+        db_index=True
+    )
     authors = models.ManyToManyField(
         ModuleUser,
         related_name='proposals',
@@ -61,6 +65,7 @@ class Proposal(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        db_index=True,
         verbose_name='Подразделение'
     )
     category = models.CharField(
@@ -272,8 +277,12 @@ class Status(models.Model):
         on_delete=models.CASCADE,
         related_name='statuses',
         verbose_name='РП',
+        db_index=True,
     )
-    status = models.CharField(max_length=20, choices=StatusChoices.choices)
+    status = models.CharField(
+        max_length=20,
+        choices=StatusChoices.choices
+    )
     date_changed = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(
         ModuleUser,
@@ -381,12 +390,18 @@ class AnnualPlan(models.Model):
 
     @property
     def completed_proposals(self):
-        """Возвращает количество предложений, зарегистрированных и принятых в данном году для данного оборудования и его дочерних элементов."""
+        """
+        Возвращает количество предложений, зарегистрированных и принятых в данном году
+        для данного оборудования и его дочерних элементов.
+        """
         return sum(quarter.completed_proposals for quarter in self.quarterly_plans.all())
 
     @property
     def sum_economy(self):
-        """Возвращает сумму экономии всех предложений, зарегистрированных и принятых в данном году для данного оборудования и его дочерних элементов."""
+        """
+        Возвращает сумму экономии всех предложений, зарегистрированных и принятых
+        в данном году для данного оборудования и его дочерних элементов
+        """
         return sum(quarter.sum_economy for quarter in self.quarterly_plans.all())
 
 
@@ -438,7 +453,10 @@ class QuarterlyPlan(models.Model):
 
     @property
     def completed_proposals(self):
-        """Возвращает количество предложений, зарегистрированных и принятых в данном квартале для данного оборудования и его дочерних элементов."""
+        """
+        Возвращает количество предложений, зарегистрированных и принятых в данном
+        квартале для данного оборудования и его дочерних элементов
+        """
         start_date, end_date = self.get_quarter_date_range()
         # Получаем все дочерние элементы текущего оборудования с structure='Административная структура'
         equipment_ids = self.annual_plan.equipment.get_descendants(include_self=True).filter(
@@ -456,7 +474,10 @@ class QuarterlyPlan(models.Model):
 
     @property
     def sum_economy(self):
-        """Возвращает сумму экономии всех предложений, зарегистрированных и принятых в данном квартале для данного оборудования и его дочерних элементов."""
+        """
+        Возвращает сумму экономии всех предложений, зарегистрированных и принятых в
+        данном квартале для данного оборудования и его дочерних элементов
+        """
         start_date, end_date = self.get_quarter_date_range()
         # Получаем все дочерние элементы текущего оборудования с structure='Административная структура'
         equipment_ids = self.annual_plan.equipment.get_descendants(include_self=True).filter(

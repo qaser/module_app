@@ -18,8 +18,6 @@
 @import url(../blocks/loader/__logo/loader__logo.css);
 @import url(../blocks/loader/_disactive/loader_disactive.css);
 
-@import url(../blocks/status/status.css);
-
 @import url(../blocks/button/button.css);
 @import url(../blocks/button/_dark-green/button_dark-green.css);
 @import url(../blocks/button/_light-red/button_light-red.css);
@@ -76,4 +74,15 @@
 @import url(../blocks/card/__button/_done/card__button_done.css);
 @import url(../blocks/card/__input/card__input.css);
 
-@import url(../blocks/tree/tree.css);
+@import url(../blocks/plan/plan.css);
+@import url(../blocks/plan/__card/plan__card.css);
+@import url(../blocks/plan/__content/plan__content.css);
+@import url(../blocks/plan/__info/plan__info.css);
+@import url(../blocks/plan/__name/plan__name.css);
+@import url(../blocks/plan/__quarters/plan__quarters.css);
+@import url(../blocks/plan/__ribbon/plan__ribbon.css);
+@import url(../blocks/plan/__stats/plan__stats.css);
+
+@import url(../blocks/chart/chart.css);
+@import url(../blocks/chart/__inline/chart__inline.css);
+@import url(../blocks/chart/__title/chart__title.css);

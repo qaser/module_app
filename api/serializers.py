@@ -416,15 +416,48 @@ class ProposalSerializer(serializers.ModelSerializer):
 
 
 class QuarterlyPlanSerializer(serializers.ModelSerializer):
+    planned_economy = serializers.SerializerMethodField()
+    sum_economy = serializers.SerializerMethodField()
+
+    def get_planned_economy(self, obj):
+        return f"{obj.planned_economy / 1000:.2f}"
+
+    def get_sum_economy(self, obj):
+        return f"{obj.sum_economy / 1000:.2f}"
+
     class Meta:
         model = QuarterlyPlan
-        fields = ['quarter', 'planned_proposals', 'planned_economy']
+        fields = [
+            'quarter',
+            'planned_proposals',
+            'planned_economy',
+            'completed_proposals',
+            'sum_economy',
+        ]
 
 
 class AnnualPlanSerializer(serializers.ModelSerializer):
     quarterly_plans = QuarterlyPlanSerializer(many=True, read_only=True)
     equipment_name = serializers.CharField(source='equipment.name', read_only=True)
+    children_plans = serializers.SerializerMethodField()
+    total_economy = serializers.SerializerMethodField()
+    sum_economy = serializers.SerializerMethodField()
 
     class Meta:
         model = AnnualPlan
-        fields = ['id', 'equipment', 'equipment_name', 'year', 'total_proposals', 'total_economy', 'quarterly_plans']
+        fields = [
+            'id', 'equipment', 'equipment_name', 'year',
+            'total_proposals', 'total_economy', 'completed_proposals', 'sum_economy',
+            'quarterly_plans', 'children_plans',
+        ]
+
+    def get_total_economy(self, obj):
+        return f"{obj.total_economy / 1000:.1f}"
+
+    def get_sum_economy(self, obj):
+        return f"{obj.sum_economy / 1000:.1f}"
+
+    def get_children_plans(self, obj):
+        children_equipment = obj.equipment.get_children()
+        children_plans = AnnualPlan.objects.filter(equipment__in=children_equipment, year=obj.year)
+        return AnnualPlanSerializer(children_plans, many=True).data

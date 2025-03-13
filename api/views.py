@@ -237,6 +237,11 @@ class AnnualPlanViewSet(viewsets.ModelViewSet):
     queryset = AnnualPlan.objects.all()
     serializer_class = AnnualPlanSerializer
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
 
 class QuarterlyPlanViewSet(viewsets.ModelViewSet):
     queryset = QuarterlyPlan.objects.all()
