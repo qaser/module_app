@@ -121,11 +121,4 @@ class AnnualPlanView(SingleTableMixin, FilterView):
 @login_required
 def single_plan(request, plan_id):
     plan = get_object_or_404(AnnualPlan, id=plan_id)
-    # equipment = plan.equipment
-    # descendant_equipment = equipment.get_descendants(include_self=True)
-    # plans = AnnualPlan.objects.filter(equipment__in=descendant_equipment)
-    return render(
-        request,
-        'rational/single-plan.html',
-        {'plan': plan}
-    )
+    return render(request, 'rational/single-plan.html', {'plan': plan})

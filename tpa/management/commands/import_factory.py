@@ -9,7 +9,7 @@ class Command(BaseCommand):
     help = 'Update database'
 
     def handle(self, *args, **options):
-        with open('csv/factory.csv', encoding='utf-8') as file:
+        with open('fixtures/factory.csv', encoding='utf-8') as file:
             reader = csv.reader(file)
             for i, row in enumerate(reader):
                 if i and len(row) < 3 and len(row) > 0:

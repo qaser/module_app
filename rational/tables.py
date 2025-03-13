@@ -13,7 +13,6 @@ class ProposalTable(tables.Table):
         accessor='equipment_root_name',  # Используем аннотацию
     )
     equipment = tables.Column(verbose_name='Подразделение')
-    # is_economy = tables.BooleanColumn(verbose_name='Эк. эфф.')
     economy_size = tables.Column(verbose_name='Эк. эфф.')
     status = tables.Column(empty_values=(), verbose_name='Статус')
 
@@ -27,7 +26,6 @@ class ProposalTable(tables.Table):
             'equipment',
             'equipment_root',  # Добавляем новую колонку
             'category',
-            # 'is_economy',
             'economy_size',
             'status',
         ]

@@ -420,10 +420,10 @@ class QuarterlyPlanSerializer(serializers.ModelSerializer):
     sum_economy = serializers.SerializerMethodField()
 
     def get_planned_economy(self, obj):
-        return f"{obj.planned_economy / 1000:.2f}"
+        return f'{obj.planned_economy / 1000:.1f}'
 
     def get_sum_economy(self, obj):
-        return f"{obj.sum_economy / 1000:.2f}"
+        return f'{obj.sum_economy / 1000:.1f}'
 
     class Meta:
         model = QuarterlyPlan
@@ -452,10 +452,10 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
         ]
 
     def get_total_economy(self, obj):
-        return f"{obj.total_economy / 1000:.1f}"
+        return f'{obj.total_economy / 1000:.1f}'
 
     def get_sum_economy(self, obj):
-        return f"{obj.sum_economy / 1000:.1f}"
+        return f'{obj.sum_economy / 1000:.1f}'
 
     def get_children_plans(self, obj):
         children_equipment = obj.equipment.get_children()

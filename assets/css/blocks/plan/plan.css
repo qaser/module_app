@@ -23,8 +23,9 @@
 
 .quarter__number {
     font-size: 14px;
-    font-weight: bold;
+    font-weight: 400;
     margin-bottom: 5px;
+    color: #B0764A;
 }
 
 .quarter__stats {
