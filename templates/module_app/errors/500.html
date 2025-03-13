@@ -1,0 +1,19 @@
+{% extends "module_app/base.html" %}
+{% load static %}
+
+{% block title %}Ошибка 400{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/errors.css'%}">
+{% endblock %}
+
+
+{% block content %}
+
+    <main class="enter-site">
+        <img class="enter-site__logo" src="{% static 'img/logo-full-large.png' %}" alt="Логотип">
+        <h1 class="enter-site__disclaimer">Ошибка 500</h1>
+        <h2 class="enter-site__disclaimer">Ошибка на сервере, попробуйте обновить страницу или обратиться позже</h1>
+    </main>
+
+{% endblock %}

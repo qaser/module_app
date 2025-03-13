@@ -1,32 +1,25 @@
-<!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-        <meta name="description" content="Проект Module">
-        <meta name="keywords" content="модуль, производство, охрана труда, безопасность, контроль, газпром">
-        <meta name="author" content="Сайгин Алексей">
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Войти в систему | Module</title>
-        {% load static %}
-        <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}">
-        <link rel="stylesheet" href="{% static 'css/pages/login-form.css'%}">
-    </head>
+{% extends "module_app/base.html" %}
+{% load static %}
+{% load user_filters %}
 
+{% block title %}Войти на сайт{% endblock %}
 
-    <body>
-        <div class="page">
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/login.css'%}">
+{% endblock %}
 
-            <main class="enter-site">
-                <img class="enter-site__logo" src="{% static 'img/logo-full-large.png' %}" alt="Логотип">
-                <h1 class="enter-site__disclaimer">Это корпоративная информационная система. Самостоятельная регистрация новых пользователей не доступна.</h1>
-                <h2 class="enter-site__disclaimer">Чтобы войти используйте Логин и Пароль, выданные Вам администратором системы.</h2>
-
-
-                <h3 class="enter-site__disclaimer">Есть вопросы или хотите зарегистрироваться?</h3>
-                <a class="enter-site__link" href="mailto:huji@mail.ru">Свяжитесь с администратором</a>
-            </main>
-
-        </div>
-    </body>
-</html>
+{% block content %}
+    <div class="main__header">
+        <h1 class="main__title">Войти на сайт</h1>
+    </div>
+    <div class="form-container">
+        <form class="form" method="post">
+            {% csrf_token %}
+            <span class="form__error">{{ form.non_field_errors }}</span>
+            {% for field in form %}
+                {% include "registration/extend/form_field.html" with id=field.id_for_label label=field.label errors=field.errors %}
+            {% endfor %}
+            {% include "registration/extend/form_footer.html" with footer_text="Войти" forget_pass=True %}
+        </form>
+    </div>
+{% endblock %}

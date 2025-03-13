@@ -1,17 +1,17 @@
 import datetime as dt
 
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics
-from django.http import JsonResponse
 
 from equipments.models import Equipment
 from leaks.models import Leak
-from rational.models import AnnualPlan, QuarterlyPlan, Proposal, ProposalDocument, Status
+from rational.models import (AnnualPlan, Proposal, ProposalDocument,
+                             QuarterlyPlan, Status)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role

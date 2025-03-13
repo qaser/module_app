@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import AnnualPlan, Proposal, ProposalDocument, Status
-from django.contrib import admin
-from .models import AnnualPlan, QuarterlyPlan
+from .models import (AnnualPlan, Proposal, ProposalDocument, QuarterlyPlan,
+                     Status)
 
 
 class QuarterlyPlanInline(admin.TabularInline):

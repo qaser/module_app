@@ -2,11 +2,10 @@ import datetime as dt
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import OuterRef, QuerySet, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
-from django.db.models import QuerySet
-from django.db.models import OuterRef, Subquery
 
 from equipments.models import Equipment
 from users.models import ModuleUser, Role

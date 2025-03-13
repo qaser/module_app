@@ -1,12 +1,11 @@
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'the-best-secret-key')
 
+# DEBUG = False
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -176,7 +175,7 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/auth/login/'
-LOGIN_REDIRECT_URL = 'module_app:index'
+LOGIN_REDIRECT_URL = 'rational:index'
 LOGOUT_REDIRECT_URL = '/auth/login/'
 
 

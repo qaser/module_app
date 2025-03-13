@@ -1,0 +1,20 @@
+{% extends "module_app/base.html" %}
+{% load static %}
+
+{% block title %}Ошибка 400{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/errors.css'%}">
+{% endblock %}
+
+
+{% block content %}
+
+    <main class="enter-site">
+        <img class="enter-site__logo" src="{% static 'img/logo-full-large.png' %}" alt="Логотип">
+        <h1 class="enter-site__disclaimer">Ошибка 404</h1>
+        <h2 class="enter-site__disclaimer">Страница <code>{{ path }}</code> не найдена</h1>
+        <h3 class="enter-site__disclaimer"><a href="{% url 'index' %}">Вернуться на главную</a></h1>
+    </main>
+
+{% endblock %}
