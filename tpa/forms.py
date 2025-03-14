@@ -1,13 +1,9 @@
-import datetime as dt
-
-from django.forms import (
-    ChoiceField, FileField, ImageField, ModelChoiceField, ModelForm)
-from django.forms.widgets import ClearableFileInput, NumberInput, Textarea
+from django.forms import ModelChoiceField, ModelForm
+from django.forms.widgets import Textarea
 
 from equipments.models import Equipment
-from module_app.utils import create_choices
-from tpa.models import Valve, ValveImage
-from users.models import ModuleUser, Role
+from tpa.models import Valve
+from users.models import Role
 
 
 class ValveForm(ModelForm):

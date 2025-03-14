@@ -14,30 +14,25 @@ class ValveFilter(df.FilterSet):
         method='filter_by_equipment',
         label='Место нахождения'
     )
-    title = df.ChoiceFilter(
-        choices=create_choices(
-            Valve.objects.values_list('title', flat=True).distinct().order_by('title')
-        )
-    )
     diameter = df.ChoiceFilter(
-        choices=create_choices(
-            Valve.objects.values_list('diameter', flat=True).distinct().order_by('diameter')
-        )
+        field_name='diameter',
+        lookup_expr='exact',
+        choices=lambda: Valve.objects.values_list('diameter', 'diameter').distinct()
     )
     pressure = df.ChoiceFilter(
-        choices=create_choices(
-            Valve.objects.values_list('pressure', flat=True).distinct().order_by('pressure')
-        )
+        field_name='pressure',
+        lookup_expr='exact',
+        choices=lambda: Valve.objects.values_list('pressure', 'pressure').distinct()
     )
     tech_number = df.ChoiceFilter(
-        choices=create_choices(
-            Valve.objects.values_list('tech_number', flat=True).distinct().order_by('tech_number')
-        )
+        field_name='tech_number',
+        lookup_expr='exact',
+        choices=lambda: Valve.objects.values_list('tech_number', 'tech_number').distinct()
     )
     design = df.ChoiceFilter(
-        choices=create_choices(
-            Valve.objects.values_list('design', flat=True).distinct().order_by('design')
-        )
+        field_name='design',
+        lookup_expr='exact',
+        choices=lambda: Valve.objects.values_list('design', 'design').distinct()
     )
 
 

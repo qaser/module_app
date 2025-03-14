@@ -9,6 +9,34 @@ STRUCTURE = (
 )
 
 
+# class Department(MPTTModel):
+#     name = models.CharField(
+#         verbose_name='Название подразделения',
+#         max_length=100,
+#         unique=True
+#     )
+#     parent = TreeForeignKey(
+#         'self',
+#         on_delete=models.CASCADE,
+#         null=True,
+#         blank=True,
+#         related_name='children',
+#         verbose_name='Родительское подразделение'
+#     )
+
+#     class MPTTMeta:
+#         order_insertion_by = ['name']
+
+#     class Meta:
+#         verbose_name = 'Подразделение'
+#         verbose_name_plural = 'Подразделения'
+
+#     def __str__(self):
+#         return self.name
+
+
+
+
 class TypeOfEquipment(models.Model):
     name = models.CharField(
         'Тип оборудования',

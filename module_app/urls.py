@@ -10,7 +10,7 @@ handler500 = 'module_app.views.server_error'  # noqa
 handler400 = 'module_app.views.bad_request'  # noqa
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('app-admin/', admin.site.urls),
     path('leaks/', include('leaks.urls')),
     path('tpa/', include('tpa.urls')),
     path('rational/', include('rational.urls')),

@@ -5,6 +5,15 @@ from equipments.models import Equipment
 from module_app.utils import compress_image
 from users.models import ModuleUser
 
+
+SERVICECOLOR = (
+    ('blue', 'синий'),
+    ('gray', 'серый'),
+    ('red', 'красный'),
+    ('violet', 'фиолетовый'),
+    ('yellow', 'жёлтый'),
+)
+
 DRIVETYPE = (
     ('Пневматический', 'Пневматический'),
     ('Пневмогидравлический', 'Пневмогидравлический'),
@@ -297,7 +306,13 @@ class ServiceType(models.Model):
             MinValueValidator(50),
         ]
     )
-    color = models.CharField('цвет ТО в шаблоне', max_length=30, null=True)
+    color = models.CharField(
+        'Цвет ТО в шаблоне',
+        choices=SERVICECOLOR,
+        max_length=30,
+        null=False,
+        blank=False,
+    )
 
     class Meta:
         ordering = ('name',)
