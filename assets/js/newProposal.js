@@ -37,14 +37,13 @@ api.getMyProfile()
     .then((userData) => {
         newUserInfo.setUserInfo(userData);
         new FormFilter(
-            api.getEquipmentChildren.bind(api),
+            api.getDepartmentChildren.bind(api),
             'filter_submit',
-            'id_equipment',
-            'equipment',
+            'id_department',
+            'department',
             'form__input',
-            'true',
         );
-        const targetField = document.querySelector('#id_equipment')
+        const targetField = document.querySelector('#id_department')
         targetField.setAttribute('data-tooltip', constant.tooltipFormField)
     })
     .catch(err => {

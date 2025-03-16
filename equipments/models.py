@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from mptt.models import MPTTModel, TreeForeignKey
+from module_app.utils import get_installed_apps
+
 
 STRUCTURE = (
     ('Административная структура', 'Административная структура'),
@@ -9,46 +11,26 @@ STRUCTURE = (
 )
 
 
-# class Department(MPTTModel):
-#     name = models.CharField(
-#         verbose_name='Название подразделения',
-#         max_length=100,
-#         unique=True
-#     )
-#     parent = TreeForeignKey(
-#         'self',
-#         on_delete=models.CASCADE,
-#         null=True,
-#         blank=True,
-#         related_name='children',
-#         verbose_name='Родительское подразделение'
-#     )
-
-#     class MPTTMeta:
-#         order_insertion_by = ['name']
-
-#     class Meta:
-#         verbose_name = 'Подразделение'
-#         verbose_name_plural = 'Подразделения'
-
-#     def __str__(self):
-#         return self.name
-
-
-
-
-class TypeOfEquipment(models.Model):
+class Department(MPTTModel):
     name = models.CharField(
-        'Тип оборудования',
-        max_length=100,
+        verbose_name='Название',
+        max_length=50,
+        blank=False,
+        null=False
+    )
+    parent = TreeForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children',
+        verbose_name='Родительский объект'
     )
 
-    class Meta:
-        ordering = ('name',)
-        verbose_name = 'Тип оборудования'
-        verbose_name_plural = 'Тип оборудования'
+    class MPTTMeta:
+        order_insertion_by = ['name']
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
 
@@ -67,20 +49,12 @@ class Equipment(MPTTModel):
         related_name='children',
         verbose_name='Родительский объект'
     )
-    type_equipment = models.ForeignKey(
-        TypeOfEquipment,
-        on_delete=models.SET_NULL,
-        verbose_name='Тип оборудования',
-        null=True,
-        blank=True
+    departments = models.ManyToManyField(
+        Department,
+        related_name='equipments',
+        verbose_name='Подразделения'
     )
-    structure = models.CharField(
-        verbose_name='Тип структуры',
-        choices=STRUCTURE,
-        max_length=50,
-        blank=False,
-        null=False
-    )
+
 
     class MPTTMeta:
         order_insertion_by = ['name']

@@ -1,6 +1,11 @@
 from PIL import Image
+from django.apps import apps
 
 _MAX_SIZE = 1000
+
+
+def get_installed_apps():
+    return [app_config.name for app_config in apps.get_app_configs()]
 
 
 def create_choices(queryset):

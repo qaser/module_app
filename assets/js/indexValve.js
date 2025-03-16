@@ -47,7 +47,6 @@ api.getMyProfile()
             'id_equipment',
             'equipment',
             'sidebar__form-input',
-            'false',
         );
         const targetField = document.querySelector('#id_equipment')
         targetField.setAttribute('data-tooltip', constant.tooltipFormField)

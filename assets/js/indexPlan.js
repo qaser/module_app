@@ -3,7 +3,6 @@ import * as constant from './utils/constants.js';
 import Api from './api/Api.js';
 import UserInfo from './components/UserInfo.js';
 import Table from './components/Table.js';
-import FormFilter from './components/FormFilter.js';
 import Tooltip from '../js/components/Tooltip.js';
 import AppMenu from '../js/components/AppMenu.js';
 
@@ -40,7 +39,7 @@ newTable.init();
 api.getMyProfile()
     .then((userData) => {
         newUserInfo.setUserInfo(userData);
-        const targetField = document.querySelector('#id_equipment')
+        const targetField = document.querySelector('#id_department')
         targetField.setAttribute('data-tooltip', constant.tooltipFormField)
     })
     .catch(err => {

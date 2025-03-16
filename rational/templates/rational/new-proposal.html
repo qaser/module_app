@@ -83,7 +83,7 @@
                         </select>
                     </div>
 
-                    {% with form.equipment as field %}
+                    {% with form.department as field %}
                     <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
                         <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
                         {{ field|addclass:'form__input' }}

@@ -1,18 +1,17 @@
 import django_tables2 as tables
 
-from equipments.models import Equipment
 from users.models import Role
 
 from .models import AnnualPlan, Proposal
 
 
 class ProposalTable(tables.Table):
-    equipment_root = tables.Column(
+    department_root = tables.Column(
         empty_values=(),
         verbose_name='Филиал',
-        accessor='equipment_root_name',  # Используем аннотацию
+        accessor='department_root_name',  # Используем аннотацию
     )
-    equipment = tables.Column(verbose_name='Подразделение')
+    department = tables.Column(verbose_name='Подразделение')
     economy_size = tables.Column(verbose_name='Эк. эфф.')
     status = tables.Column(empty_values=(), verbose_name='Статус')
 
@@ -23,8 +22,8 @@ class ProposalTable(tables.Table):
             'reg_date',
             'title',
             'authors',
-            'equipment',
-            'equipment_root',  # Добавляем новую колонку
+            'department',
+            'department_root',  # Добавляем новую колонку
             'category',
             'economy_size',
             'status',
@@ -38,11 +37,11 @@ class ProposalTable(tables.Table):
         user = kwargs.pop('user', None)  # Извлекаем пользователя
         super().__init__(*args, **kwargs)
         if user and user.role == Role.ADMIN:
-            self.sequence = ['equipment_root'] + [col for col in self.sequence if col != 'equipment_root']
+            self.sequence = ['department_root'] + [col for col in self.sequence if col != 'department_root']
         else:
-            self.exclude = ('equipment_root',)  # Скрываем колонку
+            self.exclude = ('department_root',)  # Скрываем колонку
 
-    def render_equipment_root(self, value):
+    def render_department_root(self, value):
         """Отображение корневого оборудования"""
         return value if value else '-'
 
@@ -57,7 +56,7 @@ class ProposalTable(tables.Table):
 
 
 class AnnualPlanTable(tables.Table):
-    equipment = tables.Column(verbose_name='Филиал')
+    department = tables.Column(verbose_name='Филиал')
     total_proposals = tables.Column(verbose_name='Плановое количество РП')
     completed_proposals = tables.Column(
         verbose_name='Факт. количество РП',
@@ -80,7 +79,7 @@ class AnnualPlanTable(tables.Table):
     class Meta:
         model = AnnualPlan
         fields = [
-            'equipment',
+            'department',
             'year',
             'total_proposals',
             'completed_proposals',
@@ -94,7 +93,7 @@ class AnnualPlanTable(tables.Table):
         orderable = False
         template_name = 'module_app/table/new_table.html'
 
-    def render_equipment(self, value):
+    def render_department(self, value):
         return value.name if value else ''
 
     def render_percentage_complete(self, record):

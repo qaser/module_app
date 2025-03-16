@@ -82,7 +82,7 @@ export default class Plan {
 
         annualPlanElement.style.marginLeft = `${level * 30}px`;
         annualPlanElement.style.width = `calc(100% - ${level * 30}px)`;
-        annualPlanNode.querySelector('.plan__name').textContent = plan.equipment_name;
+        annualPlanNode.querySelector('.plan__name').textContent = plan.department_name;
         annualPlanNode.querySelector('.plan__proposals').textContent = `${plan.completed_proposals} РП / ${plan.total_proposals} РП`;
         annualPlanNode.querySelector('.plan__economy').textContent = `${plan.sum_economy} тыс.руб. / ${plan.total_economy} тыс.руб.`;
 

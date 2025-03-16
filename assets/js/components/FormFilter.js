@@ -1,9 +1,8 @@
 export default class FormFilter {
-    constructor(apiMethod, formSelectorId, fieldId, fieldName, fieldClass, structureEnable) {
+    constructor(apiMethod, formSelectorId, fieldId, fieldName, fieldClass) {
         this._getElementChildren = apiMethod  // Передаем экземпляр Api в FormFilter
         this._form = document.getElementById(formSelectorId);
         this._field = document.getElementById(fieldId);
-        this._structureEnable = structureEnable
         this._fieldName = fieldName
         this._fieldClass = fieldClass
         this.init();
@@ -21,7 +20,7 @@ export default class FormFilter {
     }
 
     _fetchChildren(parentId, targetSelect) {
-        this._getElementChildren(parentId, this._structureEnable)
+        this._getElementChildren(parentId)
             .then(data => {
                 if (data.length > 0) {
                     this._restructureFields(targetSelect, data);
@@ -41,8 +40,6 @@ export default class FormFilter {
                 console.error('Ошибка при загрузке данных:', error);
             });
     }
-
-
 
     // нужно добавить проверку - если сразу выбран элемент бех потомков то удалять последующие поля
     _restructureFields(targetSelect, children) {

@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from equipments.models import Equipment
+from equipments.models import Equipment, Department
 from leaks.models import Leak, LeakDocument, LeakImage
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              QuarterlyPlan, Status)
@@ -61,6 +61,12 @@ class EquipmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+
 class LeakSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
@@ -96,7 +102,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'last_name', 'first_name', 'patronymic',
             'lastname_and_initials', 'username', 'email',
-            'job_position', 'role', 'equipment', 'apps',
+            'job_position', 'role', 'department', 'apps',
         )
 
     def get_apps(self, obj):
@@ -331,24 +337,24 @@ class StatusSerializer(serializers.Serializer):
         # Получаем статус REG
         reg_status = proposal.statuses.filter(status=Status.StatusChoices.REG).first()
         reg_owner = reg_status.owner  # Владелец статуса REG
-        # Находим корневой equipment для proposal.equipment
-        root_equipment = proposal.equipment
-        while root_equipment.parent:
-            root_equipment = root_equipment.parent
+        # Находим корневой department для proposal.department
+        root_department = proposal.department
+        while root_department.parent:
+            root_department = root_department.parent
         # Проверяем, является ли пользователь ответственным за приложение
         is_app_responsible = NotificationAppRoute.objects.filter(
             app_name='rational',
-            equipment=root_equipment,  # Используем корневой equipment
+            department=root_department,  # Используем корневой department
             user=request_user
         ).exists()
         # Проверяем, является ли пользователь владельцем REG
         is_reg_owner = reg_owner == request_user
-        # Проверяем, является ли пользователь MANAGER в том же equipment или дочерних
+        # Проверяем, является ли пользователь MANAGER в том же department или дочерних
         is_manager_same_branch = (
             request_user.role == Role.MANAGER and
-            request_user.equipment and
+            request_user.department and
             reg_owner and
-            request_user.equipment.get_root() == reg_owner.equipment.get_root()
+            request_user.department.get_root() == reg_owner.department.get_root()
         )
         if new_status in [
             Status.StatusChoices.REWORK,
@@ -381,7 +387,7 @@ class StatusSerializer(serializers.Serializer):
 
 class ProposalSerializer(serializers.ModelSerializer):
     authors = UserSerializer(many=True, read_only=True)
-    equipment = serializers.SerializerMethodField()
+    department = serializers.SerializerMethodField()
     reg_date = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
     statuses = StatusSerializer(many=True, read_only=True)
@@ -389,17 +395,17 @@ class ProposalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proposal
         fields = [
-            'id', 'reg_num', 'reg_date', 'authors', 'equipment',
+            'id', 'reg_num', 'reg_date', 'authors', 'department',
             'category', 'title', 'description', 'is_economy',
             'economy_size', 'note', 'files', 'statuses'
         ]
-        read_only_fields = ['reg_date', 'authors', 'equipment']
+        read_only_fields = ['reg_date', 'authors', 'department']
 
     def get_reg_date(self, obj):
         return obj.reg_date.strftime('%d.%m.%Y')
 
-    def get_equipment(self, obj):
-        return obj.equipment.name if obj.equipment else None
+    def get_department(self, obj):
+        return obj.department.name if obj.department else None
 
     def get_files(self, obj):
         selected_files = ProposalDocument.objects.filter(proposal=obj)
@@ -438,7 +444,7 @@ class QuarterlyPlanSerializer(serializers.ModelSerializer):
 
 class AnnualPlanSerializer(serializers.ModelSerializer):
     quarterly_plans = QuarterlyPlanSerializer(many=True, read_only=True)
-    equipment_name = serializers.CharField(source='equipment.name', read_only=True)
+    department_name = serializers.CharField(source='department.name', read_only=True)
     children_plans = serializers.SerializerMethodField()
     total_economy = serializers.SerializerMethodField()
     sum_economy = serializers.SerializerMethodField()
@@ -446,7 +452,7 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnnualPlan
         fields = [
-            'id', 'equipment', 'equipment_name', 'year',
+            'id', 'department', 'department_name', 'year',
             'total_proposals', 'total_economy', 'completed_proposals', 'sum_economy',
             'quarterly_plans', 'children_plans',
         ]
@@ -458,6 +464,6 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
         return f'{obj.sum_economy / 1000:.1f}'
 
     def get_children_plans(self, obj):
-        children_equipment = obj.equipment.get_children()
-        children_plans = AnnualPlan.objects.filter(equipment__in=children_equipment, year=obj.year)
+        children_department = obj.department.get_children()
+        children_plans = AnnualPlan.objects.filter(department__in=children_department, year=obj.year)
         return AnnualPlanSerializer(children_plans, many=True).data

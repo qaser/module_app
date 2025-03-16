@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import ModelChoiceField, ModelForm, Select, Textarea
 
-from .models import AnnualPlan, Equipment, ModuleUser, Proposal
+from .models import ModuleUser, Proposal, Department
 
 
 class IndentedModelChoiceField(ModelChoiceField):
@@ -12,7 +12,7 @@ class IndentedModelChoiceField(ModelChoiceField):
 
 
 class ProposalForm(ModelForm):
-    equipment = IndentedModelChoiceField(queryset=Equipment.objects.none(), label='Структурное подразделение')
+    department = IndentedModelChoiceField(queryset=Department.objects.none(), label='Структурное подразделение')
     author_1 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 1', required=False)
     author_2 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 2', required=False)
     author_3 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 3', required=False)
@@ -22,7 +22,7 @@ class ProposalForm(ModelForm):
         model = Proposal
         fields = (
             'title',
-            'equipment',
+            'department',
             'category',
             'economy_size',
             'is_economy',
@@ -40,31 +40,28 @@ class ProposalForm(ModelForm):
         super().__init__(*args, **kwargs)
         if user:
             if user.role == 'employee':
-                equipment_queryset = user.equipment.get_descendants(include_self=True).filter(
-                    structure='Административная структура'
-                )
-                authors_queryset = ModuleUser.objects.filter(equipment__in=equipment_queryset)
+                department_queryset = user.department.get_descendants(include_self=True)
+                authors_queryset = ModuleUser.objects.filter(department__in=department_queryset)
             elif user.role == 'manager':
-                if user.equipment.level > 1:
-                    second_level_ancestor = user.equipment.get_ancestors().filter(level=1).first()
+                if user.department.level > 1:
+                    second_level_ancestor = user.department.get_ancestors().filter(level=1).first()
                 else:
-                    second_level_ancestor = user.equipment if user.equipment.level == 1 else None
+                    second_level_ancestor = user.department if user.department.level == 1 else None
                 if second_level_ancestor:
-                    descendants = second_level_ancestor.get_descendants(include_self=True)
-                    equipment_queryset = descendants.filter(structure="Административная структура")
+                    department_queryset = second_level_ancestor.get_descendants(include_self=True)
                 else:
-                    equipment_queryset = Equipment.objects.none()
-                authors_queryset = ModuleUser.objects.filter(equipment__in=equipment_queryset)
+                    department_queryset = Department.objects.none()
+                authors_queryset = ModuleUser.objects.filter(department__in=department_queryset)
             elif user.role == 'admin':
-                equipment_queryset = Equipment.objects.filter(structure='Административная структура')
+                department_queryset = Department.objects.all()
                 authors_queryset = ModuleUser.objects.all()
             self.fields['author_1'].queryset = authors_queryset.order_by('last_name', 'first_name')
             self.fields['author_2'].queryset = authors_queryset.order_by('last_name', 'first_name')
             self.fields['author_3'].queryset = authors_queryset.order_by('last_name', 'first_name')
             self.fields['author_4'].queryset = authors_queryset.order_by('last_name', 'first_name')
-            self.fields['equipment'].queryset = equipment_queryset
+            self.fields['department'].queryset = department_queryset
             self.fields['author_1'].initial = user.id
-            self.fields['equipment'].initial = user.equipment
+            self.fields['department'].initial = user.department
 
     def clean(self):
         cleaned_data = super().clean()

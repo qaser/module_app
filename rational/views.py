@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from equipments.models import Equipment
+from equipments.models import Department
 from users.models import ModuleUser, Role
 
 from .filters import AnnualPlanFilter, ProposalFilter
@@ -29,9 +29,9 @@ class ProposalView(SingleTableMixin, FilterView):
 
         # Аннотируем queryset, чтобы добавить корневое оборудование
         queryset = queryset.annotate(
-            equipment_root_name=Subquery(
-                Equipment.objects.filter(
-                    tree_id=OuterRef('equipment__tree_id'),
+            department_root_name=Subquery(
+                Department.objects.filter(
+                    tree_id=OuterRef('department__tree_id'),
                     level=0  # Корневой элемент имеет level=0
                 ).values('name')[:1]
             )
@@ -42,12 +42,12 @@ class ProposalView(SingleTableMixin, FilterView):
         return {'user': self.request.user}
 
 
-def filter_by_user_role(user: ModuleUser, queryset: QuerySet, equipment_field: str = 'equipment') -> QuerySet:
+def filter_by_user_role(user: ModuleUser, queryset: QuerySet, department_field: str = 'department') -> QuerySet:
     """
     Фильтрует queryset в зависимости от роли пользователя.
     :param user: Пользователь (ModuleUser).
     :param queryset: Исходный queryset.
-    :param equipment_field: Название поля, связанного с Equipment (по умолчанию 'equipment').
+    :param department_field: Название поля, связанного с department (по умолчанию 'department').
     :return: Отфильтрованный queryset.
     """
     if user.role == Role.ADMIN:
@@ -55,17 +55,17 @@ def filter_by_user_role(user: ModuleUser, queryset: QuerySet, equipment_field: s
         return queryset
     elif user.role == Role.MANAGER:
         # MANAGER видит всё оборудование своей ветки, начиная со второго уровня
-        if user.equipment:
-            root = user.equipment.get_root()
+        if user.department:
+            root = user.department.get_root()
             descendants = root.get_descendants(include_self=True)
-            return queryset.filter(**{f"{equipment_field}__in": descendants, f"{equipment_field}__level__gte": 0})
+            return queryset.filter(**{f"{department_field}__in": descendants, f"{department_field}__level__gte": 0})
         else:
             return queryset.none()
     elif user.role == Role.EMPLOYEE:
         # EMPLOYEE видит всё оборудование своей ветки, начиная с уровня своего оборудования
-        if user.equipment:
-            descendants = user.equipment.get_descendants(include_self=True)
-            return queryset.filter(**{f"{equipment_field}__in": descendants})
+        if user.department:
+            descendants = user.department.get_descendants(include_self=True)
+            return queryset.filter(**{f"{department_field}__in": descendants})
         else:
             return queryset.none()
     else:
@@ -113,7 +113,7 @@ class AnnualPlanView(SingleTableMixin, FilterView):
     def get_queryset(self):
         user = self.request.user
         queryset = super().get_queryset()
-        queryset = queryset.filter(equipment__parent__isnull=True)  # Только корневые equipment
+        queryset = queryset.filter(department__parent__isnull=True)  # Только корневые department
         return filter_by_user_role(user, queryset)
 
 

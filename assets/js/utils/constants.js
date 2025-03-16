@@ -443,7 +443,7 @@ export const formAttrsProposal = {
             'disabled': '',
         }
     },
-    'equipment': {
+    'department': {
         'tag': 'input',
         'tagAttrs': {
             'class': 'card__value card__input',

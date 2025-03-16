@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from mptt.models import MPTTModel, TreeForeignKey
 
-from equipments.models import Equipment
+from equipments.models import Department
 from module_app.notifications import NotificationService
 from module_app.utils import compress_image
 from users.models import ModuleUser, NotificationAppRoute
@@ -59,8 +59,8 @@ class Proposal(models.Model):
         verbose_name='Автор(ы) предложения',
         blank=False,
     )
-    equipment = models.ForeignKey(
-        Equipment,
+    department = models.ForeignKey(
+        Department,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -115,12 +115,9 @@ class Proposal(models.Model):
         return f'№{self.reg_num}, {self.title}'
 
     def get_ks(self):
-        """
-        Возвращает корневой элемент второго уровня для текущего оборудования.
-        """
-        if self.equipment:
+        if self.department:
             # Получаем корень ветки
-            root = self.equipment.get_root()
+            root = self.department.get_root()
             # Получаем всех потомков корня
             descendants = root.get_descendants(include_self=True)
             # Фильтруем элементы второго уровня
@@ -131,11 +128,11 @@ class Proposal(models.Model):
 
 
 @receiver(m2m_changed, sender=Proposal.authors.through)
-def set_equipment_from_author(sender, instance, action, **kwargs):
-    if action == "post_add" and not instance.equipment:
+def set_department_from_author(sender, instance, action, **kwargs):
+    if action == "post_add" and not instance.department:
         if instance.authors.exists():
             first_author = instance.authors.first()
-            instance.equipment = first_author.equipment
+            instance.department = first_author.department
             instance.save()
 
 
@@ -188,19 +185,19 @@ def handle_m2m_changed(sender, instance, action, **kwargs):
 def create_proposal_doc(instance):
     """Создает заявление в формате docx для Proposal."""
     if instance.is_ready:
-        equipment = instance.equipment
-        root_equipment = equipment
-        while root_equipment.parent:
-            root_equipment = root_equipment.parent
+        department = instance.department
+        root_department = department
+        while root_department.parent:
+            root_department = root_department.parent
         app_user = NotificationAppRoute.objects.filter(
-            equipment=root_equipment,
+            department=root_department,
             app_name='rational'
         ).first()
         proposal_doc_dict = {
-            'department': root_equipment.name,
+            'department': root_department.name,
             'appuser': app_user.user.fio,
             'title': instance.title,
-            'equipment': equipment.name,
+            'equipment': department.name,
             'description': instance.description,
             'author0': '',
             'direction0': '',
@@ -221,7 +218,7 @@ def create_proposal_doc(instance):
         }
         for id, author in enumerate(instance.authors.all()):
             proposal_doc_dict[f'author{id}'] = author.fio
-            proposal_doc_dict[f'direction{id}'] = author.equipment.name
+            proposal_doc_dict[f'direction{id}'] = author.department.name
             proposal_doc_dict[f'jobposition{id}'] = author.job_position
             proposal_doc_dict[f'role{id}'] = 'Автор идеи'
         doc = create_doc(proposal_doc_dict)
@@ -331,11 +328,11 @@ def send_notification(sender, instance, created, **kwargs):
     recipients = []
     # 1. Отправляем ответственному за приложение, если статус reg или recheck
     if instance.status in [instance.StatusChoices.REG, instance.StatusChoices.RECHECK]:
-        root_equipment = instance.proposal.equipment
-        while root_equipment.parent:
-            root_equipment = root_equipment.parent
-        # Ищем NotificationAppRoute по app_name и корневому equipment
-        app_route = NotificationAppRoute.objects.filter(app_name='rational', equipment=root_equipment).first()
+        root_department = instance.proposal.department
+        while root_department.parent:
+            root_department = root_department.parent
+        # Ищем NotificationAppRoute по app_name и корневому department
+        app_route = NotificationAppRoute.objects.filter(app_name='rational', department=root_department).first()
         if app_route and app_route.user:
             recipients.append(app_route.user.email)
     # 2. Отправляем авторам, если статус rework, accept, reject, apply
@@ -360,8 +357,8 @@ def send_notification(sender, instance, created, **kwargs):
 
 
 class AnnualPlan(models.Model):
-    equipment = TreeForeignKey(
-        Equipment,
+    department = TreeForeignKey(
+        Department,
         on_delete=models.CASCADE,
         related_name='plans',
         verbose_name='Подразделение'
@@ -380,12 +377,12 @@ class AnnualPlan(models.Model):
     )
 
     class Meta:
-        unique_together = ('equipment', 'year')
+        # unique_together = ('department', 'year')
         verbose_name = 'Годовой план'
         verbose_name_plural = 'Годовые планы'
 
     def __str__(self):
-        return f'{self.equipment.name} - {self.year}'
+        return f'{self.department.name} - {self.year}'
 
     @property
     def completed_proposals(self):
@@ -428,7 +425,7 @@ class QuarterlyPlan(models.Model):
     )
 
     class Meta:
-        unique_together = ('annual_plan', 'quarter')
+        # unique_together = ('annual_plan', 'quarter')
         verbose_name = 'Квартальный план'
         verbose_name_plural = 'Квартальные планы'
 
@@ -457,14 +454,12 @@ class QuarterlyPlan(models.Model):
         квартале для данного оборудования и его дочерних элементов
         """
         start_date, end_date = self.get_quarter_date_range()
-        # Получаем все дочерние элементы текущего оборудования с structure='Административная структура'
-        equipment_ids = self.annual_plan.equipment.get_descendants(include_self=True).filter(
-            structure='Административная структура'
-        ).values_list('id', flat=True)
-        # Фильтруем предложения по equipment и статусам
+        # Получаем все дочерние элементы текущего оборудования
+        department_ids = self.annual_plan.department.get_descendants(include_self=True).values_list('id', flat=True)
+        # Фильтруем предложения по department и статусам
         proposals = Proposal.objects.filter(
             reg_date__range=(start_date, end_date),
-            equipment__id__in=equipment_ids,  # Только для текущего оборудования и его дочерних элементов
+            department__id__in=department_ids,  # Только для текущего оборудования и его дочерних элементов
             statuses__status=Status.StatusChoices.REG,
         ).filter(
             statuses__status=Status.StatusChoices.ACCEPT
@@ -478,14 +473,11 @@ class QuarterlyPlan(models.Model):
         данном квартале для данного оборудования и его дочерних элементов
         """
         start_date, end_date = self.get_quarter_date_range()
-        # Получаем все дочерние элементы текущего оборудования с structure='Административная структура'
-        equipment_ids = self.annual_plan.equipment.get_descendants(include_self=True).filter(
-            structure='Административная структура'
-        ).values_list('id', flat=True)
-        # Фильтруем предложения по equipment и статусам
+        department_ids = self.annual_plan.department.get_descendants(include_self=True).values_list('id', flat=True)
+        # Фильтруем предложения по department и статусам
         proposals = Proposal.objects.filter(
             reg_date__range=(start_date, end_date),
-            equipment__id__in=equipment_ids,  # Только для текущего оборудования и его дочерних элементов
+            department__id__in=department_ids,  # Только для текущего оборудования и его дочерних элементов
             statuses__status=Status.StatusChoices.REG,
         ).filter(
             statuses__status=Status.StatusChoices.ACCEPT
@@ -496,10 +488,9 @@ class QuarterlyPlan(models.Model):
 @receiver(post_save, sender=AnnualPlan)
 def create_quarterly_plans(sender, instance, created, **kwargs):
     """
-    Автоматически создаем квартальные планы после создания годового плана,
-    только для оборудования с structure='Административная структура'.
+    Автоматически создаем квартальные планы после создания годового плана
     """
-    if created and instance.equipment.structure == 'Административная структура':
+    if created:
         for quarter in range(1, 5):
             QuarterlyPlan.objects.create(
                 annual_plan=instance,
@@ -512,14 +503,13 @@ def create_quarterly_plans(sender, instance, created, **kwargs):
 @receiver(post_save, sender=AnnualPlan)
 def create_subdivision_plans(sender, instance, created, **kwargs):
     """
-    Автоматически создаем годовые планы для дочерних подразделений,
-    только для оборудования с structure='Административная структура'.
+    Автоматически создаем годовые планы для дочерних подразделений
     """
-    if created and instance.equipment.structure == 'Административная структура':
-        children = instance.equipment.get_children().filter(structure='Административная структура')
+    if created:
+        children = instance.department.get_children()
         for child in children:
             AnnualPlan.objects.create(
-                equipment=child,
+                department=child,
                 year=instance.year,
                 total_proposals=instance.total_proposals // len(children) if children else 0,
                 total_economy=instance.total_economy / len(children) if children else 0

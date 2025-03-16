@@ -8,7 +8,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from equipments.models import Equipment
+from equipments.models import Equipment, Department
 from leaks.models import Leak
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              QuarterlyPlan, Status)
@@ -16,7 +16,7 @@ from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
 
-from .serializers import (AnnualPlanSerializer, EquipmentSerializer,
+from .serializers import (AnnualPlanSerializer, DepartmentSerializer, EquipmentSerializer,
                           FactorySerializer, LeakSerializer,
                           ProposalDocumentSerializer, ProposalSerializer,
                           QuarterlyPlanSerializer, ServiceSerializer,
@@ -198,14 +198,22 @@ class ValveServiceViewSet(viewsets.ModelViewSet):
 class EquipmentViewSet(viewsets.ViewSet):
     def list(self, request):
         parent_id = request.query_params.get('parent_id', None)
-        filter_structure = request.query_params.get('filter_structure', 'true')  # По умолчанию фильтруем
         queryset = Equipment.objects.all()
         # Применяем фильтр по parent_id, если он указан
         if parent_id:
             queryset = queryset.filter(parent_id=parent_id)
-        # Применяем фильтр по structure, если filter_structure=True
-        if filter_structure.lower() == 'true':
-            queryset = queryset.filter(structure='Административная структура')
+        # Возвращаем данные в формате JSON
+        children = queryset.values('id', 'name')
+        return Response(list(children))
+
+
+class DepartmentViewSet(viewsets.ViewSet):
+    def list(self, request):
+        parent_id = request.query_params.get('parent_id', None)
+        queryset = Department.objects.all()
+        # Применяем фильтр по parent_id, если он указан
+        if parent_id:
+            queryset = queryset.filter(parent_id=parent_id)
         # Возвращаем данные в формате JSON
         children = queryset.values('id', 'name')
         return Response(list(children))
@@ -246,38 +254,3 @@ class AnnualPlanViewSet(viewsets.ModelViewSet):
 class QuarterlyPlanViewSet(viewsets.ModelViewSet):
     queryset = QuarterlyPlan.objects.all()
     serializer_class = QuarterlyPlanSerializer
-
-
-
-# def annual_plans_list(request):
-#     """Выдает все годовые планы в виде иерархии."""
-#     def serialize_plan(plan):
-#         children = plan.equipment.get_children()
-#         return {
-#             "id": plan.id,
-#             "equipment": {"id": plan.equipment.id, "name": plan.equipment.name},
-#             "year": plan.year,
-#             "total_proposals": plan.total_proposals,
-#             "total_economy": plan.total_economy,
-#             "children": [serialize_plan(AnnualPlan.objects.get(equipment=child, year=plan.year)) for child in children if AnnualPlan.objects.filter(equipment=child, year=plan.year).exists()]
-#         }
-
-#     root_plans = AnnualPlan.objects.filter(equipment__parent__isnull=True)
-#     return JsonResponse([serialize_plan(plan) for plan in root_plans], safe=False)
-
-# def quarterly_plan_detail(request, annual_plan_id):
-#     """Выдает квартальный план для указанного годового плана."""
-#     annual_plan = get_object_or_404(AnnualPlan, id=annual_plan_id)
-#     quarterly_plans = QuarterlyPlan.objects.filter(annual_plan=annual_plan)
-
-#     result = []
-#     for plan in quarterly_plans:
-#         result.append({
-#             "equipment_name": plan.annual_plan.equipment.name,
-#             "q1": plan.planned_proposals if plan.quarter == 1 else 0,
-#             "q2": plan.planned_proposals if plan.quarter == 2 else 0,
-#             "q3": plan.planned_proposals if plan.quarter == 3 else 0,
-#             "q4": plan.planned_proposals if plan.quarter == 4 else 0,
-#         })
-
-#     return JsonResponse(result, safe=False)

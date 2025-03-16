@@ -20,11 +20,11 @@ class QuarterlyPlanInline(admin.TabularInline):
 
 @admin.register(AnnualPlan)
 class AnnualPlanAdmin(admin.ModelAdmin):
-    list_filter = ('year', 'equipment')  # Фильтрация
-    search_fields = ('equipment__name',)  # Поиск по названию подразделения
+    list_filter = ('year', 'department')  # Фильтрация
+    search_fields = ('department__name',)  # Поиск по названию подразделения
     inlines = [QuarterlyPlanInline]  # Встроенный квартальный план
     list_display = (
-        'indented_equipment',
+        'indented_department',
         'year',
         'total_proposals',
         'total_economy',
@@ -32,14 +32,14 @@ class AnnualPlanAdmin(admin.ModelAdmin):
         'completed_proposals',
     )
 
-    def indented_equipment(self, obj):
-        indent = '...' * obj.equipment.level  # Генерируем отступы
-        return f"{indent} {obj.equipment.name}"
+    def indented_department(self, obj):
+        indent = '...' * obj.department.level  # Генерируем отступы
+        return f"{indent} {obj.department.name}"
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
         # Сортируем по tree_id и lft для правильного отображения иерархии
-        queryset = queryset.order_by('equipment__tree_id', 'equipment__lft')
+        queryset = queryset.order_by('department__tree_id', 'department__lft')
         return queryset
 
 
@@ -48,7 +48,7 @@ class ProposalAdmin(admin.ModelAdmin):
     list_display = (
         'reg_num',
         'reg_date',
-        'equipment',
+        'department',
         'get_authors',
         'title',
         'category',
@@ -57,15 +57,15 @@ class ProposalAdmin(admin.ModelAdmin):
     list_filter = (
         'category',
         'is_economy',
-        'equipment',
+        'department',
     )
     search_fields = (
         'reg_num',
         'description',
-        'equipment__name',  # Поиск по названию оборудования
+        'department__name',  # Поиск по названию подразделения
     )
     filter_horizontal = ('authors',)
-    autocomplete_fields = ['equipment']
+    autocomplete_fields = ['department']
     list_editable = ('is_economy',)
     list_per_page = 20
 

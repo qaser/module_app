@@ -1,15 +1,12 @@
-from django.apps import apps
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch.dispatcher import receiver
-from rest_framework.authtoken.models import Token
+# from rest_framework.authtoken.models import Token
+from module_app.utils import get_installed_apps
 
-from equipments.models import Equipment
+from equipments.models import Department
 
 
-def get_installed_apps():
-    return [app_config.name for app_config in apps.get_app_configs()]
+APP_CHOICES = [(app, app) for app in get_installed_apps()]
 
 
 class Role(models.TextChoices):
@@ -32,8 +29,8 @@ class ModuleUser(AbstractUser):
         choices=Role.choices,
         default=Role.EMPLOYEE
     )
-    equipment = models.ForeignKey(
-        Equipment,
+    department = models.ForeignKey(
+        Department,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -79,15 +76,13 @@ class ModuleUser(AbstractUser):
 
 
 class NotificationAppRoute(models.Model):
-    APP_CHOICES = [(app, app) for app in get_installed_apps()]
-
     app_name = models.CharField(
         'Приложение',
         max_length=50,
         choices=APP_CHOICES,  # Ограничиваем выбор только установленными приложениями
     )
-    equipment = models.ForeignKey(
-        Equipment,
+    department = models.ForeignKey(
+        Department,
         on_delete=models.CASCADE,
         verbose_name='ЛПУМГ',
         blank=False,

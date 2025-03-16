@@ -2,7 +2,7 @@ import django_filters as df
 from django.db.models import OuterRef, Subquery
 from django.forms.widgets import Select
 
-from equipments.models import Equipment
+from equipments.models import Department
 from users.models import Role
 
 from .models import CATEGORY, AnnualPlan, Proposal, Status
@@ -24,9 +24,9 @@ class ProposalFilter(df.FilterSet):
             choices=[('', '---------'), (True, 'Есть'), (False, 'Нет')]
         )
     )
-    equipment = df.ModelChoiceFilter(
-        queryset=Equipment.objects.none(),
-        method='filter_by_equipment',
+    department = df.ModelChoiceFilter(
+        queryset=Department.objects.none(),
+        method='filter_by_department',
         label='Структурное подразделение'
     )
     status = df.ChoiceFilter(
@@ -58,7 +58,7 @@ class ProposalFilter(df.FilterSet):
     class Meta:
         model = Proposal
         fields = [
-            'equipment',
+            'department',
             'category',
             'is_economy',
             'authors',
@@ -108,47 +108,47 @@ class ProposalFilter(df.FilterSet):
         user = kwargs.pop('request').user
         super().__init__(*args, **kwargs)
         base_level = 0
-        equipment_queryset = Equipment.objects.exclude(structure="Материальная структура")
+        department_queryset = Department.objects.all()
         if user.role == Role.ADMIN:
-            self.base_queryset = equipment_queryset
-            self.filters['equipment'].field.queryset = equipment_queryset
+            self.base_queryset = department_queryset
+            self.filters['department'].field.queryset = department_queryset
         elif user.role == Role.MANAGER:
-            if user.equipment:
-                root = user.equipment.get_root()
-                self.base_queryset = equipment_queryset.filter(tree_id=root.tree_id)
-                self.filters['equipment'].field.queryset = self.base_queryset.filter(parent__isnull=False)
+            if user.department:
+                root = user.department.get_root()
+                self.base_queryset = department_queryset.filter(tree_id=root.tree_id)
+                self.filters['department'].field.queryset = self.base_queryset.filter(parent__isnull=False)
                 base_level = root.level
             else:
-                self.filters['equipment'].field.queryset = Equipment.objects.none()
-                self.base_queryset = Equipment.objects.none()
+                self.filters['department'].field.queryset = Department.objects.none()
+                self.base_queryset = Department.objects.none()
         elif user.role == Role.EMPLOYEE:
-            if user.equipment:
-                descendants = user.equipment.get_descendants(include_self=True)
-                self.base_queryset = equipment_queryset.filter(id__in=descendants.values('id'))
-                self.filters['equipment'].field.queryset = self.base_queryset
-                base_level = user.equipment.level
+            if user.department:
+                descendants = user.department.get_descendants(include_self=True)
+                self.base_queryset = department_queryset.filter(id__in=descendants.values('id'))
+                self.filters['department'].field.queryset = self.base_queryset
+                base_level = user.department.level
             else:
-                self.filters['equipment'].field.queryset = Equipment.objects.none()
-                self.base_queryset = Equipment.objects.none()
-        if 'equipment' in self.filters:
-            self.filters['equipment'].field.queryset = self.filters['equipment'].field.queryset.order_by('tree_id', 'lft')
-            self.filters['equipment'].field.label_from_instance = lambda obj: f"{'..' * (obj.level - base_level)} {obj.name}"
+                self.filters['department'].field.queryset = Department.objects.none()
+                self.base_queryset = Department.objects.none()
+        if 'department' in self.filters:
+            self.filters['department'].field.queryset = self.filters['department'].field.queryset.order_by('tree_id', 'lft')
+            self.filters['department'].field.label_from_instance = lambda obj: f"{'..' * (obj.level - base_level)} {obj.name}"
 
-    def filter_by_equipment(self, queryset, name, value):
+    def filter_by_department(self, queryset, name, value):
         try:
             if value and self.base_queryset:
                 descendants = value.get_descendants(include_self=True)
-                queryset = queryset.filter(equipment__in=descendants & self.base_queryset)
+                queryset = queryset.filter(department__in=descendants & self.base_queryset)
             else:
                 queryset = queryset.none()
-        except Equipment.DoesNotExist:
+        except Department.DoesNotExist:
             queryset = queryset.none()
         return queryset
 
 
 class AnnualPlanFilter(df.FilterSet):
-    equipment = df.ModelChoiceFilter(
-        queryset=Equipment.objects.filter(parent__isnull=True),
+    department = df.ModelChoiceFilter(
+        queryset=Department.objects.filter(parent__isnull=True),
         label='Филиалы'
     )
     year = df.ChoiceFilter(
@@ -162,4 +162,4 @@ class AnnualPlanFilter(df.FilterSet):
     )
     class Meta:
         model = AnnualPlan
-        fields = ['equipment', 'year']
+        fields = ['department', 'year']
