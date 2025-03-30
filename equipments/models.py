@@ -5,12 +5,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 from module_app.utils import get_installed_apps
 
 
-STRUCTURE = (
-    ('Административная структура', 'Административная структура'),
-    ('Материальная структура', 'Материальная структура'),
-)
-
-
 class Department(MPTTModel):
     name = models.CharField(
         verbose_name='Название',
@@ -29,6 +23,10 @@ class Department(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['name']
+
+    class Meta:
+        verbose_name = 'Подразделение'
+        verbose_name_plural = 'Подразделения'
 
     def __str__(self):
         return self.name
@@ -54,7 +52,6 @@ class Equipment(MPTTModel):
         related_name='equipments',
         verbose_name='Подразделения'
     )
-
 
     class MPTTMeta:
         order_insertion_by = ['name']

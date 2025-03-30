@@ -8,7 +8,7 @@ from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              QuarterlyPlan, Status)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
-from users.models import ModuleUser, NotificationAppRoute, Role
+from users.models import ModuleUser, UserAppRoute, Role
 
 
 class LeakImageSerializer(serializers.ModelSerializer):
@@ -342,7 +342,7 @@ class StatusSerializer(serializers.Serializer):
         while root_department.parent:
             root_department = root_department.parent
         # Проверяем, является ли пользователь ответственным за приложение
-        is_app_responsible = NotificationAppRoute.objects.filter(
+        is_app_responsible = UserAppRoute.objects.filter(
             app_name='rational',
             department=root_department,  # Используем корневой department
             user=request_user

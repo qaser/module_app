@@ -23,7 +23,7 @@ class ProposalTable(tables.Table):
             'title',
             'authors',
             'department',
-            'department_root',  # Добавляем новую колонку
+            'department_root',
             'category',
             'economy_size',
             'status',
@@ -31,6 +31,7 @@ class ProposalTable(tables.Table):
         attrs = {'class': 'table table_rational'}
         row_attrs = {'id': lambda record: record.id}
         orderable = False
+        order_by = '-reg_date'
         template_name = 'module_app/table/new_table.html'
 
     def __init__(self, *args, **kwargs):

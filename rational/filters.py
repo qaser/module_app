@@ -7,6 +7,24 @@ from users.models import Role
 
 from .models import CATEGORY, AnnualPlan, Proposal, Status
 
+from django.utils.functional import lazy
+from django.forms import Select
+
+
+def get_proposal_years():
+    return [
+        (year, year)
+        for year in Proposal.objects.dates('reg_date', 'year')
+        .values_list('reg_date__year', flat=True)
+        .distinct()
+    ]
+
+def get_annual_plan_years():
+    return [
+        (year, year)
+        for year in AnnualPlan.objects.values_list('year', flat=True)
+        .distinct().order_by('year')
+    ]
 
 class ProposalFilter(df.FilterSet):
     authors = df.CharFilter(
@@ -35,12 +53,7 @@ class ProposalFilter(df.FilterSet):
         label='Статус'
     )
     year = df.ChoiceFilter(
-        choices=[
-            (year, year)
-            for year in Proposal.objects.dates('reg_date', 'year')
-            .values_list('reg_date__year', flat=True)
-            .distinct()
-        ],
+        choices=lazy(get_proposal_years, list)(),
         label='Год',
         method='filter_by_year'
     )
@@ -152,14 +165,11 @@ class AnnualPlanFilter(df.FilterSet):
         label='Филиалы'
     )
     year = df.ChoiceFilter(
-        choices=[
-            (year, year)
-            for year in AnnualPlan.objects.values_list('year', flat=True)
-            .distinct().order_by('year')
-        ],
+        choices=lazy(get_annual_plan_years, list)(),
         label='Год',
         field_name='year'
     )
+
     class Meta:
         model = AnnualPlan
         fields = ['department', 'year']

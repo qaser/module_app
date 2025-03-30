@@ -15,7 +15,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from equipments.models import Department
 from module_app.notifications import NotificationService
 from module_app.utils import compress_image
-from users.models import ModuleUser, NotificationAppRoute
+from users.models import ModuleUser, UserAppRoute
 
 from .utils import create_doc
 
@@ -189,7 +189,7 @@ def create_proposal_doc(instance):
         root_department = department
         while root_department.parent:
             root_department = root_department.parent
-        app_user = NotificationAppRoute.objects.filter(
+        app_user = UserAppRoute.objects.filter(
             department=root_department,
             app_name='rational'
         ).first()
@@ -331,8 +331,8 @@ def send_notification(sender, instance, created, **kwargs):
         root_department = instance.proposal.department
         while root_department.parent:
             root_department = root_department.parent
-        # Ищем NotificationAppRoute по app_name и корневому department
-        app_route = NotificationAppRoute.objects.filter(app_name='rational', department=root_department).first()
+        # Ищем UserAppRoute по app_name и корневому department
+        app_route = UserAppRoute.objects.filter(app_name='rational', department=root_department).first()
         if app_route and app_route.user:
             recipients.append(app_route.user.email)
     # 2. Отправляем авторам, если статус rework, accept, reject, apply

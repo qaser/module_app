@@ -3,11 +3,18 @@ from django.contrib.auth.admin import UserAdmin
 
 from equipments.models import Department
 
-from .models import ModuleUser, NotificationAppRoute
+from .models import ModuleUser, UserAppRoute
+from django import forms
 
 
-@admin.register(NotificationAppRoute)
-class NotificationAppRouteAdmin(admin.ModelAdmin):
+def get_form(self, request, obj=None, **kwargs):
+    form = super().get_form(request, obj, **kwargs)
+    form.base_fields['birth_date'].widget = admin.widgets.AdminDateWidget()
+    return form
+
+
+@admin.register(UserAppRoute)
+class UserAppRouteAdmin(admin.ModelAdmin):
     list_display = ('app_name', 'user', 'department')
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -18,15 +25,27 @@ class NotificationAppRouteAdmin(admin.ModelAdmin):
 
 @admin.register(ModuleUser)
 class ModuleUserAdmin(UserAdmin):
-    # list_display = ('username', 'email', 'lastname_and_initials', 'role', 'structure')  # Поля для отображения в списке
-    list_display = ('username', 'email', 'role', 'department')  # Поля для отображения в списке
-    search_fields = ('username', 'email', 'last_name', 'first_name', 'department__name')  # Поля для поиска
-    list_filter = ('role', 'department')  # Фильтры
+    list_display = ('username', 'get_lastname_initials', 'department', 'email', 'role', 'service_num',)
+    search_fields = ('username', 'email', 'last_name', 'first_name', 'department__name', 'service_num')
+    list_filter = ('role', 'department',)
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'patronymic', 'email', 'job_position', 'department')}),
+        ('Personal info', {'fields': (
+            'first_name',
+            'last_name',
+            'patronymic',
+            'email',
+            'job_position',
+            'department',
+            'service_num',
+            'birth_date'
+        )}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions', 'role')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
-    filter_horizontal = ('groups', 'user_permissions',)  # Горизонтальные фильтры для групп и прав
-    autocomplete_fields = ['department']  # Включаем автодополнение для поля structure
+    filter_horizontal = ('groups', 'user_permissions',)
+    autocomplete_fields = ['department']
+
+    @admin.display(description='Фамилия И.О.')
+    def get_lastname_initials(self, obj):
+        return obj.lastname_and_initials

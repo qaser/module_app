@@ -2,11 +2,16 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 # from rest_framework.authtoken.models import Token
 from module_app.utils import get_installed_apps
+from django.db.models import BooleanField, ExpressionWrapper, Q
+from django.db.models.functions import Now
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
 from equipments.models import Department
 
 
 APP_CHOICES = [(app, app) for app in get_installed_apps()]
+YOUNG_AGE_THRESHOLD = 35  # Порог молодости
 
 
 class Role(models.TextChoices):
@@ -36,46 +41,75 @@ class ModuleUser(AbstractUser):
         blank=True,
         verbose_name='Место работы'
     )
+    service_num = models.CharField(
+        'Табельный номер',
+        max_length=20,
+        blank=True,
+        null=True,
+    )
+    birth_date = models.DateField('Дата рождения', null=True, blank=True)
 
     class Meta:
         ordering = ('last_name',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+        constraints = [
+            models.CheckConstraint(
+                check=Q(birth_date__lte=Now()),
+                name='birth_date_not_in_future'
+            )
+        ]
 
-    # представление пользователя в виде Фамилия И.О.
-    # с учетом отсутствия Отчества
     @property
     def lastname_and_initials(self):
-        lastname = self.last_name
-        initial_name = self.first_name[0]
-        if self.patronymic is not None:
-            initial_patronymic = self.patronymic[0]
-            lastname_and_initials = (f'{lastname} '
-                                     f'{initial_name}.{initial_patronymic}.')
-        else:
-            lastname_and_initials = f'{lastname} {initial_name}.'
-        return lastname_and_initials
+        parts = []
+        # Добавляем фамилию, если она есть
+        if self.last_name:
+            parts.append(self.last_name)
+        # Формируем инициалы
+        initials = []
+        if self.first_name:
+            initials.append(f"{self.first_name[0]}." if self.first_name else '')
+        if self.patronymic:
+            initials.append(f"{self.patronymic[0]}." if self.patronymic else '')
+        # Объединяем инициалы без пробелов
+        if initials:
+            parts.append(''.join(initials))
+        return ' '.join(parts) if parts else self.username
 
-    # представление пользователя в виде Фамилия Имя Отчество
-    # с учетом отсутствия Отчества
     @property
     def fio(self):
-        if self.patronymic is not None:
-            fio = f'{self.last_name} {self.first_name} {self.patronymic}'
-        else:
-            fio = f'{self.last_name} {self.first_name}'
-        return fio
+        parts = []
+        if self.last_name:
+            parts.append(self.last_name)
+        if self.first_name:
+            parts.append(self.first_name)
+        if self.patronymic:
+            parts.append(self.patronymic)
+        return ' '.join(parts) if parts else self.username
 
-    # @receiver(post_save, sender=User)
-    # def create_auth_token(sender, instance=None, created=False, **kwargs):
-    #     if created:
-    #         Token.objects.create(user=instance)
+    @property
+    def is_young_worker(self):
+        if not self.birth_date:
+            return False
+        return self.age < self.YOUNG_AGE_THRESHOLD
+
+    @property
+    def age(self):
+        return relativedelta(date.today(), self.birth_date).years
+
+    @classmethod
+    def get_young_workers(cls):
+        threshold_date = date.today() - relativedelta(years=cls.YOUNG_AGE_THRESHOLD)
+        return cls.objects.filter(birth_date__gte=threshold_date)
 
     def __str__(self) -> str:
-        return self.lastname_and_initials
+        if self.last_name and self.first_name:
+            return self.lastname_and_initials
+        return self.username
 
 
-class NotificationAppRoute(models.Model):
+class UserAppRoute(models.Model):
     app_name = models.CharField(
         'Приложение',
         max_length=50,
