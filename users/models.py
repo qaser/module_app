@@ -20,7 +20,14 @@ class Role(models.TextChoices):
     EMPLOYEE = 'employee'  # уровень рабочего места (просмотр всех дочерних equipments своего места работы)
 
 
+class ActiveUserManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_active=True)
+
+
 class ModuleUser(AbstractUser):
+    objects = models.Manager()
+    active_objects = ActiveUserManager()
     patronymic = models.CharField(
         'Отчество',
         max_length=50,

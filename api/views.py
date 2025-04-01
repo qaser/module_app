@@ -92,7 +92,7 @@ class ProposalViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = ModuleUser.objects.all()
+    queryset = ModuleUser.active_objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
 

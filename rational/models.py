@@ -13,7 +13,6 @@ from django.utils import timezone
 from mptt.models import MPTTModel, TreeForeignKey
 
 from equipments.models import Department
-from module_app.notifications import NotificationService
 from module_app.utils import compress_image
 from users.models import ModuleUser, UserAppRoute
 

@@ -13,10 +13,10 @@ class IndentedModelChoiceField(ModelChoiceField):
 
 class ProposalForm(ModelForm):
     department = IndentedModelChoiceField(queryset=Department.objects.none(), label='Структурное подразделение')
-    author_1 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 1', required=False)
-    author_2 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 2', required=False)
-    author_3 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 3', required=False)
-    author_4 = ModelChoiceField(queryset=ModuleUser.objects.none(), label='Автор 4', required=False)
+    author_1 = ModelChoiceField(queryset=ModuleUser.active_objects.none(), label='Автор 1', required=False)
+    author_2 = ModelChoiceField(queryset=ModuleUser.active_objects.none(), label='Автор 2', required=False)
+    author_3 = ModelChoiceField(queryset=ModuleUser.active_objects.none(), label='Автор 3', required=False)
+    author_4 = ModelChoiceField(queryset=ModuleUser.active_objects.none(), label='Автор 4', required=False)
 
     class Meta:
         model = Proposal
@@ -41,7 +41,7 @@ class ProposalForm(ModelForm):
         if user:
             if user.role == 'employee':
                 department_queryset = user.department.get_descendants(include_self=True)
-                authors_queryset = ModuleUser.objects.filter(department__in=department_queryset)
+                authors_queryset = ModuleUser.active_objects.filter(department__in=department_queryset)
             elif user.role == 'manager':
                 if user.department.level > 1:
                     second_level_ancestor = user.department.get_ancestors().filter(level=1).first()
@@ -51,10 +51,10 @@ class ProposalForm(ModelForm):
                     department_queryset = second_level_ancestor.get_descendants(include_self=True)
                 else:
                     department_queryset = Department.objects.none()
-                authors_queryset = ModuleUser.objects.filter(department__in=department_queryset)
+                authors_queryset = ModuleUser.active_objects.filter(department__in=department_queryset)
             elif user.role == 'admin':
                 department_queryset = Department.objects.all()
-                authors_queryset = ModuleUser.objects.all()
+                authors_queryset = ModuleUser.active_objects.all()
             self.fields['author_1'].queryset = authors_queryset.order_by('last_name', 'first_name')
             self.fields['author_2'].queryset = authors_queryset.order_by('last_name', 'first_name')
             self.fields['author_3'].queryset = authors_queryset.order_by('last_name', 'first_name')

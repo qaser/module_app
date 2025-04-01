@@ -38,7 +38,7 @@ class ModuleUserAdmin(UserAdmin):
             'job_position',
             'department',
             'service_num',
-            'birth_date'
+            'birth_date',
         )}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions', 'role')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
