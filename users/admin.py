@@ -1,10 +1,10 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from equipments.models import Department
 
 from .models import ModuleUser, UserAppRoute
-from django import forms
 
 
 def get_form(self, request, obj=None, **kwargs):

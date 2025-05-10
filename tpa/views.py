@@ -35,22 +35,20 @@ def filter_valves_by_user_role(user):
         # ADMIN видит всё оборудование
         return Valve.objects.all()
     elif user.role == Role.MANAGER:
-        # MANAGER видит всё оборудование своей ветки, начиная со второго уровня
-        if user.equipment:
-            # Получаем корень ветки пользователя
-            root = user.equipment.get_root()
-            # Получаем всех потомков корня (вся ветка)
-            descendants = root.get_descendants(include_self=True)
-            # Фильтруем оборудование, начиная со второго уровня
-            return Valve.objects.filter(equipment__in=descendants, equipment__level__gte=1)
+        # MANAGER видит всё оборудование своей ветки и дочерних подразделений
+        if user.department:
+            root = user.department.get_root()
+            departments = root.get_descendants(include_self=True)
+            equipments = Equipment.objects.filter(departments__in=departments)
+            return Valve.objects.filter(equipment__in=equipments)
         else:
             return Valve.objects.none()
     elif user.role == Role.EMPLOYEE:
         # EMPLOYEE видит всё оборудование своей ветки, начиная с уровня своего оборудования
-        if user.equipment:
-            # Получаем всех потомков оборудования пользователя
-            descendants = user.equipment.get_descendants(include_self=True)
-            return Valve.objects.filter(equipment__in=descendants)
+        if user.department:
+            descendants = user.department.get_descendants(include_self=True)
+            equipments = Equipment.objects.filter(departments__in=descendants)
+            return Valve.objects.filter(equipment__in=equipments)
         else:
             return Valve.objects.none()
     else:

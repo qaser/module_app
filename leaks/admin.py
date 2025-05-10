@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.html import format_html
 
-from .models import Leak, LeakDocument, LeakImage
+from .models import Leak, LeakDocument, LeakImage, LeakStatus
 
 
+@admin.register(Leak)
 class LeaksAdmin(admin.ModelAdmin):
     empty_value_display = '-'
     list_display = (
-        # 'direction',
         'place',
         'equipment',
         'specified_location',
@@ -26,32 +27,53 @@ class LeaksAdmin(admin.ModelAdmin):
         'plan_work',
         'doc_name',
         'protocol',
-        'is_done',
         'note',
-        'is_draft',
     )
     search_fields = (
-        # 'direction',
         'place',
         'equipment',
         'specified_location',
-        'is_done',
         'detector',
         'executor',
         'detection_date',
-        'is_draft',
     )
-    list_filter = ('place', 'equipment', 'detection_date', 'is_done', 'is_draft')
+    list_filter = ('place', 'equipment', 'detection_date',)
 
 
+@admin.register(LeakDocument)
 class DocumentAdmin(admin.ModelAdmin):
     empty_value_display = '-'
 
 
+@admin.register(LeakImage)
 class ImageAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-admin.site.register(Leak, LeaksAdmin)
-admin.site.register(LeakDocument, DocumentAdmin)
-admin.site.register(LeakImage, ImageAdmin)
+@admin.register(LeakStatus)
+class StatusAdmin(admin.ModelAdmin):
+    list_display = ('leak', 'colored_status', 'date_changed', 'owner', 'short_note')
+    list_filter = ('status', 'date_changed', 'owner')
+    search_fields = ('leak__id', 'owner__username', 'note')
+    ordering = ('-date_changed',)
+    readonly_fields = ('date_changed',)
+
+    def colored_status(self, obj):
+        """ Вывод статуса с цветной подсветкой """
+        colors = {
+            'reg': 'blue',
+            'fixed': 'green',
+            'draft': 'gray',
+        }
+        return format_html(
+            '<span style="color: {};">{}</span>', colors.get(obj.status, 'black'), obj.get_status_display()
+        )
+
+    colored_status.admin_order_field = 'status'
+    colored_status.short_description = 'Статус'
+
+    def short_note(self, obj):
+        """ Сокращает длинные примечания для компактного отображения """
+        return (obj.note[:50] + '...') if obj.note and len(obj.note) > 50 else obj.note
+
+    short_note.short_description = 'Примечание'

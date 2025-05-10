@@ -5,7 +5,6 @@ from equipments.models import Equipment
 from module_app.utils import compress_image
 from users.models import ModuleUser
 
-
 SERVICECOLOR = (
     ('blue', 'синий'),
     ('gray', 'серый'),
@@ -201,19 +200,31 @@ class Valve(models.Model):
         verbose_name = 'ТПА'
         verbose_name_plural = 'ТПА'
 
+    def get_root_equipment(self):
+        """Возвращает корневой элемент оборудования"""
+        if self.equipment:
+            return self.equipment.get_root()
+        return None
+
     def get_ks(self):
         """
-        Возвращает корневой элемент второго уровня для текущего оборудования.
+        Возвращает корневой элемент второго уровня Department для текущего оборудования.
+        Если оборудование связано с несколькими подразделениями, берется первое.
         """
         if self.equipment:
-            # Получаем корень ветки
-            root = self.equipment.get_root()
-            # Получаем всех потомков корня
-            descendants = root.get_descendants(include_self=True)
-            # Фильтруем элементы второго уровня
-            second_level = descendants.filter(level=1)
-            if second_level.exists():
-                return second_level.first()
+            # Получаем все подразделения, связанные с оборудованием
+            departments = self.equipment.departments.all()
+            if departments.exists():
+                # Берем первое подразделение (можно добавить логику выбора при необходимости)
+                department = departments.first()
+                # Получаем корень иерархии подразделений
+                root = department.get_root()
+                # Получаем всех потомков корня (включая сам корень)
+                descendants = root.get_descendants(include_self=True)
+                # Фильтруем элементы второго уровня
+                second_level = descendants.filter(level=1)
+                if second_level.exists():
+                    return second_level.first()
         return None
 
     def __str__(self):

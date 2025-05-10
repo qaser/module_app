@@ -30,10 +30,10 @@ class Leak(models.Model):
     equipment = models.ForeignKey(
         Equipment,
         verbose_name='Наименование объекта',
-        related_name='locations',
+        related_name='equipments',
         on_delete=models.CASCADE
     )
-    is_valve = models.BooleanField(
+    on_valve = models.BooleanField(
         verbose_name='Утечка по ТПА',
         default=False,
     )
@@ -135,21 +135,16 @@ class Leak(models.Model):
         blank=False,
         null=False,
     )
-    is_done = models.BooleanField(
-        verbose_name='Устранено',
-        default=False,
-    )
+    # is_done = models.BooleanField(
+    #     verbose_name='Устранено',
+    #     default=False,
+    # )
     note = models.CharField(
-        verbose_name='План работ',
+        verbose_name='Примечание',
         max_length=500,
         blank=False,
         null=False,
     )
-    is_draft = models.BooleanField(
-        verbose_name='Черновик',
-        default=True,
-    )
-
 
     class Meta:
         ordering = ('detection_date',)
@@ -157,7 +152,7 @@ class Leak(models.Model):
         verbose_name_plural = 'Утечки'
 
     def __str__(self):
-        return f'{self.detection_date}, {self.location}, {self.description}'
+        return f'{self.detection_date}, {self.equipment}, {self.description}'
 
 
 class LeakDocument(models.Model):
@@ -208,3 +203,42 @@ class LeakImage(models.Model):
         super(LeakImage, self).save(*args, **kwargs)
         if self.image:
             compress_image(self.image)
+
+
+class LeakStatus(models.Model):
+    class StatusChoices(models.TextChoices):
+        DRAFT = 'draft', 'Черновик'
+        REG = 'reg', 'Зарегистрирована'
+        FIXED = 'fixed', 'Устранена'
+
+    leak = models.ForeignKey(
+        Leak,
+        on_delete=models.CASCADE,
+        related_name='statuses',
+        verbose_name='Утечка',
+        db_index=True,
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=StatusChoices.choices
+    )
+    date_changed = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(
+        ModuleUser,
+        related_name='status_owner',
+        on_delete=models.SET_NULL,
+        verbose_name='Пользователь',
+        blank=True,
+        null=True,
+    )
+    note = models.CharField(
+        'Примечание',
+        default='',
+        max_length=500,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Статус утечки газа'
+        verbose_name_plural = 'Статусы утечки газа'

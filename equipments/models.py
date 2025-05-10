@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from mptt.models import MPTTModel, TreeForeignKey
+
 from module_app.utils import get_installed_apps
 
 
@@ -32,6 +33,20 @@ class Department(MPTTModel):
         return self.name
 
 
+class Pipeline(models.Model):
+    name = models.CharField('Название газопровода', max_length=100)
+    code = models.SlugField('Код', unique=True)
+    diameter = models.PositiveIntegerField('Диаметр, мм', blank=True, null=True)
+    pressure = models.PositiveIntegerField('Давление, кгс/см²', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Газопровод'
+        verbose_name_plural = 'Газопроводы'
+
+    def __str__(self):
+        return self.name
+
+
 class Equipment(MPTTModel):
     name = models.CharField(
         verbose_name='Название',
@@ -52,6 +67,24 @@ class Equipment(MPTTModel):
         related_name='equipments',
         verbose_name='Подразделения'
     )
+    pipeline = models.ForeignKey(
+        Pipeline,
+        on_delete=models.SET_NULL,
+        verbose_name='Газопровод',
+        blank=True,
+        null=True
+    )
+
+    # @property
+    # def pipeline(self):
+    #     if self.parent:
+    #         return self.parent.pipeline
+    #     return self._pipeline
+
+    # @pipeline.setter
+    # def pipeline(self, value):
+    #     if not self.parent:
+    #         self._pipeline = value
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -62,5 +95,3 @@ class Equipment(MPTTModel):
 
     def __str__(self) -> str:
         return self.name
-        # ancestors = self.get_ancestors(ascending=True, include_self=True)[:2]
-        # return ' | '.join(ancestor.name for ancestor in ancestors)

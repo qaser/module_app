@@ -27,10 +27,9 @@ class LeakForm(ModelForm):
     class Meta:
         model = Leak
         fields = (
-            # 'direction',
             'place',
             'equipment',
-            'is_valve',
+            'on_valve',
             'specified_location',
             'description',
             'type_leak',
@@ -47,9 +46,7 @@ class LeakForm(ModelForm):
             'plan_work',
             'doc_name',
             'protocol',
-            'is_done',
             'note',
-            'is_draft',
         )
         widgets = {
             'description': Textarea(attrs={'rows': 4}),

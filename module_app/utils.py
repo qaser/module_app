@@ -1,5 +1,5 @@
-from PIL import Image
 from django.apps import apps
+from PIL import Image
 
 _MAX_SIZE = 1000
 

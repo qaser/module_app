@@ -41,29 +41,30 @@ class ValveForm(ModelForm):
         user = kwargs.pop('user', None)  # Получаем пользователя из kwargs
         super(ValveForm, self).__init__(*args, **kwargs)
         if user:
-            base_level = 0  # Базовый уровень для отступов
             if user.role == Role.ADMIN:
                 # ADMIN может выбирать всё оборудование
                 self.fields['equipment'].queryset = Equipment.objects.all()
             elif user.role == Role.MANAGER:
                 # MANAGER может выбирать оборудование своей ветки, начиная со второго уровня
-                if user.equipment:
-                    root = user.equipment.get_root()  # Получаем корень ветки
-                    descendants = root.get_descendants(include_self=True)  # Вся ветка
-                    # Фильтруем оборудование, начиная со второго уровня
-                    self.fields['equipment'].queryset = descendants.filter(level__gte=1)
-                    base_level = 1  # Базовый уровень — второй уровень
+                if user.department:
+                    root = user.department.get_root()  # Получаем корень ветки
+                    departments = root.get_descendants(include_self=True)
+                    self.fields['equipment'].queryset = Equipment.objects.filter(departments__in=departments)
                 else:
                     self.fields['equipment'].queryset = Equipment.objects.none()
             elif user.role == Role.EMPLOYEE:
                 # EMPLOYEE может выбирать оборудование своей ветки, начиная с уровня своего оборудования
-                if user.equipment:
-                    descendants = user.equipment.get_descendants(include_self=True)  # Вся ветка
-                    self.fields['equipment'].queryset = descendants
-                    base_level = user.equipment.level  # Базовый уровень — уровень оборудования пользователя
+                if user.department:
+                    departments = user.department.get_descendants(include_self=True)  # Вся ветка
+                    self.fields['equipment'].queryset = Equipment.objects.filter(departments__in=departments)
                 else:
                     self.fields['equipment'].queryset = Equipment.objects.none()
             else:
                 self.fields['equipment'].queryset = Equipment.objects.none()
-            # Добавляем отступы для отображения иерархии
-            self.fields['equipment'].label_from_instance = lambda obj: f"{'..' * (obj.level - base_level)} {obj.name}"
+
+        def label_from_instance(obj):
+            ancestors = obj.get_ancestors()
+            indent = '..' * len(ancestors)
+            return f"{indent} {obj.name}" if indent else obj.name
+
+        self.fields['equipment'].label_from_instance = label_from_instance

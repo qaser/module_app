@@ -8,7 +8,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from equipments.models import Equipment, Department
+from equipments.models import Department, Equipment
 from leaks.models import Leak
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              QuarterlyPlan, Status)
@@ -16,14 +16,14 @@ from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
 
-from .serializers import (AnnualPlanSerializer, DepartmentSerializer, EquipmentSerializer,
-                          FactorySerializer, LeakSerializer,
-                          ProposalDocumentSerializer, ProposalSerializer,
-                          QuarterlyPlanSerializer, ServiceSerializer,
-                          ServiceTypeSerializer, StatusSerializer,
-                          UserSerializer, ValveDocumentSerializer,
-                          ValveImageSerializer, ValveSerializer,
-                          WorkServiceSerializer)
+from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
+                          EquipmentSerializer, FactorySerializer,
+                          LeakSerializer, ProposalDocumentSerializer,
+                          ProposalSerializer, QuarterlyPlanSerializer,
+                          ServiceSerializer, ServiceTypeSerializer,
+                          StatusSerializer, UserSerializer,
+                          ValveDocumentSerializer, ValveImageSerializer,
+                          ValveSerializer, WorkServiceSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):

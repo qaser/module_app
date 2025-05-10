@@ -1,14 +1,13 @@
 import django_filters as df
 from django.db.models import OuterRef, Subquery
+from django.forms import Select
 from django.forms.widgets import Select
+from django.utils.functional import lazy
 
 from equipments.models import Department
 from users.models import Role
 
 from .models import CATEGORY, AnnualPlan, Proposal, Status
-
-from django.utils.functional import lazy
-from django.forms import Select
 
 
 def get_proposal_years():

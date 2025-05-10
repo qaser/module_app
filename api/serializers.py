@@ -2,13 +2,13 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from equipments.models import Equipment, Department
+from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              QuarterlyPlan, Status)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
-from users.models import ModuleUser, UserAppRoute, Role
+from users.models import ModuleUser, Role, UserAppRoute
 
 
 class LeakImageSerializer(serializers.ModelSerializer):

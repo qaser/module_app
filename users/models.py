@@ -1,14 +1,14 @@
-from django.contrib.auth.models import AbstractUser
+from datetime import date
+
+from dateutil.relativedelta import relativedelta
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
-# from rest_framework.authtoken.models import Token
-from module_app.utils import get_installed_apps
 from django.db.models import BooleanField, ExpressionWrapper, Q
 from django.db.models.functions import Now
-from datetime import date
-from dateutil.relativedelta import relativedelta
 
 from equipments.models import Department
-
+# from rest_framework.authtoken.models import Token
+from module_app.utils import get_installed_apps
 
 APP_CHOICES = [(app, app) for app in get_installed_apps()]
 YOUNG_AGE_THRESHOLD = 35  # Порог молодости
@@ -26,7 +26,7 @@ class ActiveUserManager(models.Manager):
 
 
 class ModuleUser(AbstractUser):
-    objects = models.Manager()
+    objects = UserManager()
     active_objects = ActiveUserManager()
     patronymic = models.CharField(
         'Отчество',

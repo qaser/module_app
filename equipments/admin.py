@@ -1,52 +1,48 @@
 from django.contrib import admin
-from mptt.admin import MPTTModelAdmin
-from .models import Department, Equipment
+from mptt.admin import DraggableMPTTAdmin
+from .models import Department, Equipment, Pipeline
 
+# Pipeline Admin
+@admin.register(Pipeline)
+class PipelineAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code')
+    search_fields = ('name', 'code')
+    ordering = ('name',)
 
-class EquipmentInline(admin.TabularInline):
-    model = Equipment.departments.through
-    extra = 1
-    verbose_name = 'Связанное оборудование'
-    verbose_name_plural = 'Связанное оборудование'
-    raw_id_fields = ('equipment',)  # Для быстрого выбора оборудования
-
-
-class ChildDepartmentInline(admin.TabularInline):
-    model = Department
-    fk_name = 'parent'
-    extra = 1
-    fields = ('name',)  # Только поле name для дочерних подразделений
-    verbose_name = 'Дочернее подразделение'
-    verbose_name_plural = 'Дочерние подразделения'
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(level__lte=1)  # Ограничиваем глубину вложенности
-
-
+# Department Admin
 @admin.register(Department)
-class DepartmentAdmin(MPTTModelAdmin):
-    list_display = ('name', 'parent', 'equipment_count')
+class DepartmentAdmin(DraggableMPTTAdmin):
+    list_display = ('indented_title', 'parent')
+    search_fields = ('name', 'parent__name')  # Поиск по имени и родителю
     list_filter = ('parent',)
-    search_fields = ('name', 'parent__name')
-    mptt_level_indent = 20
-    inlines = [ChildDepartmentInline, EquipmentInline]
     fields = ('name', 'parent')
-    raw_id_fields = ('parent',)  # Для удобного выбора родителя
+    autocomplete_fields = ['parent']
 
-    def equipment_count(self, obj):
-        return obj.equipments.count()
-    equipment_count.short_description = 'Кол-во оборудования'
+    def add_child_department(self, request, queryset):
+        for department in queryset:
+            Department.objects.create(
+                name=f"Новое подразделение {department.name}",
+                parent=department
+            )
+        self.message_user(request, "Дочерние подразделения успешно созданы")
+    add_child_department.short_description = "Создать дочернее подразделение"
 
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.prefetch_related('equipments')
+# Equipment Admin
+@admin.register(Equipment)
+class EquipmentAdmin(DraggableMPTTAdmin):
+    list_display = ('indented_title', 'pipeline')
+    fields = ('name', 'parent', 'pipeline', 'departments')
+    filter_horizontal = ('departments',)
+    list_filter = ('pipeline', 'departments')
+    search_fields = ('name',)
+    actions = ['add_child_equipment']
 
-    def save_formset(self, request, form, formset, change):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            if isinstance(instance, Department):  # Для дочерних подразделений
-                if not instance.parent_id:
-                    instance.parent = form.instance
-            instance.save()
-        formset.save_m2m()
+    def add_child_equipment(self, request, queryset):
+        for equipment in queryset:
+            Equipment.objects.create(
+                name=f"Новое оборудование {equipment.name}",
+                parent=equipment,
+                pipeline=equipment.pipeline
+            )
+        self.message_user(request, "Дочернее оборудование успешно создано")
+    add_child_equipment.short_description = "Создать дочернее оборудование"

@@ -17,7 +17,6 @@ class LeakTable(tables.Table):
     class Meta:
         model = Leak
         fields = [
-            # 'direction',
             'place',
             'equipment',
             'specified_location',
@@ -33,7 +32,6 @@ class LeakTable(tables.Table):
             # 'plan_work',
             # 'doc_name',
             'protocol',
-            'is_done',
             # 'note'
         ]
         attrs = {'class': 'table table_leaks'}

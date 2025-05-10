@@ -1,12 +1,9 @@
 import django_tables2 as tables
 from django.db.models import OuterRef, Subquery
-from django.urls import reverse
-from django.utils.html import format_html
 
 from equipments.models import Equipment
 from users.models import Role
 
-# from locations.models import Department
 from .models import Valve
 
 
@@ -16,6 +13,12 @@ class ValveTable(tables.Table):
         # orderable=True,
         verbose_name='КС',
         accessor='equipment__get_ks',
+    )
+    root_equipment = tables.Column(
+        empty_values=(),
+        verbose_name='Место нахождения',
+        accessor='get_root_equipment',
+        orderable=False
     )
     equipment = tables.Column(verbose_name='Оборудование')
     tech_number = tables.Column(verbose_name='Техн. номер')
@@ -30,6 +33,7 @@ class ValveTable(tables.Table):
         model = Valve
         fields = [
             'ks',
+            'root_equipment',
             'equipment',
             'tech_number',
             'title',
@@ -51,14 +55,23 @@ class ValveTable(tables.Table):
         template_name = 'module_app/table/new_table.html'
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Извлекаем пользователя
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-
         if user and user.role == Role.ADMIN:
-            # Делаем 'ks' первым, удаляя его из остальных мест
-            self.sequence = ['ks'] + [col for col in self.sequence if col != 'ks']
+            self.sequence = ['ks', 'root_equipment'] + [col for col in self.sequence if col not in ['ks', 'root_equipment']]
         else:
-            self.exclude = ('ks',)  # Скрываем колонку
+            self.sequence = ['root_equipment'] + [col for col in self.sequence if col != 'root_equipment']
+            self.exclude = ('ks',)
+
+    def render_root_equipment(self, record):
+        root = record.get_root_equipment()
+        return root.name if root else '-'
+
+    def get_root_equipment(self, record):
+        """Метод для получения корневого оборудования"""
+        if record.equipment:
+            return record.equipment.get_root()
+        return None
 
     def render_ks(self, record):
         ks = record.get_ks()
