@@ -5,10 +5,22 @@ from rest_framework import serializers
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
-                             QuarterlyPlan, Status)
+                             QuarterlyPlan, ProposalStatus)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
 from users.models import ModuleUser, Role, UserAppRoute
+from notifications.models import Notification
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Notification
+        fields = ['id', 'title', 'message', 'url', 'created_at', 'is_read', 'app_name', 'object_id']
+
+    def get_url(self, obj):
+        return obj.get_absolute_url()
 
 
 class LeakImageSerializer(serializers.ModelSerializer):
@@ -262,14 +274,14 @@ class FactorySerializer(serializers.ModelSerializer):
 
 
 class StatusSerializer(serializers.Serializer):
-    current_status = serializers.ChoiceField(choices=Status.StatusChoices.choices, required=False)
-    new_status = serializers.ChoiceField(choices=Status.StatusChoices.choices, required=False)
+    current_status = serializers.ChoiceField(choices=ProposalStatus.StatusChoices.choices, required=False)
+    new_status = serializers.ChoiceField(choices=ProposalStatus.StatusChoices.choices, required=False)
     proposal_id = serializers.IntegerField(required=False)
     note = serializers.CharField(max_length=500, required=False)
 
     def to_representation(self, instance):
         # Если instance — объект Status, берем его данные
-        if isinstance(instance, Status):
+        if isinstance(instance, ProposalStatus):
             current_status = instance.status
             status_data = {
                 'id': instance.id,
@@ -293,7 +305,7 @@ class StatusSerializer(serializers.Serializer):
             status_data = {
                 'status': {
                     'code': current_status,
-                    'label': Status.StatusChoices(current_status).label
+                    'label': ProposalStatus.StatusChoices(current_status).label
                 },
                 'owner': None,
                 'note': None,
@@ -301,20 +313,20 @@ class StatusSerializer(serializers.Serializer):
             }
         # Определяем возможные переходы статусов
         status_transitions = {
-            Status.StatusChoices.REG: [
-                Status.StatusChoices.REWORK,
-                Status.StatusChoices.ACCEPT,
-                Status.StatusChoices.REJECT
+            ProposalStatus.StatusChoices.REG: [
+                ProposalStatus.StatusChoices.REWORK,
+                ProposalStatus.StatusChoices.ACCEPT,
+                ProposalStatus.StatusChoices.REJECT
             ],
-            Status.StatusChoices.RECHECK: [
-                Status.StatusChoices.REWORK,
-                Status.StatusChoices.ACCEPT,
-                Status.StatusChoices.REJECT
+            ProposalStatus.StatusChoices.RECHECK: [
+                ProposalStatus.StatusChoices.REWORK,
+                ProposalStatus.StatusChoices.ACCEPT,
+                ProposalStatus.StatusChoices.REJECT
             ],
-            Status.StatusChoices.REWORK: [Status.StatusChoices.RECHECK],
-            Status.StatusChoices.ACCEPT: [Status.StatusChoices.APPLY],
-            Status.StatusChoices.REJECT: [],
-            Status.StatusChoices.APPLY: [],
+            ProposalStatus.StatusChoices.REWORK: [ProposalStatus.StatusChoices.RECHECK],
+            ProposalStatus.StatusChoices.ACCEPT: [ProposalStatus.StatusChoices.APPLY],
+            ProposalStatus.StatusChoices.REJECT: [],
+            ProposalStatus.StatusChoices.APPLY: [],
         }
         possible_statuses = status_transitions.get(current_status, [])
         return {
@@ -322,7 +334,7 @@ class StatusSerializer(serializers.Serializer):
             'possible_statuses': [
                 {
                     'code': status,
-                    'label': Status.StatusChoices(status).label
+                    'label': ProposalStatus.StatusChoices(status).label
                 } for status in possible_statuses
             ]
         }
@@ -335,7 +347,7 @@ class StatusSerializer(serializers.Serializer):
             raise serializers.ValidationError("Поля 'proposal_id' и 'new_status' обязательны.")
         proposal = Proposal.objects.get(id=proposal_id)
         # Получаем статус REG
-        reg_status = proposal.statuses.filter(status=Status.StatusChoices.REG).first()
+        reg_status = proposal.statuses.filter(status=ProposalStatus.StatusChoices.REG).first()
         reg_owner = reg_status.owner  # Владелец статуса REG
         # Находим корневой department для proposal.department
         root_department = proposal.department
@@ -357,15 +369,15 @@ class StatusSerializer(serializers.Serializer):
             request_user.department.get_root() == reg_owner.department.get_root()
         )
         if new_status in [
-            Status.StatusChoices.REWORK,
-            Status.StatusChoices.ACCEPT,
-            Status.StatusChoices.REJECT
+            ProposalStatus.StatusChoices.REWORK,
+            ProposalStatus.StatusChoices.ACCEPT,
+            ProposalStatus.StatusChoices.REJECT
         ]:
             if not is_app_responsible:
                 raise serializers.ValidationError(
                     "Назначать статусы 'REWORK', 'ACCEPT' и 'REJECT' может только ответственный за приложение."
                 )
-        elif new_status == Status.StatusChoices.RECHECK:
+        elif new_status == ProposalStatus.StatusChoices.RECHECK:
             if not (is_reg_owner or is_manager_same_branch):
                 raise serializers.ValidationError(
                     "Назначать статус 'RECHECK' может только владелец статуса 'REG'"
@@ -376,7 +388,7 @@ class StatusSerializer(serializers.Serializer):
         proposal_id = validated_data['proposal_id']
         new_status = validated_data['new_status']
         note = validated_data.get('note', '')
-        status = Status.objects.create(
+        status = ProposalStatus.objects.create(
             proposal_id=proposal_id,
             status=new_status,
             note=note,

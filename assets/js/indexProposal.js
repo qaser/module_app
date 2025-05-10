@@ -1,6 +1,7 @@
 import * as config from './config/config.js';
 import * as constant from './utils/constants.js';
 import Api from './api/Api.js';
+import PollingClient from './api/PollingClient.js';
 import UserInfo from './components/UserInfo.js';
 import Table from './components/Table.js';
 import FormFilter from './components/FormFilter.js';
@@ -16,6 +17,11 @@ const api = new Api({
         'Content-Type': 'application/json',
         // authorization: constant.apiConfig.token,
     }
+});
+
+const pollingClient = new PollingClient({
+  pollingInterval: 15000, // 15 секунд
+  endpoint: '/api/notifications/unread/'
 });
 
 // создание объекта с данными пользователя
@@ -40,6 +46,7 @@ newTable.init();
 api.getMyProfile()
     .then((userData) => {
         newUserInfo.setUserInfo(userData);
+        pollingClient.start();
         new FormFilter(
             api.getDepartmentChildren.bind(api),
             'filter_submit',

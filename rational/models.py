@@ -15,6 +15,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from equipments.models import Department
 from module_app.utils import compress_image
 from users.models import ModuleUser, UserAppRoute
+from notifications.models import Notification
 
 from .utils import create_doc
 
@@ -138,9 +139,9 @@ def set_department_from_author(sender, instance, action, **kwargs):
 @receiver(m2m_changed, sender=Proposal.authors.through)
 def create_status_with_owner(sender, instance, action, **kwargs):
     if action == "post_add" and not instance.statuses.exists():
-        Status.objects.create(
+        ProposalStatus.objects.create(
             proposal=instance,
-            status=Status.StatusChoices.REG,
+            status=ProposalStatus.StatusChoices.REG,
             owner=instance.authors.first(),
             note=instance.note,
         )
@@ -258,7 +259,7 @@ class ProposalDocument(models.Model):
         verbose_name_plural = 'Документация РП'
 
 
-class Status(models.Model):
+class ProposalStatus(models.Model):
     class StatusChoices(models.TextChoices):
         REG = 'reg', 'Зарегистрировано'
         RECHECK = 'recheck', 'Повторная заявка'
@@ -309,7 +310,7 @@ class Status(models.Model):
         ]
         if self.status in single_instance_statuses:
             # Проверяем, есть ли уже такой статус у предложения
-            if Status.objects.filter(
+            if ProposalStatus.objects.filter(
                 proposal=self.proposal,
                 status=self.status
             ).exists():
@@ -322,18 +323,25 @@ class Status(models.Model):
         super().save(*args, **kwargs)
 
 
-@receiver(post_save, sender=Status)
+@receiver(post_save, sender=ProposalStatus)
 def send_notification(sender, instance, created, **kwargs):
-    recipients = []
+    if not created:
+        return
+
+    notification_data = {
+        'app_name': Notification.AppChoices.RATIONAL,
+        'object_id': instance.proposal.id,
+        'title': f'Изменение статуса РП №{instance.proposal.reg_num}',
+        'message': f'Статус изменен на: {instance.get_status_display()}',
+        'status': instance.status
+    }
     # 1. Отправляем ответственному за приложение, если статус reg или recheck
     if instance.status in [instance.StatusChoices.REG, instance.StatusChoices.RECHECK]:
-        root_department = instance.proposal.department
-        while root_department.parent:
-            root_department = root_department.parent
+        root_department = instance.proposal.department.get_root()
         # Ищем UserAppRoute по app_name и корневому department
         app_route = UserAppRoute.objects.filter(app_name='rational', department=root_department).first()
         if app_route and app_route.user:
-            recipients.append(app_route.user.email)
+            Notification.objects.create(user=app_route.user, **notification_data)
     # 2. Отправляем авторам, если статус rework, accept, reject, apply
     if instance.status in [
         instance.StatusChoices.REWORK,
@@ -341,18 +349,8 @@ def send_notification(sender, instance, created, **kwargs):
         instance.StatusChoices.REJECT,
         instance.StatusChoices.APPLY
     ]:
-        recipients += list(instance.proposal.authors.values_list('email', flat=True))
-    # Отправка email
-    if recipients:
-        subject = f'Изменение статуса РП №{instance.proposal.reg_num}'
-        message = (
-            f'Статус рационализаторского предложения №{instance.proposal.reg_num} изменен.\n'
-            f'Новый статус: {instance.get_status_display()}\n'
-            f"Дата изменения: {instance.date_changed.strftime('%d.%m.%Y, %H:%M')}\n"
-            f"Примечание: {instance.note or 'Без примечаний'}"
-        )
-        print(instance.status, recipients)
-        # self.send_email(self.owner.email, subject, message)
+        for author in instance.proposal.authors.all():
+            Notification.objects.create(user=author, **notification_data)
 
 
 class AnnualPlan(models.Model):
@@ -459,9 +457,9 @@ class QuarterlyPlan(models.Model):
         proposals = Proposal.objects.filter(
             reg_date__range=(start_date, end_date),
             department__id__in=department_ids,  # Только для текущего оборудования и его дочерних элементов
-            statuses__status=Status.StatusChoices.REG,
+            statuses__status=ProposalStatus.StatusChoices.REG,
         ).filter(
-            statuses__status=Status.StatusChoices.ACCEPT
+            statuses__status=ProposalStatus.StatusChoices.ACCEPT
         ).distinct()
         return proposals.count()
 
@@ -477,9 +475,9 @@ class QuarterlyPlan(models.Model):
         proposals = Proposal.objects.filter(
             reg_date__range=(start_date, end_date),
             department__id__in=department_ids,  # Только для текущего оборудования и его дочерних элементов
-            statuses__status=Status.StatusChoices.REG,
+            statuses__status=ProposalStatus.StatusChoices.REG,
         ).filter(
-            statuses__status=Status.StatusChoices.ACCEPT
+            statuses__status=ProposalStatus.StatusChoices.ACCEPT
         ).distinct()
         return proposals.aggregate(total_economy=Sum('economy_size'))['total_economy'] or 0
 

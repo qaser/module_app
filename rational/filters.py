@@ -7,7 +7,7 @@ from django.utils.functional import lazy
 from equipments.models import Department
 from users.models import Role
 
-from .models import CATEGORY, AnnualPlan, Proposal, Status
+from .models import CATEGORY, AnnualPlan, Proposal, ProposalStatus
 
 
 def get_proposal_years():
@@ -47,7 +47,7 @@ class ProposalFilter(df.FilterSet):
         label='Структурное подразделение'
     )
     status = df.ChoiceFilter(
-        choices=Status.StatusChoices.choices,
+        choices=ProposalStatus.StatusChoices.choices,
         method='filter_by_status',
         label='Статус'
     )
@@ -101,15 +101,15 @@ class ProposalFilter(df.FilterSet):
 
     def filter_by_status(self, queryset, name, value):
         """Фильтрация по последнему статусу"""
-        if value == Status.StatusChoices.ACCEPT:
-            latest_status = Status.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
+        if value == ProposalStatus.StatusChoices.ACCEPT:
+            latest_status = ProposalStatus.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
             return queryset.annotate(
                 latest_status=Subquery(latest_status)
             ).filter(
-                latest_status__in=[Status.StatusChoices.ACCEPT, Status.StatusChoices.APPLY]
+                latest_status__in=[ProposalStatus.StatusChoices.ACCEPT, ProposalStatus.StatusChoices.APPLY]
             )
         else:
-            latest_status = Status.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
+            latest_status = ProposalStatus.objects.filter(proposal=OuterRef('id')).order_by('-date_changed').values('status')[:1]
             return queryset.annotate(
                 latest_status=Subquery(latest_status)
             ).filter(

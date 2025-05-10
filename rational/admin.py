@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from .models import (AnnualPlan, Proposal, ProposalDocument, QuarterlyPlan,
-                     Status)
+                     ProposalStatus)
 
 
 class QuarterlyPlanInline(admin.TabularInline):
@@ -86,7 +86,7 @@ class DocumentAdmin(admin.ModelAdmin):
     empty_value_display = '-'
 
 
-@admin.register(Status)
+@admin.register(ProposalStatus)
 class StatusAdmin(admin.ModelAdmin):
     list_display = ('proposal', 'colored_status', 'date_changed', 'owner', 'short_note')
     list_filter = ('status', 'date_changed', 'owner')

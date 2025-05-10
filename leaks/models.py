@@ -4,22 +4,24 @@ from equipments.models import Equipment
 from leaks.utils import compress_image
 from tpa.models import Valve
 from users.models import ModuleUser
+from django.core.exceptions import ValidationError
+
 
 PLACE = (('КЦ', 'КЦ'), ('ЛЧ', 'ЛЧ'),)
+FILETYPE = (('video', 'video'), ('image', 'image'))
+DETECTOR_TYPE = (
+    ('Эксплуатационный персонал', 'Эксплуатационный персонал'),
+    ('Ремонтный персонал', 'Ремонтный персонал'),
+    ('Административная проверка', 'Административная проверка'),
+    ('Контролирующая организация', 'Контролирующая организация'),
+)
 DOCTYPE = (
     ('Протокол', 'Протокол'),
     ('Донесение об утечке газа', 'Донесение об утечке газа'),
 )
-FILETYPE = (('video', 'video'), ('image', 'image'))
 
 
 class Leak(models.Model):
-    # direction = models.ForeignKey(
-    #     Direction,
-    #     verbose_name='Структурное подразделение',
-    #     related_name='directions',
-    #     on_delete=models.CASCADE,
-    # )
     place = models.CharField(
         'Местоположение утечки',
         choices=PLACE,
@@ -105,11 +107,20 @@ class Leak(models.Model):
         blank=False,
         null=False,
     )
-    detector = models.CharField(
+    detector_type = models.CharField(
         verbose_name='Кем выявлена утечка',
+        choices=DETECTOR_TYPE,
         max_length=50,
         blank=False,
         null=False,
+    )
+    detector = models.ForeignKey(
+        ModuleUser,
+        on_delete=models.SET_NULL,
+        verbose_name='Кто обнаружил',
+        related_name='detectors',
+        blank=True,
+        null=True,
     )
     executor = models.ForeignKey(
         ModuleUser,
@@ -242,3 +253,20 @@ class LeakStatus(models.Model):
     class Meta:
         verbose_name = 'Статус утечки газа'
         verbose_name_plural = 'Статусы утечки газа'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['leak', 'status'],
+                name='unique_status_per_leak',
+            ),
+        ]
+
+    def clean(self):
+        if self.status in ['reg', 'fixed', 'draft']:
+            if LeakStatus.objects.filter(leak=self.leak, status=self.status).exists():
+                raise ValidationError(
+                    f'Статус "{self.get_status_display()}" уже существует для этой утечки.'
+                )
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)

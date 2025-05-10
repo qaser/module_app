@@ -19,6 +19,8 @@ INSTALLED_APPS = [
     'leaks',
     'rational',
     'users',
+    'notifications',
+    # 'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,7 +63,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'module_app.wsgi.application'
-ASGI_APPLICATION = 'module_app.asgi.application'
+# ASGI_APPLICATION = 'module_app.asgi.application'
 
 LOGGING = {
     'version': 1,

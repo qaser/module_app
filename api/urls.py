@@ -21,6 +21,8 @@ router.register('statuses', views.StatusViewSet, basename='statuses')
 router.register('rational-plans', views.AnnualPlanViewSet, basename='rational-plans')
 router.register(r'rational-plans/(?P<plan_id>\d+)/quarterly', views.QuarterlyPlanViewSet, basename='rational-plans-quarterly')
 router.register(r'valves/(?P<valve_id>\d+)/services', views.ValveServiceViewSet, basename='valve-services')
+router.register(r'notifications', views.NotificationViewSet, basename='notification')
+
 
 
 urlpatterns = [

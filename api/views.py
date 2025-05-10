@@ -1,17 +1,21 @@
 import datetime as dt
 
 from django.http import JsonResponse
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
-from rest_framework import generics, status, viewsets
+from rest_framework import generics, status, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from notifications.models import Notification
+from .serializers import NotificationSerializer
 
 from equipments.models import Department, Equipment
 from leaks.models import Leak
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
-                             QuarterlyPlan, Status)
+                             QuarterlyPlan, ProposalStatus)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
@@ -23,7 +27,8 @@ from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
                           StatusSerializer, UserSerializer,
                           ValveDocumentSerializer, ValveImageSerializer,
-                          ValveSerializer, WorkServiceSerializer)
+                          ValveSerializer, WorkServiceSerializer,
+                          NotificationSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
@@ -254,3 +259,36 @@ class AnnualPlanViewSet(viewsets.ModelViewSet):
 class QuarterlyPlanViewSet(viewsets.ModelViewSet):
     queryset = QuarterlyPlan.objects.all()
     serializer_class = QuarterlyPlanSerializer
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    queryset = Notification.objects.all()
+
+    def get_queryset(self):
+        """Фильтрация только для текущего пользователя"""
+        return self.queryset.filter(user=self.request.user).order_by('-created_at')
+
+    @action(detail=False, methods=['get'])
+    def unread(self, request):
+        """Кастомный эндпоинт для непрочитанных уведомлений"""
+        last_check = request.query_params.get('last_check')
+        queryset = self.get_queryset().filter(is_read=False)
+
+        if last_check:
+            try:
+                last_check = timezone.datetime.fromisoformat(last_check)
+                queryset = queryset.filter(created_at__gt=last_check)
+            except ValueError:
+                pass
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['post'])
+    def mark_as_read(self, request, pk=None):
+        """Пометить уведомление как прочитанное"""
+        notification = self.get_object()
+        notification.is_read = True
+        notification.save()
+        return Response({'status': 'marked as read'})
