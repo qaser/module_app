@@ -56,6 +56,10 @@ export default class AppMenu {
                 <div class="sidebar__icon sidebar__icon_app"></div>
                 <h3 class="sidebar__text">Рационализаторская работа</h3>
             </a>
+            <a href="/pipelines/" class="sidebar__item module-color_pipelines">
+                <div class="sidebar__icon sidebar__icon_app"></div>
+                <h3 class="sidebar__text">Магистральные газопроводы</h3>
+            </a>
         `;
 
         // Добавляем обработчик клика на кнопки меню

@@ -3,17 +3,20 @@ import datetime as dt
 from django.http import JsonResponse
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
+from django.db.models import Q, Max, Min
 from rest_framework import generics, status, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from notifications.models import Notification
 from .serializers import NotificationSerializer
 
 from equipments.models import Department, Equipment
 from leaks.models import Leak
+from pipelines.models import Pipeline, Pipe, ValveNode, ConnectionNode, BridgeNode
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              QuarterlyPlan, ProposalStatus)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -28,13 +31,14 @@ from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           StatusSerializer, UserSerializer,
                           ValveDocumentSerializer, ValveImageSerializer,
                           ValveSerializer, WorkServiceSerializer,
-                          NotificationSerializer)
+                          NotificationSerializer, PipelineSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
     queryset = ValveImage.objects.all()
     serializer_class = ValveImageSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save()
@@ -44,6 +48,7 @@ class ValveDocumentViewSet(viewsets.ModelViewSet):
     queryset = ValveDocument.objects.all()
     serializer_class = ValveDocumentSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save()
@@ -53,6 +58,7 @@ class ProposalDocumentViewSet(viewsets.ModelViewSet):
     queryset = ProposalDocument.objects.all()
     serializer_class = ProposalDocumentSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save()
@@ -61,12 +67,14 @@ class ProposalDocumentViewSet(viewsets.ModelViewSet):
 class LeaksViewSet(viewsets.ModelViewSet):
     queryset = Leak.objects.all()
     serializer_class = LeakSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ValveViewSet(viewsets.ModelViewSet):
     queryset = Valve.objects.all()
     serializer_class = ValveSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
     def perform_update(self, serializer):
         factory_str = self.request.data.get("factory")
@@ -89,17 +97,20 @@ class ValveViewSet(viewsets.ModelViewSet):
 class FactoryViewSet(viewsets.ModelViewSet):
     queryset = Factory.objects.all()
     serializer_class = FactorySerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ProposalViewSet(viewsets.ModelViewSet):
     queryset = Proposal.objects.all()
     serializer_class = ProposalSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = ModuleUser.active_objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
+    permission_classes = [IsAuthenticated]
 
     @action(methods=['GET', 'PATCH'], detail=False)
     def me(self, request):
@@ -116,11 +127,13 @@ class UserViewSet(viewsets.ModelViewSet):
 class ServiceTypeViewSet(viewsets.ModelViewSet):
     queryset = ServiceType.objects.values('name').distinct().order_by('name')
     serializer_class = ServiceTypeSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         valve = get_object_or_404(Valve, id=self.request.data['valve'])
@@ -154,6 +167,7 @@ class WorkServiceView(viewsets.ModelViewSet):
     serializer_class = WorkServiceSerializer
     parser_classes = (MultiPartParser, FormParser)
     http_method_names = ['get', 'post', 'patch', 'delete']
+    permission_classes = [IsAuthenticated]
 
     def perform_update(self, serializer):
         instance = self.get_object()
@@ -190,6 +204,7 @@ class WorkServiceView(viewsets.ModelViewSet):
 
 class ValveServiceViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_valve(self):  # DRY function for extract 'id' from url and check
         valve = get_object_or_404(Valve, id=self.kwargs['valve_id'])
@@ -201,6 +216,8 @@ class ValveServiceViewSet(viewsets.ModelViewSet):
 
 
 class EquipmentViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
     def list(self, request):
         parent_id = request.query_params.get('parent_id', None)
         queryset = Equipment.objects.all()
@@ -213,6 +230,8 @@ class EquipmentViewSet(viewsets.ViewSet):
 
 
 class DepartmentViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
     def list(self, request):
         parent_id = request.query_params.get('parent_id', None)
         queryset = Department.objects.all()
@@ -225,6 +244,8 @@ class DepartmentViewSet(viewsets.ViewSet):
 
 
 class StatusViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
     def list(self, request):
         current_status = request.query_params.get('status')
         if not current_status:
@@ -249,6 +270,7 @@ class StatusViewSet(viewsets.ViewSet):
 class AnnualPlanViewSet(viewsets.ModelViewSet):
     queryset = AnnualPlan.objects.all()
     serializer_class = AnnualPlanSerializer
+    permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -259,11 +281,13 @@ class AnnualPlanViewSet(viewsets.ModelViewSet):
 class QuarterlyPlanViewSet(viewsets.ModelViewSet):
     queryset = QuarterlyPlan.objects.all()
     serializer_class = QuarterlyPlanSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     queryset = Notification.objects.all()
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """Фильтрация только для текущего пользователя"""
@@ -292,3 +316,37 @@ class NotificationViewSet(viewsets.ModelViewSet):
         notification.is_read = True
         notification.save()
         return Response({'status': 'marked as read'})
+
+
+class PipelineViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = PipelineSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.department:
+            return Pipeline.objects.none()
+
+        # Получаем все участки, связанные с department пользователя
+        department_pipes = Pipe.objects.filter(department=user.department)
+        pipeline_ids = department_pipes.values_list('pipeline_id', flat=True).distinct()
+
+        # Получаем диапазон километража для отображения
+        min_km = department_pipes.aggregate(Min('start_point'))['start_point__min']
+        max_km = department_pipes.aggregate(Max('end_point'))['end_point__max']
+
+        # Добавляем небольшой отступ по краям
+        self.view_start = min_km - 0.5 if min_km else 0
+        self.view_end = max_km + 0.5 if max_km else 10
+
+        return Pipeline.objects.filter(id__in=pipeline_ids)
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+
+        # Добавляем метаданные о диапазоне отображения
+        response.data['view_range'] = {
+            'start': getattr(self, 'view_start', 0),
+            'end': getattr(self, 'view_end', 10)
+        }
+        return response

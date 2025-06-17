@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
+from pipelines.models import Pipeline, Pipe, ValveNode, ConnectionNode, BridgeNode
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              QuarterlyPlan, ProposalStatus)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -479,3 +480,34 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
         children_department = obj.department.get_children()
         children_plans = AnnualPlan.objects.filter(department__in=children_department, year=obj.year)
         return AnnualPlanSerializer(children_plans, many=True).data
+
+
+class PipeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Pipe
+        fields = ['id', 'diameter', 'start_point', 'end_point']
+
+class ValveNodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ValveNode
+        fields = ['id', 'valve_point']
+
+class ConnectionNodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConnectionNode
+        fields = ['id', 'connect_point']
+
+class BridgeNodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BridgeNode
+        fields = ['id', 'bridge_point']
+
+class PipelineSerializer(serializers.ModelSerializer):
+    pipes = PipeSerializer(many=True)
+    valve_nodes = ValveNodeSerializer(many=True)
+    connection_nodes = ConnectionNodeSerializer(many=True)
+    bridge_nodes = BridgeNodeSerializer(many=True)
+
+    class Meta:
+        model = Pipeline
+        fields = ['id', 'name', 'pipes', 'valve_nodes', 'connection_nodes', 'bridge_nodes']

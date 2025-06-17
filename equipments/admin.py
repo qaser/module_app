@@ -1,15 +1,8 @@
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
-from .models import Department, Equipment, Pipeline
+from .models import Department, Equipment
 
-# Pipeline Admin
-@admin.register(Pipeline)
-class PipelineAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code')
-    search_fields = ('name', 'code')
-    ordering = ('name',)
 
-# Department Admin
 @admin.register(Department)
 class DepartmentAdmin(DraggableMPTTAdmin):
     list_display = ('indented_title', 'parent')
@@ -27,13 +20,16 @@ class DepartmentAdmin(DraggableMPTTAdmin):
         self.message_user(request, "Дочерние подразделения успешно созданы")
     add_child_department.short_description = "Создать дочернее подразделение"
 
-# Equipment Admin
+
 @admin.register(Equipment)
 class EquipmentAdmin(DraggableMPTTAdmin):
-    list_display = ('indented_title', 'pipeline')
-    fields = ('name', 'parent', 'pipeline', 'departments')
+    # list_display = ('indented_title', 'pipeline')
+    # fields = ('name', 'parent', 'pipeline', 'departments')
+    list_display = ('indented_title',)
+    fields = ('name', 'parent', 'departments')
     filter_horizontal = ('departments',)
-    list_filter = ('pipeline', 'departments')
+    # list_filter = ('pipeline', 'departments')
+    list_filter = ('departments',)
     search_fields = ('name',)
     actions = ['add_child_equipment']
 

@@ -1,6 +1,6 @@
 export default class PollingClient {
   constructor(options = {}) {
-    this.pollingInterval = options.pollingInterval || 300000; // 30 секунд
+    this.pollingInterval = options.pollingInterval || 600000; // 60 секунд
     this.endpoint = options.endpoint || '/api/notifications/';
     this.messageHandlers = new Set();
     this.isRunning = false;

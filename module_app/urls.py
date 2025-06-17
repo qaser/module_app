@@ -12,6 +12,7 @@ handler400 = 'module_app.views.bad_request'  # noqa
 urlpatterns = [
     path('app-admin/', admin.site.urls),
     path('leaks/', include('leaks.urls')),
+    path('pipelines/', include('pipelines.urls')),
     path('tpa/', include('tpa.urls')),
     path('rational/', include('rational.urls')),
     path('auth/', include('django.contrib.auth.urls')),
