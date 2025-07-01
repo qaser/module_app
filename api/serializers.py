@@ -4,13 +4,13 @@ from rest_framework import serializers
 
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
-from pipelines.models import Pipeline, Pipe, ValveNode, ConnectionNode, BridgeNode
+from notifications.models import Notification
+from pipelines.models import Node, Pipe, PipeState, Pipeline, NodeState
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
-                             QuarterlyPlan, ProposalStatus)
+                             ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
 from users.models import ModuleUser, Role, UserAppRoute
-from notifications.models import Notification
 
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -18,7 +18,16 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'message', 'url', 'created_at', 'is_read', 'app_name', 'object_id']
+        fields = [
+            'id',
+            'title',
+            'message',
+            'url',
+            'created_at',
+            'is_read',
+            'app_name',
+            'object_id'
+        ]
 
     def get_url(self, obj):
         return obj.get_absolute_url()
@@ -482,32 +491,96 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
         return AnnualPlanSerializer(children_plans, many=True).data
 
 
+class PipeStateSerializer(serializers.ModelSerializer):
+    color = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PipeState
+        fields = '__all__'
+
+    def get_color(self, obj):
+        return obj.color
+
+
+class NodeStateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NodeState
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['state_display'] = instance.get_state_display()
+        data['changed_by'] = instance.changed_by.lastname_and_initials if instance.changed_by else None
+        return data
+
+
 class PipeSerializer(serializers.ModelSerializer):
+    state = serializers.SerializerMethodField()
+
     class Meta:
         model = Pipe
-        fields = ['id', 'diameter', 'start_point', 'end_point']
+        fields = [
+            'id',
+            'start_point',
+            'end_point',
+            'diameter',
+            'state'
+        ]
 
-class ValveNodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ValveNode
-        fields = ['id', 'valve_point']
+    def get_state(self, obj):
+        current_state = obj.current_state
+        if current_state:
+            return PipeStateSerializer(current_state).data
+        return None
 
-class ConnectionNodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ConnectionNode
-        fields = ['id', 'connect_point']
 
-class BridgeNodeSerializer(serializers.ModelSerializer):
+class NodeSerializer(serializers.ModelSerializer):
+    valves = serializers.SerializerMethodField()
+    state = serializers.SerializerMethodField()
+
     class Meta:
-        model = BridgeNode
-        fields = ['id', 'bridge_point']
+        model = Node
+        fields = [
+            'id',
+            'node_type',
+            'location_point',
+            'pipeline',
+            'equipment',
+            'valves',
+            'state',
+        ]
+
+    def get_valves(self, obj):
+        valves = Valve.objects.filter(equipment=obj.equipment)
+        return ValveSerializer(valves, many=True).data
+
+    def get_state(self, obj):
+        latest_state = obj.states.order_by('-timestamp').first()
+        if latest_state:
+            return NodeStateSerializer(latest_state).data
+        return None
+
 
 class PipelineSerializer(serializers.ModelSerializer):
-    pipes = PipeSerializer(many=True)
-    valve_nodes = ValveNodeSerializer(many=True)
-    connection_nodes = ConnectionNodeSerializer(many=True)
-    bridge_nodes = BridgeNodeSerializer(many=True)
+    pipes = serializers.SerializerMethodField()
+    nodes = serializers.SerializerMethodField()
 
     class Meta:
         model = Pipeline
-        fields = ['id', 'name', 'pipes', 'valve_nodes', 'connection_nodes', 'bridge_nodes']
+        fields = ['order', 'title', 'description', 'pipes', 'nodes']
+
+    def get_pipes(self, obj):
+        department = self.context.get('department')
+        pipes = obj.pipes.filter(department=department)
+        return PipeSerializer(pipes, many=True).data
+
+    def get_nodes(self, obj):
+        department = self.context.get('department')
+        # Получаем все equipment, связанные с department пользователя (включая родительские)
+        departments = department.get_ancestors(include_self=True)
+        equipment_ids = Equipment.objects.filter(
+            departments__in=departments
+        ).values_list('id', flat=True)
+
+        nodes = obj.nodes.filter(equipment__in=equipment_ids)
+        return NodeSerializer(nodes, context=self.context, many=True).data

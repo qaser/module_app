@@ -32,6 +32,11 @@ class Department(MPTTModel):
     def __str__(self):
         return self.name
 
+    def get_all_related_equipment(self):
+        """Возвращает все equipment, связанные с этим подразделением и его родителями"""
+        departments = self.get_ancestors(include_self=True)
+        return Equipment.objects.filter(departments__in=departments).distinct()
+
 
 class Equipment(MPTTModel):
     name = models.CharField(

@@ -5,7 +5,6 @@ from equipments.models import Equipment
 from module_app.utils import compress_image
 from users.models import ModuleUser
 
-
 SERVICECOLOR = (
     ('blue', 'синий'),
     ('gray', 'серый'),
@@ -67,9 +66,9 @@ class Factory(models.Model):
 
 class Valve(models.Model):
     equipment = models.ForeignKey(
-        Equipment(),
+        Equipment,
         verbose_name='Место установки',
-        related_name='equipment',
+        related_name='valves',
         on_delete=models.CASCADE,
         null=False,
         blank=False,
@@ -189,6 +188,11 @@ class Valve(models.Model):
     removed = models.BooleanField(
         'Демонтирован',
         default=False
+    )
+    is_pipelines_major = models.BooleanField(
+        'Кран магистрального трубопровода',
+        default=False,
+        help_text='Этот кран используется в работе магистрального газопровода'
     )
 
     class Meta:

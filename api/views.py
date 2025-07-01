@@ -1,37 +1,35 @@
 import datetime as dt
 
+from django.db.models import Max, Min, Q, Prefetch
 from django.http import JsonResponse
-from django.utils import timezone
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, Max, Min
-from rest_framework import generics, status, viewsets, permissions
+from django.utils import timezone
+from rest_framework import generics, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from notifications.models import Notification
-from .serializers import NotificationSerializer
 
 from equipments.models import Department, Equipment
 from leaks.models import Leak
-from pipelines.models import Pipeline, Pipe, ValveNode, ConnectionNode, BridgeNode
+from notifications.models import Notification
+from pipelines.models import (Node, Pipe, Pipeline)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
-                             QuarterlyPlan, ProposalStatus)
+                             ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
 
 from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, ProposalDocumentSerializer,
+                          LeakSerializer, NotificationSerializer,
+                          PipelineSerializer, ProposalDocumentSerializer,
                           ProposalSerializer, QuarterlyPlanSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
                           StatusSerializer, UserSerializer,
                           ValveDocumentSerializer, ValveImageSerializer,
-                          ValveSerializer, WorkServiceSerializer,
-                          NotificationSerializer, PipelineSerializer)
+                          ValveSerializer, WorkServiceSerializer)
 
 
 class ValveImageViewSet(viewsets.ModelViewSet):
@@ -318,35 +316,29 @@ class NotificationViewSet(viewsets.ModelViewSet):
         return Response({'status': 'marked as read'})
 
 
-class PipelineViewSet(viewsets.ReadOnlyModelViewSet):
+class PipelineViewSet(viewsets.ModelViewSet):
     serializer_class = PipelineSerializer
     permission_classes = [IsAuthenticated]
+    queryset = Pipeline.objects.all().order_by('order')
 
     def get_queryset(self):
-        user = self.request.user
-        if not user.department:
-            return Pipeline.objects.none()
+        user_department = self.request.user.department
+        departments = user_department.get_ancestors(include_self=True)
+        equipment_ids = Equipment.objects.filter(
+            departments__in=departments
+        ).values_list('id', flat=True)
 
-        # Получаем все участки, связанные с department пользователя
-        department_pipes = Pipe.objects.filter(department=user.department)
-        pipeline_ids = department_pipes.values_list('pipeline_id', flat=True).distinct()
+        return Pipeline.objects.filter(
+            Q(pipes__department__in=departments) |
+            Q(nodes__equipment__in=equipment_ids)
+        ).distinct().order_by('order').prefetch_related(
+            Prefetch('pipes',
+                    queryset=Pipe.objects.filter(department__in=departments)
+                    .prefetch_related('states')),
+            Prefetch('nodes',
+                    queryset=Node.objects.filter(equipment__in=equipment_ids)
+                    .prefetch_related('states')),
+        )
 
-        # Получаем диапазон километража для отображения
-        min_km = department_pipes.aggregate(Min('start_point'))['start_point__min']
-        max_km = department_pipes.aggregate(Max('end_point'))['end_point__max']
-
-        # Добавляем небольшой отступ по краям
-        self.view_start = min_km - 0.5 if min_km else 0
-        self.view_end = max_km + 0.5 if max_km else 10
-
-        return Pipeline.objects.filter(id__in=pipeline_ids)
-
-    def list(self, request, *args, **kwargs):
-        response = super().list(request, *args, **kwargs)
-
-        # Добавляем метаданные о диапазоне отображения
-        response.data['view_range'] = {
-            'start': getattr(self, 'view_start', 0),
-            'end': getattr(self, 'view_end', 10)
-        }
-        return response
+    def get_serializer_context(self):
+        return {'department': self.request.user.department}

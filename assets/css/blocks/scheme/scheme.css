@@ -1,4 +1,115 @@
 .scheme {
     width: 100%;
-    margin-top: 12px;
+    border: 1px solid #6A5A8C;
+    border-radius: 10px;
+    overflow: auto;
+    margin-top: 20px;
+    padding-bottom: 20px;
+}
+
+.scheme svg {
+    display: block;
+    min-width: 100%;
+    min-height: 100%;
+}
+
+/* Общие стили для интерактивных элементов */
+.pipe-element,
+.node-element {
+    transition: opacity 0.2s;
+}
+
+.pipe-element:hover,
+.node-element:hover {
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+/* Убираем стандартный тултип SVG */
+.pipe-element[data-tooltip],
+.node-element[data-tooltip] {
+    pointer-events: auto;
+}
+
+.scheme-container {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.scheme-legend {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    gap: 15px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+}
+
+.legend-color {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+    border-radius: 2px;
+}
+
+/* Цвета для легенды */
+.legend-pipe { background-color: #4a89dc; }
+.legend-valve { background-color: #e9573f; }
+.legend-connection { background-color: #37bc9b; }
+.legend-bridge { background-color: #967adc; }
+
+/* Стили для кастомного тултипа */
+.pipeline-tooltip {
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1000;
+    display: none;
+    white-space: pre-line;
+    max-width: 300px;
+    line-height: 1.4;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Стили для контекстного меню */
+.pipeline-context-menu {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    min-width: 180px;
+}
+
+.pipeline-context-menu-item {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.pipeline-context-menu-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .scheme {
+        height: 400px;
+    }
 }

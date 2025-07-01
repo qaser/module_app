@@ -350,6 +350,51 @@ export default class Api {
         .then(this._checkResponse);
     }
 
+    getPipelines() {
+        return fetch(`${this._baseUrl}/pipelines/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    changePipeState(pipeId, stateData) {
+        return fetch(`${this._baseUrl}/pipe-states/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: JSON.stringify({
+                pipe: pipeId,
+                ...stateData
+            })
+        })
+        .then(this._checkResponse);
+    }
+
+    changeNodeState(nodeId, stateData) {
+        return fetch(`${this._baseUrl}/node-states/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: JSON.stringify({
+                node: nodeId,
+                ...stateData
+            })
+        })
+        .then(this._checkResponse);
+    }
+
+    getPipeDetails(pipeId) {
+        return fetch(`${this._baseUrl}/pipes/${pipeId}/`, {
+            headers: this._headers,
+        })
+        .then(this._checkResponse);
+    }
+
+    getNodeDetails(nodeId) {
+        return fetch(`${this._baseUrl}/nodes/${nodeId}/`, {
+            headers: this._headers,
+        })
+        .then(this._checkResponse);
+    }
+
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();

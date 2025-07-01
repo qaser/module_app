@@ -1,7 +1,8 @@
 from django.db import models
-from users.models import ModuleUser, UserAppRoute
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
+
+from users.models import ModuleUser, UserAppRoute
 
 
 class Notification(models.Model):

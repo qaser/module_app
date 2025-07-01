@@ -37,6 +37,7 @@ class ValveAdmin(admin.ModelAdmin):
         'drive_factory',
         'drive_year_exploit',
         'note',
+        'is_pipelines_major'
     )
     search_fields = (
         'equipment',
@@ -56,6 +57,7 @@ class ValveAdmin(admin.ModelAdmin):
         'drive_type',
         'drive_factory',
         'drive_year_exploit',
+        'is_pipelines_major'
     )
     list_filter = (
         'title',
@@ -66,6 +68,7 @@ class ValveAdmin(admin.ModelAdmin):
         'remote',
         'design',
         'drive_type',
+        'is_pipelines_major'
     )
     empty_value_display = '-'
 

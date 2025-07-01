@@ -1,6 +1,6 @@
 {% extends "module_app/base.html" %}
 {% block title %}Обзор магистральных газопроводов{% endblock %}
-{% block app_name %}Магистральные газопроводыы{% endblock %}
+{% block app_name %}Магистральные газопроводы{% endblock %}
 
 {% load static %}
 {% load render_table from django_tables2 %}
@@ -26,9 +26,35 @@
 <main class="content">
   <section class="main" id="main">
     <h1 class="main__title">Обзор магистральных газопроводов</h1>
-    <div class="scheme"></div>
+    <div class="scheme" id="scheme"></div>
   </section>
 </main>
+
+<div class="popup" id="popup-pipe-statechange">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="state-change" id="form-pipe-statechange">
+            <h2 class="form-popup__header"></h2>
+            <div id="state-change-form-fields">
+                <!-- Поля будут добавляться динамически -->
+            </div>
+            <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<div class="popup" id="popup-node-statechange">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="state-change" id="form-node-statechange">
+            <h2 class="form-popup__header"></h2>
+            <div id="state-change-form-fields">
+                <!-- Поля будут добавляться динамически -->
+            </div>
+            <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}

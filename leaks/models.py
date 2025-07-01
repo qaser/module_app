@@ -1,11 +1,10 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from equipments.models import Equipment
 from leaks.utils import compress_image
 from tpa.models import Valve
 from users.models import ModuleUser
-from django.core.exceptions import ValidationError
-
 
 PLACE = (('КЦ', 'КЦ'), ('ЛЧ', 'ЛЧ'),)
 FILETYPE = (('video', 'video'), ('image', 'image'))

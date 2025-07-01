@@ -14,8 +14,8 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from equipments.models import Department
 from module_app.utils import compress_image
-from users.models import ModuleUser, UserAppRoute
 from notifications.models import Notification
+from users.models import ModuleUser, UserAppRoute
 
 from .utils import create_doc
 

@@ -1,7 +1,9 @@
 from django.core.cache import cache
 from django.db.models import Q
-from equipments.models import Equipment, Department
+
+from equipments.models import Department, Equipment
 from users.models import Role
+
 
 class EquipmentAccessMixin:
     """Миксин для контроля доступа к оборудованию"""

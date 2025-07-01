@@ -1,11 +1,11 @@
 import django_filters as df
 from django.db.models import Q
 
-from equipments.models import Equipment, Department
+from equipments.models import Department, Equipment
 from module_app.utils import create_choices
 from users.models import Role
-from .mixins import EquipmentAccessMixin
 
+from .mixins import EquipmentAccessMixin
 from .models import Valve
 
 
