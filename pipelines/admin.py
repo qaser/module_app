@@ -1,7 +1,12 @@
 from django.contrib import admin
-from django.utils.html import format_html
 from django.db.models import Count
-from .models import Pipeline, Pipe, PipeState, Node, NodeState
+from django.utils.html import format_html
+
+from .models import (ComplexPlan, Defect, Hole, HoleDocument, Node, NodeState,
+                     Pipe, PipeDiagrostics, Pipeline, PipeRepair,
+                     PipeRepairDocument, PipeRepairStage, PipeState,
+                     PlannedWork)
+
 
 # Фильтры для админки
 class StateFilter(admin.SimpleListFilter):
@@ -25,7 +30,7 @@ class PipeStateInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('created_by', 'start_date')
     fields = ('state_type', 'start_date', 'end_date', 'description',
-              'current_pressure', 'is_limited', 'created_by')
+              'current_pressure', 'created_by')
 
 # Inline для участков трубопровода
 class PipeInline(admin.TabularInline):
@@ -59,12 +64,34 @@ class NodeInline(admin.TabularInline):
         return obj.equipment.valves.count()
     valves_count.short_description = "Кол-во арматуры"
 
+
 # Inline для состояний арматуры
 class NodeStateInline(admin.TabularInline):
     model = NodeState
     extra = 0
     readonly_fields = ('timestamp', 'changed_by')
     fields = ('state', 'timestamp', 'changed_by', 'comment')
+
+
+class PipeRepairStageInline(admin.TabularInline):
+    model = PipeRepairStage
+    extra = 0
+
+
+class PipeRepairDocumentInline(admin.TabularInline):
+    model = PipeRepairDocument
+    extra = 0
+
+
+class DefectInline(admin.TabularInline):
+    model = Defect
+    extra = 0
+
+
+class HoleDocumentInline(admin.TabularInline):
+    model = HoleDocument
+    extra = 0
+
 
 # Админка для Pipeline
 @admin.register(Pipeline)
@@ -184,3 +211,45 @@ class NodeStateAdmin(admin.ModelAdmin):
         if not obj.pk:
             obj.changed_by = request.user
         super().save_model(request, obj, form, change)
+
+
+@admin.register(PipeRepair)
+class PipeRepairAdmin(admin.ModelAdmin):
+    list_display = ('pipe', 'start_date', 'end_date', 'description')
+    list_filter = ('pipe__pipeline', 'pipe__department')
+    search_fields = ('pipe__pipeline__title', 'description')
+    inlines = [PipeRepairStageInline, PipeRepairDocumentInline]
+
+
+@admin.register(PipeDiagrostics)
+class PipeDiagrosticsAdmin(admin.ModelAdmin):
+    list_display = ('pipe', 'event_date', 'description')
+    list_filter = ('pipe__pipeline',)
+    search_fields = ('pipe__pipeline__title',)
+    inlines = [DefectInline]
+
+
+@admin.register(Hole)
+class HoleAdmin(admin.ModelAdmin):
+    list_display = ('pipe', 'location_point', 'cutting_date', 'welding_date')
+    list_filter = ('pipe__pipeline',)
+    search_fields = ('pipe__pipeline__title',)
+    inlines = [HoleDocumentInline]
+
+
+@admin.register(ComplexPlan)
+class ComplexPlanAdmin(admin.ModelAdmin):
+    list_display = ('department', 'year')
+    list_filter = ('year', 'department')
+    search_fields = ('department__name',)
+
+
+@admin.register(PlannedWork)
+class PlannedWorkAdmin(admin.ModelAdmin):
+    list_display = ('complex_plan', 'work_type', 'start_date', 'end_date', 'target_object')
+    list_filter = ('work_type', 'complex_plan__year')
+    search_fields = ('description', 'complex_plan__department__name')
+
+    def target_object(self, obj):
+        return obj.pipe or obj.node
+    target_object.short_description = 'Объект'

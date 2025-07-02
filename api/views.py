@@ -1,6 +1,6 @@
 import datetime as dt
 
-from django.db.models import Max, Min, Q, Prefetch
+from django.db.models import Max, Min, Prefetch, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from equipments.models import Department, Equipment
 from leaks.models import Leak
 from notifications.models import Notification
-from pipelines.models import (Node, Pipe, Pipeline)
+from pipelines.models import Node, Pipe, Pipeline
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -334,9 +334,11 @@ class PipelineViewSet(viewsets.ModelViewSet):
         ).distinct().order_by('order').prefetch_related(
             Prefetch('pipes',
                     queryset=Pipe.objects.filter(department__in=departments)
+                    .order_by('start_point')
                     .prefetch_related('states')),
             Prefetch('nodes',
                     queryset=Node.objects.filter(equipment__in=equipment_ids)
+                    .order_by('location_point')
                     .prefetch_related('states')),
         )
 

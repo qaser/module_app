@@ -271,7 +271,7 @@ export default class PipelineVisualizer {
         element.classList.add('pipe-element');
         if (pipe.state) {
             element.setAttribute('data-tooltip',
-                `Состояние: ${pipe.state.state_type}\n` +
+                `Состояние: ${pipe.state.state_type_display}\n` +
                 `Давление: ${pipe.state.current_pressure} МПа\n` +
                 `Ограничение: ${pipe.state.is_limited ? 'Да' : 'Нет'}`);
         }

@@ -5,7 +5,9 @@ from rest_framework import serializers
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
-from pipelines.models import Node, Pipe, PipeState, Pipeline, NodeState
+from pipelines.models import (Pipeline, Pipe, Node, PipeState, NodeState,
+                              ComplexPlan, PlannedWork, PipeRepair,
+                              PipeDiagrostics, Defect, Hole)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -493,25 +495,27 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
 
 class PipeStateSerializer(serializers.ModelSerializer):
     color = serializers.SerializerMethodField()
+    state_type_display = serializers.SerializerMethodField()
+    created_by_name = serializers.CharField(source='created_by.lastname_and_initials', read_only=True)
 
     class Meta:
         model = PipeState
         fields = '__all__'
 
     def get_color(self, obj):
-        return obj.color
+        return PipeState.STATE_COLORS.get(obj.state_type)
+
+    def get_state_type_display(self, obj):
+        return obj.get_state_type_display()
 
 
 class NodeStateSerializer(serializers.ModelSerializer):
+    state_display = serializers.CharField(source='get_state_display', read_only=True)
+    changed_by_name = serializers.CharField(source='changed_by.lastname_and_initials', read_only=True)
+
     class Meta:
         model = NodeState
         fields = '__all__'
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['state_display'] = instance.get_state_display()
-        data['changed_by'] = instance.changed_by.lastname_and_initials if instance.changed_by else None
-        return data
 
 
 class PipeSerializer(serializers.ModelSerializer):
@@ -584,3 +588,96 @@ class PipelineSerializer(serializers.ModelSerializer):
 
         nodes = obj.nodes.filter(equipment__in=equipment_ids)
         return NodeSerializer(nodes, context=self.context, many=True).data
+
+
+class ComplexPlanSerializer(serializers.ModelSerializer):
+    department_name = serializers.CharField(source='department.name', read_only=True)
+    planned_works_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ComplexPlan
+        fields = [
+            'id', 'department', 'department_name', 'year',
+            'planned_works_count'
+        ]
+
+    def get_planned_works_count(self, obj):
+        return obj.planned_works.count()
+
+
+class PlannedWorkSerializer(serializers.ModelSerializer):
+    work_type_display = serializers.CharField(source='get_work_type_display', read_only=True)
+    target_object = serializers.SerializerMethodField()
+    target_type = serializers.SerializerMethodField()
+    department = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PlannedWork
+        fields = [
+            'id', 'complex_plan', 'work_type', 'work_type_display',
+            'description', 'start_date', 'end_date', 'pipe', 'node',
+            'target_object', 'target_type', 'department'
+        ]
+        extra_kwargs = {
+            'pipe': {'required': False, 'allow_null': True},
+            'node': {'required': False, 'allow_null': True}
+        }
+
+    def get_target_object(self, obj):
+        if obj.pipe:
+            return PipeSerializer(obj.pipe).data
+        elif obj.node:
+            return NodeSerializer(obj.node).data
+        return None
+
+    def get_target_type(self, obj):
+        if obj.pipe:
+            return 'pipe'
+        elif obj.node:
+            return 'node'
+        return None
+
+    def get_department(self, obj):
+        if obj.pipe:
+            return obj.pipe.department.name
+        elif obj.node:
+            return obj.node.equipment.department.name
+        return None
+
+    def validate(self, data):
+        if not data.get('pipe') and not data.get('node'):
+            raise serializers.ValidationError(
+                "Необходимо указать либо участок газопровода, либо крановый узел."
+            )
+        if data.get('pipe') and data.get('node'):
+            raise serializers.ValidationError(
+                "Можно указать только один объект - либо участок газопровода, либо крановый узел."
+            )
+        return data
+
+
+class PipeRepairSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PipeRepair
+        fields = '__all__'
+
+
+class PipeDiagrosticsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PipeDiagrostics
+        fields = '__all__'
+
+
+class DefectSerializer(serializers.ModelSerializer):
+    defect_type_display = serializers.CharField(source='get_defect_type_display', read_only=True)
+    defect_place_display = serializers.CharField(source='get_defect_place_display', read_only=True)
+
+    class Meta:
+        model = Defect
+        fields = '__all__'
+
+
+class HoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hole
+        fields = '__all__'

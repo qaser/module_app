@@ -1,10 +1,12 @@
-from django.core.management.base import BaseCommand
-from equipments.models import Department, Equipment
-from pipelines.models import Pipeline, Pipe, Node, PipeState, ValveState
-from tpa.models import Valve, Factory
-from users.models import ModuleUser
-import random
 import datetime
+import random
+
+from django.core.management.base import BaseCommand
+
+from equipments.models import Department, Equipment
+from pipelines.models import Node, Pipe, Pipeline, PipeState, ValveState
+from tpa.models import Factory, Valve
+from users.models import ModuleUser
 
 
 class Command(BaseCommand):
