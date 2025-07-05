@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from equipments.models import Department, Equipment
 from leaks.models import Leak
 from notifications.models import Notification
-from pipelines.models import Node, Pipe, Pipeline
+from pipelines.models import Node, NodeState, Pipe, PipeDepartment, PipeState, Pipeline
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -23,7 +23,7 @@ from users.models import ModuleUser, Role
 
 from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, NotificationSerializer,
+                          LeakSerializer, NodeStateSerializer, NotificationSerializer, PipeStateSerializer,
                           PipelineSerializer, ProposalDocumentSerializer,
                           ProposalSerializer, QuarterlyPlanSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
@@ -323,24 +323,91 @@ class PipelineViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user_department = self.request.user.department
-        departments = user_department.get_ancestors(include_self=True)
+        if not user_department:
+            return Pipeline.objects.none()
+        # Дерево: корневой департамент и все потомки
+        root = user_department.get_root()
+        departments = root.get_descendants(include_self=True)
+        # Все Pipe, связанные с этими департаментами
+        pipe_ids = PipeDepartment.objects.filter(
+            department__in=departments
+        ).values_list('pipe_id', flat=True)
+        # Всё оборудование в этих департаментах
         equipment_ids = Equipment.objects.filter(
             departments__in=departments
         ).values_list('id', flat=True)
-
         return Pipeline.objects.filter(
-            Q(pipes__department__in=departments) |
+            Q(pipes__id__in=pipe_ids) |
             Q(nodes__equipment__in=equipment_ids)
         ).distinct().order_by('order').prefetch_related(
-            Prefetch('pipes',
-                    queryset=Pipe.objects.filter(department__in=departments)
-                    .order_by('start_point')
-                    .prefetch_related('states')),
-            Prefetch('nodes',
-                    queryset=Node.objects.filter(equipment__in=equipment_ids)
-                    .order_by('location_point')
-                    .prefetch_related('states')),
+            Prefetch(
+                'pipes',
+                queryset=Pipe.objects.filter(id__in=pipe_ids)
+                .order_by('start_point').prefetch_related('states', 'limits')
+            ),
+            Prefetch(
+                'nodes',
+                queryset=Node.objects.filter(
+                    Q(equipment__in=equipment_ids) | Q(is_shared=True)
+                ).order_by('location_point').prefetch_related(
+                    Prefetch(
+                        'states',
+                        queryset=NodeState.objects.filter(end_date__isnull=True).order_by('-start_date'),
+                        to_attr='current_states'
+                    )
+                )
+            )
         )
 
     def get_serializer_context(self):
         return {'department': self.request.user.department}
+
+
+class PipeStatesViewSet(viewsets.ModelViewSet):
+    queryset = PipeState.objects.all()
+    serializer_class = PipeStateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.get('stateData') or request.data  # поддержка обоих форматов
+        pipe_id = data.get('id')
+        if not pipe_id:
+            return Response({'error': 'Pipe ID не указан'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            pipe = Pipe.objects.get(pk=pipe_id)
+        except Pipe.DoesNotExist:
+            return Response({'error': 'Pipe не найден'}, status=status.HTTP_404_NOT_FOUND)
+        new_state = PipeState.objects.create(
+            pipe=pipe,
+            state_type=data.get('state_type'),
+            start_date=data.get('start_date'),
+            end_date=data.get('end_date'),
+            description=data.get('description'),
+            created_by=request.user
+        )
+        serializer = self.get_serializer(new_state)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class NodeStatesViewSet(viewsets.ModelViewSet):
+    queryset = NodeState.objects.all()
+    serializer_class = NodeStateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.get('stateData') or request.data  # поддержка обоих форматов
+        node_id = data.get('id')
+        if not node_id:
+            return Response({'error': 'Узел ID не указан'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            node = Node.objects.get(pk=node_id)
+        except Node.DoesNotExist:
+            return Response({'error': 'Узел не найден'}, status=status.HTTP_404_NOT_FOUND)
+        new_state = NodeState.objects.create(
+            node=node,
+            state_type=data.get('state_type'),
+            description=data.get('description', ''),
+            changed_by=request.user
+        )
+        serializer = self.get_serializer(new_state)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

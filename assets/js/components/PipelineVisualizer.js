@@ -69,6 +69,7 @@ export default class PipelineVisualizer {
     }
 
     render(pipelinesData) {
+        this.pipelines = pipelinesData
         this.container.innerHTML = '';
 
         const screenWidth = window.innerWidth;
@@ -92,6 +93,7 @@ export default class PipelineVisualizer {
         });
 
         this.container.appendChild(svg);
+        this.svg = svg
         this.applyTransform();
         this.createResetButton();
         this.addClickHandlers();
@@ -104,77 +106,47 @@ export default class PipelineVisualizer {
                 this.contextMenu.close();
                 return;
             }
-
             e.preventDefault();
             e.stopPropagation();
-
             const isPipe = target.classList.contains('pipe-element');
-            const id = target.getAttribute(isPipe ? 'data-pipe-id' : 'data-node-id');
+            const id = target.getAttribute(isPipe ? 'pipe-id' : 'node-id');
             const type = isPipe ? 'pipe' : 'node';
+            this.selectedElement = {
+                type,
+                id: parseInt(id),
+            };
+
+            if (this.tooltip) {
+                this.hideTooltip();
+            }
 
             const menuItems = [
                 {
                     text: 'Сменить состояние',
-                    action: () => type === 'pipe' ? this.popupPipeChange.open() : this.popupNodeChange.open()
+                    action: () => {
+                        if (type === 'pipe') {
+                            this.popupPipeChange.open();
+                        } else {
+                            this.popupNodeChange.open();
+                        }
+                    }
                 },
                 {
                     text: 'Подробный обзор',
                     action: () => this.openDetailsPopup(type, id)
                 }
             ];
-
-            this.contextMenu.open(target, menuItems);
+            this.contextMenu.open(e, menuItems);
         });
     }
 
-    // openStateChangePopup(type, id) {
-        // Здесь нужно создать и открыть попап с формой
-        // const popup = new PopupWithForm(
-        //     '#popup-state-change',
-        //     '.form-popup',
-        //     `Сменить состояние ${type === 'pipe' ? 'участка' : 'узла'}`,
-        //     (formData) => this.handleStateChange(type, id, formData)
-        // );
-
-        // if (type === 'pipe') {
-        //     popup.setFormFields([
-        //         { name: 'state_type', type: 'select', options: ['repair', 'operation', 'disabled', 'limited', 'depletion', 'diagnostics'] },
-        //         { name: 'current_pressure', type: 'number', placeholder: 'Давление, МПа' },
-        //         { name: 'is_limited', type: 'checkbox', label: 'С ограничением давления' },
-        //         { name: 'description', type: 'textarea', placeholder: 'Описание состояния' }
-        //     ]);
-        // } else {
-        //     popup.setFormFields([
-        //         { name: 'state', type: 'select', options: ['open', 'closed'] },
-        //         { name: 'comment', type: 'textarea', placeholder: 'Комментарий' }
-        //     ]);
-        // }
-
-    //     this.popup.open();
-    // }
+    getSelectedElement() {
+        return this.selectedElement || null;
+    }
 
     openDetailsPopup(type, id) {
         // Реализация просмотра деталей
         console.log(`Opening details for ${type} with id ${id}`);
-    }
-
-    handleStateChange(type, id, formData) {
-        if (type === 'pipe') {
-            this.api.changePipeState(id, formData)
-                .then(() => this.refreshPipeline())
-                .catch(error => console.error('Error changing pipe state:', error));
-        } else {
-            this.api.changeNodeState(id, formData)
-                .then(() => this.refreshPipeline())
-                .catch(error => console.error('Error changing node state:', error));
-        }
-    }
-
-    refreshPipeline() {
-        // Перезагружаем данные и рендерим заново
-        this.api.getPipelines()
-            .then(data => this.render(data))
-            .catch(error => console.error('Error refreshing pipeline:', error));
     }
 
     calculatePipelineLength(pipeline) {
@@ -197,8 +169,9 @@ export default class PipelineVisualizer {
         const availableWidth = containerWidth - 2 * this.options.pipelinePadding;
         const pipeWidth = availableWidth / (pipeline.pipes.length + 2); // +2 for empty pipes
 
-        const startEmptyPipe = this.createEmptyPipeElement(pipeline.pipes.length, yPos, pipeWidth);
+        const [startEmptyPipe, startArrow] = this.createEmptyPipeElement(pipeline.pipes.length, yPos, pipeWidth);
         group.appendChild(startEmptyPipe);
+        group.appendChild(startArrow);
 
         const startCity = pipeline.title.split(' - ')[0];
         const startLabel = this.createCityLabel(startCity,
@@ -208,12 +181,13 @@ export default class PipelineVisualizer {
         group.appendChild(startLabel);
 
         pipeline.pipes.forEach((pipe, idx) => {
-            const pipeElement = this.createPipeElement(pipe, yPos, idx, pipeWidth);
+            const pipeElement = this.createPipeElement(pipeline.title, pipe, yPos, idx, pipeWidth);
             group.appendChild(pipeElement);
         });
 
-        const endEmptyPipe = this.createEmptyPipeElement(-1, yPos, pipeWidth);
+        const [endEmptyPipe, endArrow] = this.createEmptyPipeElement(-1, yPos, pipeWidth);
         group.appendChild(endEmptyPipe);
+        group.appendChild(endArrow);
 
         const endCity = pipeline.title.split(' - ')[1] || '';
         const endLabel = this.createCityLabel(endCity,
@@ -223,7 +197,7 @@ export default class PipelineVisualizer {
         group.appendChild(endLabel);
 
         pipeline.nodes.forEach(node => {
-            const nodeElement = this.createNodeElement(node, yPos, pipeline, pipeWidth);
+            const nodeElement = this.createNodeElement(pipeline.title, node, yPos, pipeline, pipeWidth);
             if (nodeElement) {
                 group.appendChild(nodeElement);
             }
@@ -245,7 +219,25 @@ export default class PipelineVisualizer {
         element.setAttribute('stroke-width', '0.5');
         element.classList.add('empty-pipe-element');
 
-        return element;
+        const arrowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        arrowGroup.setAttribute('transform', `translate(${x + pipeWidth/2}, ${yPos - 5})`);
+
+        const arrowShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        arrowShape.setAttribute("points", "0 0, -7 2.5, 0 5");
+        arrowShape.setAttribute('transform', 'translate(0, 18)');
+        arrowShape.setAttribute("fill", "gray");
+
+        const arrowRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        arrowRect.setAttribute('x', '0');
+        arrowRect.setAttribute('y', '20.5');
+        arrowRect.setAttribute('width', '15');
+        arrowRect.setAttribute('height', '0.5');
+        arrowRect.setAttribute('fill', 'gray');
+
+        arrowGroup.appendChild(arrowShape);
+        arrowGroup.appendChild(arrowRect);
+
+        return [element, arrowGroup];
     }
 
     createCityLabel(cityName, x, y, width) {
@@ -259,26 +251,67 @@ export default class PipelineVisualizer {
         return text;
     }
 
-    createPipeElement(pipe, yPos, index, pipeWidth) {
-        const element = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    createPipeElement(pipeline_title, pipe, yPos, index, pipeWidth) {
+        const svgNS = "http://www.w3.org/2000/svg";
+        const group = document.createElementNS(svgNS, "g");
+        group.classList.add('pipe-group');
+
         const x = this.container.clientWidth - this.options.pipelinePadding - (index + 2) * pipeWidth;
-        element.setAttribute('x', x);
-        element.setAttribute('y', yPos);
-        element.setAttribute('width', pipeWidth);
-        element.setAttribute('height', this.options.pipelineHeight);
-        element.setAttribute('fill', pipe.state?.color || this.options.pipeColor);
-        element.setAttribute('data-pipe-id', pipe.id);
-        element.classList.add('pipe-element');
-        if (pipe.state) {
-            element.setAttribute('data-tooltip',
-                `Состояние: ${pipe.state.state_type_display}\n` +
-                `Давление: ${pipe.state.current_pressure} МПа\n` +
-                `Ограничение: ${pipe.state.is_limited ? 'Да' : 'Нет'}`);
+        const rect = document.createElementNS(svgNS, "rect");
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', yPos);
+        rect.setAttribute('width', pipeWidth);
+        rect.setAttribute('height', this.options.pipelineHeight);
+        rect.setAttribute('fill', pipe.state?.color || this.options.pipeColor);
+        if (pipe.limit) {
+            rect.setAttribute('stroke', 'red');
         }
-        return element;
+        rect.classList.add('pipe-element');
+        rect.setAttribute('pipe-id', pipe.id);
+
+        let departmentInfo = '';
+        let separator = null;
+
+        if (Array.isArray(pipe.departments)) {
+            if (pipe.departments.length === 1) {
+                departmentInfo = `Филиал: ${pipe.departments[0].name}`;
+            } else {
+                departmentInfo = pipe.departments.map(dep => {
+                    return `Филиал: ${dep.name} от ${dep.start_point} до ${dep.end_point} км.`;
+                }).join('\n');
+                separator = document.createElementNS(svgNS, 'line');
+                const centerX = x + pipeWidth / 2;
+                separator.setAttribute('x1', centerX);
+                separator.setAttribute('x2', centerX);
+                separator.setAttribute('y1', yPos - 30);
+                separator.setAttribute('y2', yPos + this.options.pipelineHeight + 30);
+                separator.setAttribute('stroke', 'red');
+                separator.setAttribute('stroke-width', '1');
+                separator.setAttribute('stroke-dasharray', '4,2');
+                separator.classList.add('pipe-separator-line');
+            }
+        }
+
+        if (pipe.state) {
+            rect.setAttribute('data-tooltip',
+                `${departmentInfo}\n` +
+                `Газопровод: ${pipeline_title}\n` +
+                `Участок: ${pipe.start_point} - ${pipe.end_point} км.\n` +
+                `Диаметр: ${pipe.diameter} мм\n` +
+                `Состояние: ${pipe.state.state_type_display} c ${pipe.state.start_date}г.\n` +
+                `Ограничение: ${pipe.limit ? pipe.limit.pressure_limit + ' кгс/см²' : 'Нет'}`
+            );
+        }
+
+        group.appendChild(rect);
+        if (separator) {
+            group.appendChild(separator);
+        }
+
+        return group;
     }
 
-    createNodeElement(node, yPos, pipeline, pipeWidth) {
+    createNodeElement(pipeline_title, node, yPos, pipeline, pipeWidth) {
         const containerWidth = this.container.clientWidth;
         const availableWidth = containerWidth - 2 * this.options.pipelinePadding;
         const pipes = pipeline.pipes;
@@ -322,14 +355,13 @@ export default class PipelineVisualizer {
             default:
                 return null;
         }
-        element.setAttribute('data-node-id', node.id);
+        element.setAttribute('node-id', node.id);
         element.classList.add('node-element');
-        if (node.valves && node.valves.length > 0) {
-            const tooltipText = node.valves.map(valve =>
-                `${valve.valve_type} Ду${valve.diameter} (${valve.tech_number})`
-            ).join('\n');
-            element.setAttribute('data-tooltip', tooltipText);
-        }
+        element.setAttribute('data-tooltip',
+            `Филиал: ${node.department.name}\n` +
+            `Газопровод: ${pipeline_title}\n` +
+            `${node.node_type_display}: ${node.location_point} км.\n` +
+            `Состояние: ${node.state ? node.state.state_display : 'Неизвестно'}`);
         return element;
     }
 
@@ -379,7 +411,6 @@ export default class PipelineVisualizer {
         return svg;
     }
 
-
     createValveElement(node, x, y, size) {
         const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
         const scale = size / 20;
@@ -387,7 +418,7 @@ export default class PipelineVisualizer {
         const getValveColor = () => {
             if (!node.state) return this.options.valveDefaultColor;
 
-            return node.state.state === 'open'
+            return node.state.state_type === 'open'
                 ? this.options.valveOpenColor
                 : this.options.valveClosedColor;
         };
@@ -426,6 +457,14 @@ export default class PipelineVisualizer {
         const bypassBleed = this.createValveIcon(this.options.valveDefaultColor, 'small', 'vertical');
         bypassBleed.setAttribute('transform', 'scale(0.8) rotate(90) translate(-12, -33)');
 
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute('x', 10);
+        text.setAttribute('y', 23);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '7px');
+        text.setAttribute('fill', '#333');
+        text.textContent = node.location_point;
+
         group.appendChild(leftVerticalPipe);
         group.appendChild(rightVerticalPipe);
         group.appendChild(horizontalPipe);
@@ -433,6 +472,7 @@ export default class PipelineVisualizer {
         group.appendChild(bypassLeft);
         group.appendChild(bypassRight);
         group.appendChild(bypassBleed);
+        group.appendChild(text);
 
         return group;
     }
@@ -444,7 +484,7 @@ export default class PipelineVisualizer {
         const getValveColor = () => {
             if (!node.state) return this.options.valveDefaultColor;
 
-            return node.state.state === 'open'
+            return node.state.state_type === 'open'
                 ? this.options.valveOpenColor
                 : this.options.valveClosedColor;
         };
@@ -460,21 +500,17 @@ export default class PipelineVisualizer {
         const mainValveIcon = this.createValveIcon(mainValveColor, 'large', 'horizontal');
         mainValveIcon.setAttribute('transform', 'scale(1) translate(0, 1)');
 
-        const arrowShape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        arrowShape.setAttribute("points", "0 0, -7 2.5, 0 5");
-        arrowShape.setAttribute('transform', 'translate(0, -3)');
-        arrowShape.setAttribute("fill", "gray");
-        const arrowRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        arrowRect.setAttribute('x', '0');
-        arrowRect.setAttribute('y', '-0.8');
-        arrowRect.setAttribute('width', '15');
-        arrowRect.setAttribute('height', '0.5');
-        arrowRect.setAttribute('fill', 'gray');
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute('x', 10);
+        text.setAttribute('y', 23);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-size', '7px');
+        text.setAttribute('fill', '#333');
+        text.textContent = node.location_point;
 
         group.appendChild(mainValveIcon);
         group.appendChild(perimetrHost);
-        group.appendChild(arrowShape);
-        group.appendChild(arrowRect);
+        group.appendChild(text);
 
         return group;
     }
@@ -484,14 +520,14 @@ export default class PipelineVisualizer {
 
         const scale = size / 20;
         group.setAttribute('transform', `translate(${x - 10 * scale}, ${y - 10 * scale}) scale(${scale})`);
-        const isValveOpen = node.state?.state === 'open';
+        const isValveOpen = node.state?.state_type === 'open';
         const bridgePipeColor = isValveOpen
             ? this.options.bridgePipeOpenColor
             : this.options.bridgePipeClosedColor;
         const getValveColor = () => {
             if (!node.state) return this.options.valveDefaultColor;
 
-            return node.state.state === 'open'
+            return node.state.state_type === 'open'
                 ? this.options.valveOpenColor
                 : this.options.valveClosedColor;
         };

@@ -10,6 +10,7 @@ class Notification(models.Model):
         RATIONAL = 'rational', 'Рацпредложения'
         LEAKS = 'leaks', 'Утечки газа'
         EQUIPMENT = 'equipment', 'Оборудование'
+        PIPELINES = 'pipelines', 'Магистральные газопроводы'
 
     user = models.ForeignKey(
         ModuleUser,

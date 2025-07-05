@@ -1,0 +1,65 @@
+/* Стили для кастомного тултипа */
+.pipeline-tooltip {
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 1000;
+    display: none;
+    white-space: pre-line;
+    max-width: 300px;
+    line-height: 1.4;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Контейнер контекстного меню */
+.pipeline-context-menu {
+    position: absolute;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 1001;
+    min-width: 200px;
+    overflow: hidden;
+    padding: 4px 0;
+    animation: fadeIn 0.15s ease-out;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.pipeline-context-menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #2c2c2c;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.pipeline-context-menu-item:hover {
+    background-color: #D3C2E2;
+}
+
+.pipeline-context-menu-item:active {
+    background-color: #d0eaff;
+    color: #004a99;
+}
+
+/* Плавное появление */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

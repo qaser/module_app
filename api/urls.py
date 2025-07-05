@@ -23,6 +23,8 @@ router.register(r'rational-plans/(?P<plan_id>\d+)/quarterly', views.QuarterlyPla
 router.register(r'valves/(?P<valve_id>\d+)/services', views.ValveServiceViewSet, basename='valve-services')
 router.register(r'notifications', views.NotificationViewSet, basename='notification')
 router.register(r'pipelines', views.PipelineViewSet, basename='pipelines')
+router.register(r'pipe-states', views.PipeStatesViewSet, basename='pipe-states')
+router.register(r'node-states', views.NodeStatesViewSet, basename='node-states')
 
 
 

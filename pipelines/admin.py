@@ -3,12 +3,17 @@ from django.db.models import Count
 from django.utils.html import format_html
 
 from .models import (ComplexPlan, Defect, Hole, HoleDocument, Node, NodeState,
-                     Pipe, PipeDiagrostics, Pipeline, PipeRepair,
+                     Pipe, PipeDepartment, PipeDiagrostics, PipeLimit, Pipeline, PipeRepair,
                      PipeRepairDocument, PipeRepairStage, PipeState,
                      PlannedWork)
 
 
-# Фильтры для админки
+class PipeDepartmentInline(admin.TabularInline):
+    model = PipeDepartment
+    extra = 0
+    autocomplete_fields = ['department']
+
+
 class StateFilter(admin.SimpleListFilter):
     title = 'Текущее состояние'
     parameter_name = 'current_state'
@@ -24,20 +29,25 @@ class StateFilter(admin.SimpleListFilter):
             ).distinct()
         return queryset
 
-# Inline для состояний трубы
+
+class PipeLimitInline(admin.TabularInline):
+    model = PipeLimit
+    extra = 0
+
+
 class PipeStateInline(admin.TabularInline):
     model = PipeState
     extra = 0
-    readonly_fields = ('created_by', 'start_date')
+    readonly_fields = ('created_by',)
     fields = ('state_type', 'start_date', 'end_date', 'description',
               'current_pressure', 'created_by')
 
-# Inline для участков трубопровода
+
 class PipeInline(admin.TabularInline):
     model = Pipe
     extra = 0
     show_change_link = True
-    fields = ('department', 'diameter', 'start_point', 'end_point', 'current_state_display')
+    fields = ('diameter', 'start_point', 'end_point', 'current_state_display')
     readonly_fields = ('current_state_display',)
 
     def current_state_display(self, obj):
@@ -52,25 +62,25 @@ class PipeInline(admin.TabularInline):
         return "-"
     current_state_display.short_description = "Текущее состояние"
 
-# Inline для узлов
+
 class NodeInline(admin.TabularInline):
     model = Node
     extra = 0
     show_change_link = True
+    fk_name = 'pipeline'
     fields = ('node_type', 'equipment', 'location_point', 'valves_count')
     readonly_fields = ('valves_count',)
 
     def valves_count(self, obj):
         return obj.equipment.valves.count()
-    valves_count.short_description = "Кол-во арматуры"
+    valves_count.short_description = 'Количество ТПА'
 
 
-# Inline для состояний арматуры
 class NodeStateInline(admin.TabularInline):
     model = NodeState
     extra = 0
-    readonly_fields = ('timestamp', 'changed_by')
-    fields = ('state', 'timestamp', 'changed_by', 'comment')
+    readonly_fields = ('start_date', 'changed_by')
+    fields = ('state_type', 'start_date', 'changed_by', 'description')
 
 
 class PipeRepairStageInline(admin.TabularInline):
@@ -93,7 +103,6 @@ class HoleDocumentInline(admin.TabularInline):
     extra = 0
 
 
-# Админка для Pipeline
 @admin.register(Pipeline)
 class PipelineAdmin(admin.ModelAdmin):
     list_display = ('title', 'order', 'pipes_count', 'nodes_count')
@@ -116,16 +125,16 @@ class PipelineAdmin(admin.ModelAdmin):
         return obj.nodes_count
     nodes_count.short_description = "Узлов"
 
-# Админка для Pipe
+
 @admin.register(Pipe)
 class PipeAdmin(admin.ModelAdmin):
     list_display = (
-        'pipeline', 'department', 'diameter',
+        'pipeline', 'diameter',
         'start_point', 'end_point', 'current_state_display'
     )
-    list_filter = ('pipeline', 'department', StateFilter)
-    search_fields = ('pipeline__title', 'department__name')
-    inlines = [PipeStateInline]
+    list_filter = ('pipeline', 'departments', StateFilter)
+    search_fields = ('pipeline__title', 'departments__name')
+    inlines = [PipeStateInline, PipeLimitInline, PipeDepartmentInline]
 
     def current_state_display(self, obj):
         state = obj.current_state
@@ -139,14 +148,14 @@ class PipeAdmin(admin.ModelAdmin):
         return "-"
     current_state_display.short_description = "Текущее состояние"
 
-# Админка для PipeState
+
 @admin.register(PipeState)
 class PipeStateAdmin(admin.ModelAdmin):
     list_display = (
         'pipe', 'state_type_colored', 'start_date',
         'end_date', 'created_by', 'current_pressure'
     )
-    list_filter = ('state_type', 'pipe__pipeline', 'pipe__department')
+    list_filter = ('state_type', 'pipe__pipeline')
     search_fields = ('pipe__pipeline__title', 'description')
     readonly_fields = ('created_by', 'start_date')
 
@@ -163,7 +172,7 @@ class PipeStateAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         super().save_model(request, obj, form, change)
 
-# Админка для Node
+
 @admin.register(Node)
 class NodeAdmin(admin.ModelAdmin):
     list_display = (
@@ -172,7 +181,7 @@ class NodeAdmin(admin.ModelAdmin):
     )
     list_filter = ('pipeline', 'node_type')
     search_fields = ('pipeline__title', 'equipment__name')
-    # inlines = [NodeStateInline]
+    inlines = [NodeStateInline]
 
     def valves_count(self, obj):
         return obj.equipment.valves.count()
@@ -183,29 +192,29 @@ class NodeAdmin(admin.ModelAdmin):
             valves_count=Count('equipment__valves')
         )
 
-# Админка для NodeState
+
 @admin.register(NodeState)
 class NodeStateAdmin(admin.ModelAdmin):
     list_display = (
-        'node', 'state_display', 'timestamp',
-        'changed_by', 'comment_short'
+        'node', 'state_type_display', 'start_date',
+        'end_date', 'changed_by', 'description_short'
     )
-    list_filter = ('state', 'node__node_type')
+    list_filter = ('state_type', 'node__node_type')
     search_fields = ('node__node_type',)
-    readonly_fields = ('timestamp', 'changed_by')
+    readonly_fields = ('start_date', 'changed_by')
 
-    def state_display(self, obj):
-        color = '#00FF00' if obj.state == 'open' else '#FF0000'
+    def state_type_display(self, obj):
+        color = '#00FF00' if obj.state_type == 'open' else '#FF0000'
         return format_html(
             '<span style="color: {}; font-weight: bold;">{}</span>',
             color,
-            obj.get_state_display()
+            obj.get_state_type_display()
         )
-    state_display.short_description = "Состояние"
+    state_type_display.short_description = "Состояние"
 
-    def comment_short(self, obj):
-        return obj.comment[:50] + '...' if obj.comment else ''
-    comment_short.short_description = "Комментарий"
+    def description_short(self, obj):
+        return obj.description[:50] + '...' if obj.description else ''
+    description_short.short_description = "Комментарий"
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:
@@ -216,7 +225,7 @@ class NodeStateAdmin(admin.ModelAdmin):
 @admin.register(PipeRepair)
 class PipeRepairAdmin(admin.ModelAdmin):
     list_display = ('pipe', 'start_date', 'end_date', 'description')
-    list_filter = ('pipe__pipeline', 'pipe__department')
+    list_filter = ('pipe__pipeline',)
     search_fields = ('pipe__pipeline__title', 'description')
     inlines = [PipeRepairStageInline, PipeRepairDocumentInline]
 

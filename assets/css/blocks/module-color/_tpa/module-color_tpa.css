@@ -2,7 +2,11 @@
     background-color: #9AC999;
 }
 
-
 .module-color__header_tpa {
     background-color: #648763;
+}
+
+.module-color__button_tpa {
+    color: white;
+    background: #648763;
 }

@@ -1,10 +1,10 @@
 {% extends "module_app/base.html" %}
-{% block title %}Обзор трубопроводной арматуры{% endblock %}
-{% block app_name %}Техническое обслуживание ТПА{% endblock %}
+{% block title %}Ремонты магистральных газопроводов{% endblock %}
+{% block app_name %}Магистральные газопроводы{% endblock %}
 
 {% load static %}
 {% load render_table from django_tables2 %}
-{% load tpa_filters %}
+{% load pipelines_filters %}
 
 
 {% block style %}
@@ -14,11 +14,7 @@
 {% block sidepanel %}
     <a href="" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_objects"></div>
-        <h3 class="sidebar__text">Обзор объектов</h3>
-    </a>
-    <a href="{% url 'tpa:valve_new' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_new"></div>
-        <h3 class="sidebar__text">Добавить ТПА</h3>
+        <h3 class="sidebar__text">Схема магистральных газопроводов</h3>
     </a>
     <a href="" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_help"></div>
@@ -31,9 +27,9 @@
                 {{ field|addclass:'sidebar__form-input' }}
             </div>
         {% endfor %}
-        <button type="submit" class="sidebar__button button module-color__button_tpa">Применить</button>
+        <button type="submit" class="sidebar__button button module-color__button_pipelines">Применить</button>
     </form>
-    <a class="link_simple" href="{% url 'tpa:index' %}">
+    <a class="link_simple" href="{% url 'pipelines:index' %}">
         <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
     </a>
 {% endblock %}
@@ -42,12 +38,12 @@
 {% csrf_token %}
 <main class="content">
   <section class="main" id="main">
-    <h1 class="main__title">Обзор трубопроводной арматуры</h1>
+    <h1 class="main__title">Ремонты магистральных газопроводов</h1>
     {% render_table table %}
   </section>
 </main>
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/indexValve.js' %}"></script>
+    <script type="module" src="{% static 'js/pipelinesRepairs.js' %}"></script>
 {% endblock %}

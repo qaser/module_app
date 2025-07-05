@@ -1,12 +1,11 @@
 import * as config from './config/config.js';
 import * as constant from './utils/constants.js';
 import Api from './api/Api.js';
-import PollingClient from './api/PollingClient.js';
 import UserInfo from './components/UserInfo.js';
 import Table from './components/Table.js';
-import FormFilter from './components/FormFilter.js';
 import Tooltip from '../js/components/Tooltip.js';
 import AppMenu from '../js/components/AppMenu.js';
+import PollingClient from './api/PollingClient.js';
 
 
 // создание объекта api
@@ -20,8 +19,11 @@ const api = new Api({
 });
 
 const pollingClient = new PollingClient({
-  endpoint: '/api/notifications/unread/'
+    endpoint: '/api/notifications/unread/'
 });
+
+// создание объекта таблицы со строками ссылками
+const newTable = new Table({table: '.table__body'});
 
 // создание объекта с данными пользователя
 const newUserInfo = new UserInfo({
@@ -29,14 +31,13 @@ const newUserInfo = new UserInfo({
     job: '.header__user-proff',
 });
 
-// создание объекта таблицы со строками ссылками
-const newTable = new Table({table: '.table__body'});
 
 function renderLoading(isLoading) {
   if (isLoading) {
       constant.loadingScreen.classList.add('loader_disactive');
   }
 }
+
 
 new Tooltip();
 new AppMenu();
@@ -46,13 +47,6 @@ api.getMyProfile()
     .then((userData) => {
         newUserInfo.setUserInfo(userData);
         pollingClient.start();
-        new FormFilter(
-            api.getDepartmentChildren.bind(api),
-            'filter_submit',
-            'id_department',
-            'department',
-            'sidebar__form-input',
-        );
         const targetField = document.querySelector('#id_department')
         targetField.setAttribute('data-tooltip', constant.tooltipFormField)
     })

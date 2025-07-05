@@ -5,3 +5,8 @@
 .module-color__header_leaks {
     background-color: #40869B;
 }
+
+.module-color__button_leaks {
+    color: white;
+    background: #40869B;
+}

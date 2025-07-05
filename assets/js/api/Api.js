@@ -357,26 +357,20 @@ export default class Api {
         .then(response => response.json());
     }
 
-    changePipeState(pipeId, stateData) {
+    changePipeState(stateData) {
         return fetch(`${this._baseUrl}/pipe-states/`, {
             method: 'POST',
             headers: this._headers,
-            body: JSON.stringify({
-                pipe: pipeId,
-                ...stateData
-            })
+            body: JSON.stringify({stateData})
         })
         .then(this._checkResponse);
     }
 
-    changeNodeState(nodeId, stateData) {
+    changeNodeState(stateData) {
         return fetch(`${this._baseUrl}/node-states/`, {
             method: 'POST',
             headers: this._headers,
-            body: JSON.stringify({
-                node: nodeId,
-                ...stateData
-            })
+            body: JSON.stringify({stateData})
         })
         .then(this._checkResponse);
     }

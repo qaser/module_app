@@ -6,5 +6,5 @@ from . import views
 app_name = 'pipelines'
 
 urlpatterns = [
-    path('', views.single_pipeline, name='index'),
+    path('', views.scheme_pipelines, name='index'),
 ]

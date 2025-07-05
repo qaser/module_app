@@ -59,6 +59,9 @@ class Factory(models.Model):
         ordering = ('name',)
         verbose_name = 'Изготовитель ТПА'
         verbose_name_plural = 'Изготовители ТПА'
+        indexes = [
+            models.Index(fields=['name']),
+        ]
 
     def __str__(self) -> str:
         return f'{self.name}, {self.country}'
@@ -199,6 +202,15 @@ class Valve(models.Model):
         ordering = ('diameter',)
         verbose_name = 'ТПА'
         verbose_name_plural = 'ТПА'
+        indexes = [
+            models.Index(fields=['equipment']),
+            models.Index(fields=['valve_type']),
+            models.Index(fields=['diameter']),
+            models.Index(fields=['tech_number']),
+            models.Index(fields=['factory']),
+            models.Index(fields=['is_pipelines_major']),
+            models.Index(fields=['removed']),
+        ]
 
     def get_root_equipment(self):
         """Возвращает корневой элемент оборудования"""
@@ -329,6 +341,10 @@ class ServiceType(models.Model):
         ordering = ('name',)
         verbose_name = 'Вид ТО'
         verbose_name_plural = 'Вид ТО'
+        indexes = [
+            models.Index(fields=['valve_type']),  # Фильтрация по типу ТПА
+            models.Index(fields=['min_diameter', 'max_diameter']),  # Диапазон
+        ]
 
     def __str__(self):
         return self.name
@@ -356,6 +372,10 @@ class Work(models.Model):
         ordering = ('service_type',)
         verbose_name = 'Работа'
         verbose_name_plural = 'Работы'
+        indexes = [
+            models.Index(fields=['service_type']),  # Основной фильтр
+            models.Index(fields=['planned']),  # Фильтр по регламенту
+        ]
 
     def __str__(self):
         return f'{self.description[:25].capitalize()}'
@@ -399,6 +419,13 @@ class Service(models.Model):
         ordering = ('service_type',)
         verbose_name = 'Проведенное ТО'
         verbose_name_plural = 'Проведенные ТО'
+        indexes = [
+            models.Index(fields=['valve']),
+            models.Index(fields=['service_type']),
+            models.Index(fields=['prod_date']),
+            models.Index(fields=['reg_date']),
+            models.Index(fields=['valve', 'prod_date']),
+        ]
 
     def __str__(self):
         date = self.prod_date.strftime('%d.%m.%Y')
@@ -438,6 +465,11 @@ class WorkService(models.Model):
         ordering = ('service',)
         verbose_name = 'Проведенная работа'
         verbose_name_plural = 'Проведенные работы'
+        indexes = [
+            models.Index(fields=['service']),
+            models.Index(fields=['work']),
+            models.Index(fields=['done']),
+        ]
 
     def __str__(self):
         return f'{self.service}'

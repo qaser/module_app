@@ -5,3 +5,8 @@
 .module-color__header_pipelines {
     background-color: #6A5A8C;
 }
+
+.module-color__button_pipelines {
+    color: white;
+    background: #6A5A8C;
+}

@@ -51,7 +51,6 @@ class Proposal(models.Model):
     reg_date = models.DateTimeField(
         'Дата регистрации',
         default=timezone.now,
-        db_index=True
     )
     authors = models.ManyToManyField(
         ModuleUser,
@@ -110,6 +109,14 @@ class Proposal(models.Model):
         ordering = ('reg_date',)
         verbose_name = 'Рационализаторское предложение'
         verbose_name_plural = 'Рационализаторские предложения'
+        indexes = [
+            models.Index(fields=['reg_num']),  # Уникальный идентификатор
+            models.Index(fields=['reg_date']),
+            models.Index(fields=['department']),  # Фильтрация по подразделению
+            models.Index(fields=['category']),  # Фильтрация по категории
+            models.Index(fields=['is_economy']),  # Фильтрация по флагу экономии
+            models.Index(fields=['reg_date', 'department']),  # Комбинированный
+        ]
 
     def __str__(self):
         return f'№{self.reg_num}, {self.title}'
@@ -257,6 +264,9 @@ class ProposalDocument(models.Model):
     class Meta:
         verbose_name = 'Документация РП'
         verbose_name_plural = 'Документация РП'
+        indexes = [
+            models.Index(fields=['proposal']),  # Основной фильтр
+        ]
 
 
 class ProposalStatus(models.Model):
@@ -273,7 +283,6 @@ class ProposalStatus(models.Model):
         on_delete=models.CASCADE,
         related_name='statuses',
         verbose_name='РП',
-        db_index=True,
     )
     status = models.CharField(
         max_length=20,
@@ -299,6 +308,12 @@ class ProposalStatus(models.Model):
     class Meta:
         verbose_name = 'Статус РП'
         verbose_name_plural = 'Статусы РП'
+        indexes = [
+            models.Index(fields=['proposal']),
+            models.Index(fields=['status']),  # Фильтрация по статусу
+            models.Index(fields=['date_changed']),  # Сортировка по дате
+            models.Index(fields=['proposal', 'status']),  # Комбинированный
+        ]
 
     def clean(self):
         # Статусы, которые могут быть добавлены только один раз
@@ -377,6 +392,11 @@ class AnnualPlan(models.Model):
         # unique_together = ('department', 'year')
         verbose_name = 'Годовой план'
         verbose_name_plural = 'Годовые планы'
+        indexes = [
+            models.Index(fields=['department']),  # Фильтрация по подразделению
+            models.Index(fields=['year']),  # Фильтрация по году
+            models.Index(fields=['department', 'year']),  # Уникальный вместе
+        ]
 
     def __str__(self):
         return f'{self.department.name} - {self.year}'
@@ -425,6 +445,11 @@ class QuarterlyPlan(models.Model):
         # unique_together = ('annual_plan', 'quarter')
         verbose_name = 'Квартальный план'
         verbose_name_plural = 'Квартальные планы'
+        indexes = [
+            models.Index(fields=['annual_plan']),  # Основной фильтр
+            models.Index(fields=['quarter']),  # Фильтрация по кварталу
+            models.Index(fields=['annual_plan', 'quarter']),  # Уникальный вместе
+        ]
 
     def get_quarter_date_range(self):
         """Возвращает диапазон дат для заданного квартала."""

@@ -5,7 +5,7 @@ from rest_framework import serializers
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
-from pipelines.models import (Pipeline, Pipe, Node, PipeState, NodeState,
+from pipelines.models import (PipeDepartment, PipeLimit, Pipeline, Pipe, Node, PipeState, NodeState,
                               ComplexPlan, PlannedWork, PipeRepair,
                               PipeDiagrostics, Defect, Hole)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
@@ -489,14 +489,30 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
 
     def get_children_plans(self, obj):
         children_department = obj.department.get_children()
-        children_plans = AnnualPlan.objects.filter(department__in=children_department, year=obj.year)
+        children_plans = AnnualPlan.objects.filter(
+            department__in=children_department,
+            year=obj.year
+        )
         return AnnualPlanSerializer(children_plans, many=True).data
+
+
+class PipeDepartmentSerializer(serializers.ModelSerializer):
+    department_name = serializers.CharField(
+        source='department.name',
+        read_only=True
+    )
+
+    class Meta:
+        model = PipeDepartment
+        fields = ['department_name']
 
 
 class PipeStateSerializer(serializers.ModelSerializer):
     color = serializers.SerializerMethodField()
     state_type_display = serializers.SerializerMethodField()
-    created_by_name = serializers.CharField(source='created_by.lastname_and_initials', read_only=True)
+    created_by = UserSerializer(read_only=True)
+    start_date = serializers.DateField(format='%d.%m.%Y')
+    end_date = serializers.DateField(format='%d.%m.%Y')
 
     class Meta:
         model = PipeState
@@ -510,25 +526,55 @@ class PipeStateSerializer(serializers.ModelSerializer):
 
 
 class NodeStateSerializer(serializers.ModelSerializer):
-    state_display = serializers.CharField(source='get_state_display', read_only=True)
-    changed_by_name = serializers.CharField(source='changed_by.lastname_and_initials', read_only=True)
+    state_display = serializers.CharField(
+        source='get_state_type_display',
+        read_only=True
+    )
+    changed_by = UserSerializer(read_only=True)
+    start_date = serializers.DateField(format='%d.%m.%Y')
 
     class Meta:
         model = NodeState
         fields = '__all__'
 
 
+class PipeLimitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PipeLimit
+        fields = [
+            'pressure_limit',
+            'limit_reason',
+            'start_date',
+            # 'end_date'
+        ]
+
+
 class PipeSerializer(serializers.ModelSerializer):
+    departments = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
+    limit = serializers.SerializerMethodField()
 
     class Meta:
         model = Pipe
         fields = [
             'id',
+            'departments',
             'start_point',
             'end_point',
             'diameter',
-            'state'
+            'state',
+            'limit'
+        ]
+
+    def get_departments(self, obj):
+        return [
+            {
+                'id': pd.department.id,
+                'name': pd.department.name,
+                'start_point': pd.start_point,
+                'end_point': pd.end_point
+            }
+            for pd in obj.pipedepartment_set.select_related('department')
         ]
 
     def get_state(self, obj):
@@ -537,20 +583,32 @@ class PipeSerializer(serializers.ModelSerializer):
             return PipeStateSerializer(current_state).data
         return None
 
+    def get_limit(self, obj):
+        limit = obj.limits.filter(end_date__isnull=True).first()
+        if limit:
+            return PipeLimitSerializer(limit).data
+        return None
+
 
 class NodeSerializer(serializers.ModelSerializer):
-    valves = serializers.SerializerMethodField()
+    department = serializers.SerializerMethodField()
+    # valves = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
+    node_type_display = serializers.CharField(
+        source='get_node_type_display',
+        read_only=True
+    )
 
     class Meta:
         model = Node
         fields = [
             'id',
             'node_type',
+            'node_type_display',
             'location_point',
             'pipeline',
-            'equipment',
-            'valves',
+            'department',
+            # 'valves',
             'state',
         ]
 
@@ -559,35 +617,35 @@ class NodeSerializer(serializers.ModelSerializer):
         return ValveSerializer(valves, many=True).data
 
     def get_state(self, obj):
-        latest_state = obj.states.order_by('-timestamp').first()
+        latest_state = obj.current_states[0] if hasattr(obj, 'current_states') and obj.current_states else None
         if latest_state:
             return NodeStateSerializer(latest_state).data
         return None
 
+    def get_department(self, obj):
+        departments = obj.equipment.departments.all()
+        if not departments.exists():
+            return None
+        root_department = departments.order_by('tree_id', 'level').first().get_root()
+        return {
+            'id': root_department.id,
+            'name': root_department.name
+        }
+
 
 class PipelineSerializer(serializers.ModelSerializer):
-    pipes = serializers.SerializerMethodField()
-    nodes = serializers.SerializerMethodField()
+    pipes = PipeSerializer(many=True)
+    nodes = NodeSerializer(many=True)
 
     class Meta:
         model = Pipeline
-        fields = ['order', 'title', 'description', 'pipes', 'nodes']
-
-    def get_pipes(self, obj):
-        department = self.context.get('department')
-        pipes = obj.pipes.filter(department=department)
-        return PipeSerializer(pipes, many=True).data
-
-    def get_nodes(self, obj):
-        department = self.context.get('department')
-        # Получаем все equipment, связанные с department пользователя (включая родительские)
-        departments = department.get_ancestors(include_self=True)
-        equipment_ids = Equipment.objects.filter(
-            departments__in=departments
-        ).values_list('id', flat=True)
-
-        nodes = obj.nodes.filter(equipment__in=equipment_ids)
-        return NodeSerializer(nodes, context=self.context, many=True).data
+        fields = [
+            'order',
+            'title',
+            'description',
+            'pipes',
+            'nodes'
+        ]
 
 
 class ComplexPlanSerializer(serializers.ModelSerializer):

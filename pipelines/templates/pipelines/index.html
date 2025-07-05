@@ -35,10 +35,23 @@
         <button class="popup__button-close" type="button"></button>
         <form class="form-popup" name="state-change" id="form-pipe-statechange">
             <h2 class="form-popup__header"></h2>
-            <div id="state-change-form-fields">
-                <!-- Поля будут добавляться динамически -->
-            </div>
-            <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+            <label class="form-popup__field">
+                <select class="form-popup__input" id="state_type" name="state_type">
+                    {% for value, label in state_choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <span class="form-popup__input-error" id="state_type-error"></span>
+            </label>
+            <label class="form-popup__field">
+                <input class="form-popup__input" id="start_date" type="date" required name="start_date">
+                <span class="form-popup__input-error" id="start_date-error"></span>
+            </label>
+            <label class="form-popup__field">
+                <textarea class="form-popup__input" id="state-description" name="description" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="500" minlength="7"></textarea>
+                <span class="form-popup__input-error" id="state-description-error"></span>
+            </label>
+            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
         </form>
     </div>
 </div>
@@ -48,10 +61,18 @@
         <button class="popup__button-close" type="button"></button>
         <form class="form-popup" name="state-change" id="form-node-statechange">
             <h2 class="form-popup__header"></h2>
-            <div id="state-change-form-fields">
-                <!-- Поля будут добавляться динамически -->
-            </div>
-            <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+            <label class="form-popup__field">
+                <select class="form-popup__input" id="state_type" name="state_type">
+                    <option value="open">Открыто</option>
+                    <option value="closed">Закрыто</option>
+                </select>
+                <span class="form-popup__input-error" id="state_type-error"></span>
+            </label>
+            <label class="form-popup__field">
+                <textarea class="form-popup__input" id="description" name="description" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="500" minlength="7"></textarea>
+                <span class="form-popup__input-error" id="description-error"></span>
+            </label>
+            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
         </form>
     </div>
 </div>

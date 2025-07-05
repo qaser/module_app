@@ -41,7 +41,7 @@ class Department(MPTTModel):
 class Equipment(MPTTModel):
     name = models.CharField(
         verbose_name='Название',
-        max_length=50,
+        max_length=500,
         blank=False,
         null=False
     )
