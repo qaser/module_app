@@ -1,19 +1,20 @@
+from multiprocessing import Pipe
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from equipments.models import Equipment
-from users.models import Role
-from .models import PipeRepair, Pipeline, PipeState
+from pipelines.filters import DiagnosticsFilter, RepairFilter
+from pipelines.tables import DiagnosticsTable, RepairTable
+from users.models import ModuleUser, Role
+from .models import Diagnostics, PipeDepartment, Pipeline, PipeState, Repair, Pipe
+from django.db.models import OuterRef, QuerySet, Subquery, Q
 
 from django_tables2 import SingleTableMixin
 from django_filters.views import FilterView
 
 
-
-
 @login_required
 def scheme_pipelines(request):
-    # pipeline = Pipeline.objects.all()
     state_choices = PipeState.STATE_CHOICES
     return render(
         request,
@@ -22,27 +23,76 @@ def scheme_pipelines(request):
     )
 
 
-class PipeRepairsView(SingleTableMixin, FilterView):
-    model = PipeRepair
-    table_class = PipeRepairTable
+@login_required
+def single_pipe(request, pipe_id):
+    pipe = Pipe.objects.filter(id=pipe_id)
+    return render(
+        request,
+        'pipelines/single_pipe.html',
+        {'pipe_id': pipe_id, 'valve': pipe.model._meta.fields}
+    )
+
+
+@login_required
+def single_node(request):
+    return render(
+        request,
+        'pipelines/single_node.html',
+        {}
+    )
+
+
+class RepairsView(SingleTableMixin, FilterView):
+    model = Repair
+    table_class = RepairTable
     paginate_by = 39
     template_name = 'pipelines/pipelines_repairs.html'
-    filterset_class = PipeRepairFilter
+    filterset_class = RepairFilter
 
     def get_queryset(self):
+        queryset = super().get_queryset()
         user = self.request.user
-        queryset = filter_by_user_role(user, Proposal.objects.all())
 
-        # Аннотируем queryset, чтобы добавить корневое оборудование
-        queryset = queryset.annotate(
-            department_root_name=Subquery(
-                Department.objects.filter(
-                    tree_id=OuterRef('department__tree_id'),
-                    level=0  # Корневой элемент имеет level=0
-                ).values('name')[:1]
-            )
-        )
-        return queryset
+        if user.role == Role.ADMIN:
+            return queryset  # ADMIN видит все ремонты
 
-    def get_table_kwargs(self):
-        return {'user': self.request.user}
+        else:
+            if user.department:
+                root_department = user.department.get_root()
+                departments = root_department.get_descendants(include_self=True)
+                pipe_repairs = queryset.filter(
+                    pipe__pipedepartment__department__in=departments
+                ).distinct()
+                node_repairs = queryset.filter(
+                    node__equipment__departments__in=departments
+                ).distinct()
+                return (pipe_repairs | node_repairs).distinct()
+            return queryset.none()
+
+
+class DiagnosticsView(SingleTableMixin, FilterView):
+    model = Diagnostics
+    table_class = DiagnosticsTable
+    paginate_by = 39
+    template_name = 'pipelines/pipelines_diagnostics.html'
+    filterset_class = DiagnosticsFilter
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+
+        if user.role == Role.ADMIN:
+            return queryset  # ADMIN видит все ремонты
+
+        else:
+            if user.department:
+                root_department = user.department.get_root()
+                departments = root_department.get_descendants(include_self=True)
+                pipe_diagnostics = queryset.filter(
+                    pipe__pipedepartment__department__in=departments
+                ).distinct()
+                node_diagnostics = queryset.filter(
+                    node__equipment__departments__in=departments
+                ).distinct()
+                return (pipe_diagnostics | node_diagnostics).distinct()
+            return queryset.none()

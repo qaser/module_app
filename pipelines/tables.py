@@ -2,107 +2,124 @@ import django_tables2 as tables
 
 from users.models import Role
 
-from .models import PipeRepair
+from .models import Diagnostics, PipeDepartment, Repair
 
 
-class PipeRepairsTable(tables.Table):
-    department_root = tables.Column(
-        empty_values=(),
-        verbose_name='Филиал',
-        accessor='department_root_name',  # Используем аннотацию
-    )
-    department = tables.Column(verbose_name='Подразделение')
-    economy_size = tables.Column(verbose_name='Эк. эфф.')
-    status = tables.Column(empty_values=(), verbose_name='Статус')
+class RepairTable(tables.Table):
+    department_root = tables.Column(verbose_name='Филиал', accessor='pk')
+    pipeline = tables.Column(verbose_name='Газопровод', accessor='pk')
+    object_type = tables.Column(verbose_name='Тип объекта', accessor='pk')
+    object_name = tables.Column(verbose_name='Наименование объекта', accessor='pk')
+    start_date = tables.DateColumn(verbose_name='Начало ремонта')
+    end_date = tables.DateColumn(verbose_name='Окончание ремонта')
 
     class Meta:
-        model = PipeRepair
+        model = Repair
         fields = [
-            'reg_num',
-            'reg_date',
-            'title',
-            'authors',
-            'department',
             'department_root',
-            'category',
-            'economy_size',
-            'status',
+            'object_type',
+            'pipeline',
+            'object_name',
+            'start_date',
+            'end_date'
         ]
-        attrs = {'class': 'table table_rational'}
+        attrs = {'class': 'table table_pipelines'}
         row_attrs = {'id': lambda record: record.id}
         orderable = False
-        order_by = '-reg_date'
         template_name = 'module_app/table/new_table.html'
 
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Извлекаем пользователя
-        super().__init__(*args, **kwargs)
-        if user and user.role == Role.ADMIN:
-            self.sequence = ['department_root'] + [col for col in self.sequence if col != 'department_root']
-        else:
-            self.exclude = ('department_root',)  # Скрываем колонку
+    def render_pipeline(self, record):
+        if record.pipe:
+            return record.pipe.pipeline.title
+        if record.node:
+            if record.node.node_type == 'bridge' and record.node.sub_pipeline:
+                return f'{record.node.pipeline.title}  /  {record.node.sub_pipeline.title}'
+            return record.node.pipeline.title
+        return '—'
 
-    def render_department_root(self, value):
-        """Отображение корневого оборудования"""
-        return value if value else '-'
+    def render_department_root(self, record):
+        if record.pipe:
+            pd_list = PipeDepartment.objects.filter(pipe=record.pipe).select_related('department')
+            roots = [pd.department.get_root().name for pd in pd_list if pd.department]
+            return ' / '.join(sorted(set(roots))) if roots else '—'
 
-    def render_status(self, record):
-        """Отображение последнего статуса"""
-        latest_status = record.statuses.order_by('-date_changed').first()
-        return latest_status.get_status_display() if latest_status else 'Нет статуса'
+        if record.node:
+            departments = record.node.equipment.departments.all()
+            if departments.exists():
+                roots = [d.get_root().name for d in departments]
+                return ' / '.join(sorted(set(roots)))
+        return '—'
 
-    def render_reg_date(self, value):
-        """Отображение даты без времени"""
-        return value.strftime('%d.%m.%Y') if value else '-'
+    def render_object_type(self, record):
+        if record.pipe:
+            return 'Участок газопровода'
+        if record.node:
+            return record.node.get_node_type_display()
+        return '—'
+
+    def render_object_name(self, record):
+        if record.pipe:
+            return str(record.pipe)
+        if record.node:
+            return str(record.node)
+        return '—'
 
 
-class AnnualPlanTable(tables.Table):
-    department = tables.Column(verbose_name='Филиал')
-    total_proposals = tables.Column(verbose_name='Плановое количество РП')
-    completed_proposals = tables.Column(
-        verbose_name='Факт. количество РП',
-        accessor='completed_proposals'
-    )
-    percentage_complete = tables.Column(
-        verbose_name='Выполнения плана по количеству РП',
-        empty_values=()
-    )
-    total_economy = tables.Column(verbose_name='Плановая эк. эфф., руб.')
-    sum_economy = tables.Column(
-        verbose_name='Факт. эк. эфф., руб.',
-        accessor='sum_economy'
-    )
-    percentage_economy = tables.Column(
-        verbose_name='Выполнения плана эк. эфф.',
-        empty_values=()
-    )
+class DiagnosticsTable(tables.Table):
+    department_root = tables.Column(verbose_name='Филиал', accessor='pk')
+    pipeline = tables.Column(verbose_name='Газопровод', accessor='pk')
+    object_type = tables.Column(verbose_name='Тип объекта', accessor='pk')
+    object_name = tables.Column(verbose_name='Наименование объекта', accessor='pk')
+    start_date = tables.DateColumn(verbose_name='Начало ВТД')
+    end_date = tables.DateColumn(verbose_name='Окончание ВТД')
 
     class Meta:
-        model = AnnualPlan
+        model = Diagnostics
         fields = [
-            'department',
-            'year',
-            'total_proposals',
-            'completed_proposals',
-            'percentage_complete',
-            'total_economy',
-            'sum_economy',
-            'percentage_economy',
+            'department_root',
+            'object_type',
+            'pipeline',
+            'object_name',
+            'start_date',
+            'end_date'
         ]
-        attrs = {'class': 'table table_rational'}
+        attrs = {'class': 'table table_pipelines'}
         row_attrs = {'id': lambda record: record.id}
         orderable = False
         template_name = 'module_app/table/new_table.html'
 
-    def render_department(self, value):
-        return value.name if value else ''
+    def render_pipeline(self, record):
+        if record.pipe:
+            return record.pipe.pipeline.title
+        if record.node:
+            if record.node.node_type == 'bridge' and record.node.sub_pipeline:
+                return f'{record.node.pipeline.title}  /  {record.node.sub_pipeline.title}'
+            return record.node.pipeline.title
+        return '—'
 
-    def render_percentage_complete(self, record):
-        if record.total_proposals:
-            return f'{(record.completed_proposals / record.total_proposals * 100):.1f}%'
-        return '0%'
+    def render_department_root(self, record):
+        if record.pipe:
+            pd_list = PipeDepartment.objects.filter(pipe=record.pipe).select_related('department')
+            roots = [pd.department.get_root().name for pd in pd_list if pd.department]
+            return ' / '.join(sorted(set(roots))) if roots else '—'
 
-    def render_percentage_economy(self, record):
-        if record.total_economy:
-            return f'{(record.sum_economy / record.total_economy * 100):.1f}%'
-        return '0%'
+        if record.node:
+            departments = record.node.equipment.departments.all()
+            if departments.exists():
+                roots = [d.get_root().name for d in departments]
+                return ' / '.join(sorted(set(roots)))
+        return '—'
+
+    def render_object_type(self, record):
+        if record.pipe:
+            return 'Участок газопровода'
+        if record.node:
+            return record.node.get_node_type_display()
+        return '—'
+
+    def render_object_name(self, record):
+        if record.pipe:
+            return str(record.pipe)
+        if record.node:
+            return str(record.node)
+        return '—'

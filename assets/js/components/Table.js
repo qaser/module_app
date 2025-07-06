@@ -13,7 +13,7 @@ export default class Table {
         this._arrRows = this._getArrayRows()
         this._arrRows.forEach((row) => {
             row.addEventListener('click', () => {
-                document.location.href = row.id + '/'
+                window.location.href = row.id + '/'
             })
         })
     }

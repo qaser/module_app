@@ -1,0 +1,133 @@
+{% extends "module_app/base.html" %}
+{% block title %}Обзор участка МГ{% endblock %}
+{% block app_name %}Магистральные газопроводы{% endblock %}
+
+{% load static %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/single-pipe.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="{% url 'pipelines:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_objects"></div>
+        <h3 class="sidebar__text">Схема магистральных газопроводов</h3>
+    </a>
+    <a href="{% url 'pipelines:repairs' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_service"></div>
+        <h3 class="sidebar__text">Обзор ремонтов</h3>
+    </a>
+    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_edit"></div>
+        <h3 class="sidebar__text">Диагностика МГ</h3>
+    </a>
+    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Планирование</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+      <!-- основная панель -->
+      <section class="main" id="main">
+        <h1 class="main__title"></h1>
+        <div class="scheme" id="scheme"></div>
+        <div class="card" id="{{ pipe_id }}">
+          <div class="card__container">
+
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                  <h3 class="card__title">Информация об участке</h3>
+                  <!-- <button class="button card__button card__button_edit" data-tooltip="Редактировать информацию"></button> -->
+              </div>
+              <div class="card__field" id="pipe_info">
+                <div class="card__line">
+                  <p class="card__param">Филиал(ы)</p>
+                  <p class="card__value" id="departments"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Газопровод</p>
+                  <p class="card__value" id="pipeline"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Начало участка, км</p>
+                  <p class="card__value" id="start_point"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Конец участка, км</p>
+                  <p class="card__value" id="end_point"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Год ввода в эксплуатацию</p>
+                  <p class="card__value" id="exploit_year"></p>
+                </div>
+
+              </div>
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                  <h3 class="card__title">Информация о последнем ремонте</h3>
+              </div>
+              <div class="card__field" id="service_info">
+                <div class="card__line">
+                  <p class="card__param">Вид ТО</p>
+                  <p class="card__value_unique" id="service_type"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Дата проведения</p>
+                  <p class="card__value_unique" id="prod_date"></p>
+                </div>
+              </div>
+              <div class="card__header hidden module-color__header_{{ request.resolver_match.app_name }}" id="cardFiles">
+                <h3 class="card__title">Документация</h3>
+                <button class="button card__button card__button_add hidden" data-tooltip="Добавить файл"></button>
+              </div>
+                <div class="card__files"></div>
+            </div>
+          <div class="card__images"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- всплывающее окно с формой добавления файла -->
+    <div class="popup" id="popup-file">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup form-popup_wide" name="new-file" id="form-newfile" enctype="multipart/form-data">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4"></input>
+                    <span class="form-popup__input-error" id="file-name-error"></span>
+                </label>
+                <label class="form-popup__file-field">
+                    <span class="form-popup__file-title">Файл:</span>
+                    <input class="form-popup__input" type="file" id="work-files" name="files" accept="image/*, application/pdf">
+                    <span class="form-popup__input-error" id="work-files-error"></span>
+                </label>
+                <progress id="progressBar" value="0" max="100"></progress>
+                <div class="form-popup__container">
+                    <span class="form-popup__status" id="uploadForm_Status"></span>
+                    <span id="uploadForm_Size"></span>
+                </div>
+                <button class="form-popup__button button module-color__button_{{ request.resolver_match.app_name }}" type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+
+    <template class="file-template">
+        <div class="card__line" id="">
+            <a class="card__value_ext  link" target="_blank" data-tooltip="Открыть файл"></a>
+            <button class="card__delete hidden" type="button" data-tooltip="Удалить файл">✖</button>
+        </div>
+    </template>
+
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/singlePipe.js' %}"></script>
+{% endblock %}

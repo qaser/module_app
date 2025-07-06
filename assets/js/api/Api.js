@@ -375,11 +375,11 @@ export default class Api {
         .then(this._checkResponse);
     }
 
-    getPipeDetails(pipeId) {
-        return fetch(`${this._baseUrl}/pipes/${pipeId}/`, {
+    getPipeItem(id) {
+        return fetch(`${this._baseUrl}/pipes/${id}`, {
             headers: this._headers,
         })
-        .then(this._checkResponse);
+        .then(response => response.json());
     }
 
     getNodeDetails(nodeId) {

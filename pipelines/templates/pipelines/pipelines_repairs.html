@@ -1,5 +1,5 @@
 {% extends "module_app/base.html" %}
-{% block title %}Ремонты магистральных газопроводов{% endblock %}
+{% block title %}Обзор ремонтных работ{% endblock %}
 {% block app_name %}Магистральные газопроводы{% endblock %}
 
 {% load static %}
@@ -12,9 +12,17 @@
 {% endblock %}
 
 {% block sidepanel %}
-    <a href="" class="sidebar__item">
+    <a href="{% url 'pipelines:index' %}" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_objects"></div>
         <h3 class="sidebar__text">Схема магистральных газопроводов</h3>
+    </a>
+    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_edit"></div>
+        <h3 class="sidebar__text">Диагностика МГ</h3>
+    </a>
+    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Планирование</h3>
     </a>
     <a href="" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_help"></div>
@@ -29,7 +37,7 @@
         {% endfor %}
         <button type="submit" class="sidebar__button button module-color__button_pipelines">Применить</button>
     </form>
-    <a class="link_simple" href="{% url 'pipelines:index' %}">
+    <a class="link_simple" href="{% url 'pipelines:repairs' %}">
         <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
     </a>
 {% endblock %}
@@ -38,7 +46,7 @@
 {% csrf_token %}
 <main class="content">
   <section class="main" id="main">
-    <h1 class="main__title">Ремонты магистральных газопроводов</h1>
+    <h1 class="main__title">Обзор ремонтных работ</h1>
     {% render_table table %}
   </section>
 </main>

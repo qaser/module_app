@@ -6,8 +6,8 @@ from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
 from pipelines.models import (PipeDepartment, PipeLimit, Pipeline, Pipe, Node, PipeState, NodeState,
-                              ComplexPlan, PlannedWork, PipeRepair,
-                              PipeDiagrostics, Defect, Hole)
+                              ComplexPlan, PlannedWork, Repair,
+                              Diagnostics, Hole)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -553,11 +553,13 @@ class PipeSerializer(serializers.ModelSerializer):
     departments = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
     limit = serializers.SerializerMethodField()
+    pipeline = serializers.SerializerMethodField()
 
     class Meta:
         model = Pipe
         fields = [
             'id',
+            'pipeline',
             'departments',
             'start_point',
             'end_point',
@@ -576,6 +578,9 @@ class PipeSerializer(serializers.ModelSerializer):
             }
             for pd in obj.pipedepartment_set.select_related('department')
         ]
+
+    def get_pipeline(self, obj):
+        return obj.pipeline.title
 
     def get_state(self, obj):
         current_state = obj.current_state
@@ -714,25 +719,25 @@ class PlannedWorkSerializer(serializers.ModelSerializer):
         return data
 
 
-class PipeRepairSerializer(serializers.ModelSerializer):
+class RepairSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PipeRepair
+        model = Repair
         fields = '__all__'
 
 
-class PipeDiagrosticsSerializer(serializers.ModelSerializer):
+class DiagnosticsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PipeDiagrostics
+        model = Diagnostics
         fields = '__all__'
 
 
-class DefectSerializer(serializers.ModelSerializer):
-    defect_type_display = serializers.CharField(source='get_defect_type_display', read_only=True)
-    defect_place_display = serializers.CharField(source='get_defect_place_display', read_only=True)
+# class DefectSerializer(serializers.ModelSerializer):
+#     defect_type_display = serializers.CharField(source='get_defect_type_display', read_only=True)
+#     defect_place_display = serializers.CharField(source='get_defect_place_display', read_only=True)
 
-    class Meta:
-        model = Defect
-        fields = '__all__'
+#     class Meta:
+#         model = Defect
+#         fields = '__all__'
 
 
 class HoleSerializer(serializers.ModelSerializer):

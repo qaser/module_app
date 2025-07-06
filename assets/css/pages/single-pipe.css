@@ -18,7 +18,7 @@
 @import url(../blocks/loader/__logo/loader__logo.css);
 @import url(../blocks/loader/_disactive/loader_disactive.css);
 
-/* @import url(../blocks/list/list.css); */
+@import url(../blocks/status/status.css);
 
 @import url(../blocks/button/button.css);
 @import url(../blocks/button/_dark-green/button_dark-green.css);
@@ -33,8 +33,6 @@
 @import url(../blocks/popup/__container/popup__container.css);
 @import url(../blocks/popup/__button-close/popup__button-close.css);
 @import url(../blocks/popup/_opened/popup_opened.css);
-@import url(../blocks/popup/__image/popup__image.css);
-@import url(../blocks/popup/__image-title/popup__image-title.css);
 
 @import url(../blocks/form-popup/form-popup.css);
 @import url(../blocks/form-popup/_wide/form-popup_wide.css);
@@ -58,14 +56,6 @@
 @import url(../blocks/main/main.css);
 @import url(../blocks/main/__title/main__title.css);
 
-@import url(../blocks/table/table.css);
-@import url(../blocks/table/table_tpa.css);
-@import url(../blocks/table/table_leaks.css);
-@import url(../blocks/table/table_rational.css);
-@import url(../blocks/table/table_oil.css);
-@import url(../blocks/table/table_pipelines.css);
-@import url(../blocks/table/__pagination/table__pagination.css);
-
 @import url(../blocks/card/card.css);
 @import url(../blocks/card/__delete/card__delete.css);
 @import url(../blocks/card/__form/card__form.css);
@@ -77,10 +67,6 @@
 @import url(../blocks/card/__value/card__value.css);
 @import url(../blocks/card/__value/_ext/card__value_ext.css);
 @import url(../blocks/card/__value/_unique/card__value_unique.css);
-@import url(../blocks/card/__images/card__images.css);
-@import url(../blocks/card/__image/card__image.css);
-@import url(../blocks/card/__image/_delete/card__image_delete.css);
-@import url(../blocks/card/__image/_upload/card__image_upload.css);
 @import url(../blocks/card/__line/card__line.css);
 @import url(../blocks/card/__basket/card__basket.css);
 @import url(../blocks/card/__button/card__button.css);
@@ -88,11 +74,4 @@
 @import url(../blocks/card/__button/_add/card__button_add.css);
 @import url(../blocks/card/__button/_edit/card__button_edit.css);
 @import url(../blocks/card/__button/_done/card__button_done.css);
-@import url(../blocks/card/__image-container/card__image-container.css);
-@import url(../blocks/card/__image-container/_delete/card__image-container_delete.css);
 @import url(../blocks/card/__input/card__input.css);
-
-@import url(../blocks/service/__button/service__button.css);
-@import url(../blocks/service/__buttons/service__buttons.css);
-@import url(../blocks/service/__button/_basket/service__button_basket.css);
-@import url(../blocks/service/__button/_add/service__button_add.css);

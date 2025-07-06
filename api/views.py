@@ -23,7 +23,7 @@ from users.models import ModuleUser, Role
 
 from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, NodeStateSerializer, NotificationSerializer, PipeStateSerializer,
+                          LeakSerializer, NodeStateSerializer, NotificationSerializer, PipeSerializer, PipeStateSerializer,
                           PipelineSerializer, ProposalDocumentSerializer,
                           ProposalSerializer, QuarterlyPlanSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
@@ -411,3 +411,10 @@ class NodeStatesViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(new_state)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class PipeViewSet(viewsets.ModelViewSet):
+    queryset = Pipe.objects.all()
+    serializer_class = PipeSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]

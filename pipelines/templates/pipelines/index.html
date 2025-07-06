@@ -3,7 +3,6 @@
 {% block app_name %}Магистральные газопроводы{% endblock %}
 
 {% load static %}
-{% load render_table from django_tables2 %}
 
 
 {% block style %}
@@ -11,9 +10,17 @@
 {% endblock %}
 
 {% block sidepanel %}
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_objects"></div>
+    <a href="{% url 'pipelines:repairs' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_service"></div>
         <h3 class="sidebar__text">Обзор ремонтов</h3>
+    </a>
+    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_edit"></div>
+        <h3 class="sidebar__text">Диагностика МГ</h3>
+    </a>
+    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Планирование</h3>
     </a>
     <a href="" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_help"></div>

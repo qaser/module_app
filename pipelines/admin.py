@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
 
-from .models import (ComplexPlan, Defect, Hole, HoleDocument, Node, NodeState,
-                     Pipe, PipeDepartment, PipeDiagrostics, PipeLimit, Pipeline, PipeRepair,
-                     PipeRepairDocument, PipeRepairStage, PipeState,
+from .models import (ComplexPlan, Hole, HoleDocument, Node, NodeState,
+                     Pipe, PipeDepartment, Diagnostics, PipeLimit, Pipeline, Repair,
+                     RepairDocument, RepairStage, PipeState,
                      PlannedWork)
 
 
@@ -83,19 +83,19 @@ class NodeStateInline(admin.TabularInline):
     fields = ('state_type', 'start_date', 'changed_by', 'description')
 
 
-class PipeRepairStageInline(admin.TabularInline):
-    model = PipeRepairStage
+class RepairStageInline(admin.TabularInline):
+    model = RepairStage
     extra = 0
 
 
-class PipeRepairDocumentInline(admin.TabularInline):
-    model = PipeRepairDocument
+class RepairDocumentInline(admin.TabularInline):
+    model = RepairDocument
     extra = 0
 
 
-class DefectInline(admin.TabularInline):
-    model = Defect
-    extra = 0
+# class DefectInline(admin.TabularInline):
+#     model = Defect
+#     extra = 0
 
 
 class HoleDocumentInline(admin.TabularInline):
@@ -222,20 +222,20 @@ class NodeStateAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(PipeRepair)
-class PipeRepairAdmin(admin.ModelAdmin):
-    list_display = ('pipe', 'start_date', 'end_date', 'description')
+@admin.register(Repair)
+class RepairAdmin(admin.ModelAdmin):
+    list_display = ('pipe', 'node', 'start_date', 'end_date', 'description')
     list_filter = ('pipe__pipeline',)
     search_fields = ('pipe__pipeline__title', 'description')
-    inlines = [PipeRepairStageInline, PipeRepairDocumentInline]
+    inlines = [RepairStageInline, RepairDocumentInline]
 
 
-@admin.register(PipeDiagrostics)
-class PipeDiagrosticsAdmin(admin.ModelAdmin):
-    list_display = ('pipe', 'event_date', 'description')
+@admin.register(Diagnostics)
+class DiagnosticsAdmin(admin.ModelAdmin):
+    list_display = ('pipe', 'node', 'start_date', 'end_date', 'description')
     list_filter = ('pipe__pipeline',)
     search_fields = ('pipe__pipeline__title',)
-    inlines = [DefectInline]
+    # inlines = [DefectInline]
 
 
 @admin.register(Hole)

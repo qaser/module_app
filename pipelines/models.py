@@ -118,408 +118,6 @@ class PipeDepartment(models.Model):
         return f'{self.pipe} — {self.department}'
 
 
-class PipeRepair(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='repairs'
-    )
-    start_date = models.DateTimeField(
-        verbose_name='Начало ремонта',
-        auto_now_add=True
-    )
-    end_date = models.DateTimeField(
-        verbose_name='Окончание ремонта',
-        null=True,
-        blank=True
-    )
-    description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=True
-    )
-
-    class Meta:
-        verbose_name = 'Ремонт участка МГ'
-        verbose_name_plural = 'Ремонты участков МГ'
-        indexes = [
-            models.Index(fields=['pipe']),
-            models.Index(fields=['start_date', 'end_date']),
-        ]
-
-
-class PipeRepairDocument(models.Model):
-    repair = models.ForeignKey(
-        PipeRepair,
-        on_delete=models.CASCADE,
-        related_name='documents'
-    )
-    doc = models.FileField(upload_to='pipelines/docs/')
-    title = models.CharField(
-        'Наименование документа',
-        max_length=50,
-        blank=False,
-        null=False,
-    )
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = 'Документация по ремонту участка МГ'
-        verbose_name_plural = 'Документация по ремонтам участков МГ'
-
-
-class PipeRepairStage(models.Model):
-    repair = models.ForeignKey(
-        PipeRepair,
-        on_delete=models.CASCADE,
-        related_name='stages'
-    )
-    event_date = models.DateTimeField(
-        verbose_name='Дата проведения',
-        blank=False,
-        null=False,
-    )
-    title = models.CharField(
-        verbose_name='Наименование этапа',
-        max_length=50,
-        blank=False,
-        null=False,
-    )
-    resource = models.TextField(
-        verbose_name='Ресурсы',
-        null=True,
-        blank=True
-    )
-    description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=False,
-        null=False,
-    )
-
-    class Meta:
-        verbose_name = 'Документация по ремонту участка МГ'
-        verbose_name_plural = 'Документация по ремонтам участков МГ'
-
-
-class PipeDiagrostics(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='diagnostics'
-    )
-    event_date = models.DateTimeField(
-        verbose_name='Дата проведения ВТД',
-        blank=False,
-        null=False,
-    )
-    description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=True
-    )
-
-    class Meta:
-        verbose_name = 'ВТД участка МГ'
-        verbose_name_plural = 'ВТД участков МГ'
-        indexes = [
-            models.Index(fields=['pipe']),
-            models.Index(fields=['event_date']),
-        ]
-
-
-class Defect(models.Model):
-    DEFECT_PLACE = [
-        ('tube', 'Труба'),
-        ('kss', 'КСС'),
-        ('sdt', 'СДТ'),
-    ]
-    DEFECT_TYPE = [
-        ('krn', 'КРН'),
-        ('scratch', 'Царапина'),
-        ('burr', 'Задир'),
-        ('dent', 'Вмятина'),
-        ('crack', 'Трещина'),
-        ('shell', 'Раковина'),
-        ('potholes', 'Забоина'),
-        ('risk', 'Риска'),
-        ('oval', 'Овальность'),
-        ('curve', 'Кривизна'),
-        ('goffer', 'Гофр'),
-        ('notbrewed', 'Непровар'),
-        ('undercutting', 'Подрез зоны сплавления'),
-        ('displacement', 'Смещение сваренных кромок'),
-        ('pore', 'Пора'),
-        ('slag', 'Шлаковые включения'),
-        ('fistula', 'Свищ в сварном шве'),
-    ]
-    diagnostics = models.ForeignKey(
-        PipeDiagrostics,
-        on_delete=models.CASCADE,
-        related_name='defects'
-    )
-    defect_num = models.PositiveSmallIntegerField(
-        verbose_name='Номер дефекта',
-        blank=False,
-        null=False,
-    )
-    defect_type = models.CharField(
-        max_length=50,
-        choices=DEFECT_TYPE,
-        verbose_name='Тип дефекта',
-        blank=False,
-        null=False,
-    )
-    defect_place = models.CharField(
-        max_length=50,
-        choices=DEFECT_PLACE,
-        verbose_name='Место расположения дефекта',
-        blank=False,
-        null=False,
-    )
-    place_num = models.CharField(
-        verbose_name='Номер трубы (КСС, СДТ)',
-        blank=True,
-        null=True,
-    )
-    is_fixed = models.BooleanField(
-        verbose_name='Дефект устранён',
-        default=False
-    )
-    description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=True
-    )
-
-    class Meta:
-        verbose_name = 'Дефект трубопровода (КСС, СДТ)'
-        verbose_name_plural = 'Дефекты трубопроводов (КСС, СДТ)'
-        indexes = [
-            models.Index(fields=['diagnostics']),
-            models.Index(fields=['defect_type']),
-            models.Index(fields=['defect_place']),
-            models.Index(fields=['is_fixed']),
-        ]
-
-    def clean(self):
-        super().clean()
-        # Список допустимых типов дефектов для КСС
-        kss_allowed_defects = [
-            'notbrewed',
-            'undercutting',
-            'displacement',
-            'pore',
-            'slag',
-            'crack',
-            'shell',
-            'fistula',
-        ]
-        if self.defect_place == 'kss' and self.defect_type not in kss_allowed_defects:
-            raise ValidationError(
-                ("Для места расположения 'КСС' допустимы только следующие типы дефектов: "
-                 ', '.join([dict(self.DEFECT_TYPE)[d] for d in kss_allowed_defects]))
-            )
-
-
-class Hole(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='holes'
-    )
-    location_point = models.FloatField(
-        verbose_name='Место расположения, км',
-        blank=False,
-        null=False
-    )
-    cutting_date = models.DateField(
-        verbose_name='Дата вырезки',
-        null=False,
-        blank=False,
-    )
-    welding_date = models.DateField(
-        verbose_name='Дата заварки',
-        null=True,
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = 'Технологическое отверстие'
-        verbose_name_plural = 'Технологические отверстия'
-
-
-class HoleDocument(models.Model):
-    hole = models.ForeignKey(
-        Hole,
-        on_delete=models.CASCADE,
-        related_name='documents'
-    )
-    doc = models.FileField(upload_to='pipelines/docs/')
-    title = models.CharField(
-        'Наименование документа',
-        max_length=50,
-        blank=False,
-        null=False,
-    )
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    description = models.TextField(
-        max_length=500,
-        null=True,
-        blank=True,
-    )
-
-    class Meta:
-        verbose_name = 'Документация по ТО'
-        verbose_name_plural = 'Документация по ТО'
-
-
-class PipeState(models.Model):
-    STATE_CHOICES = [
-        ('repair', 'В ремонте'),
-        ('operation', 'В работе'),
-        ('disabled', 'Отключен'),
-        # ('empty', 'Стравлен'),
-        ('depletion', 'На выработке'),
-        ('diagnostics', 'Проведение ВТД'),
-    ]
-    STATE_COLORS = {
-        'repair': '#FF0000',  # Красный
-        'operation': '#00FF00',  # Зеленый
-        'disabled': '#888888',  # Серый
-        # 'empty': '#FFFFFF',  # Белый
-        'depletion': '#FFA500',  # Оранжевый
-        'diagnostics': '#0000FF',  # Синий
-    }
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='states'
-    )
-    state_type = models.CharField(
-        max_length=25,
-        choices=STATE_CHOICES,
-        verbose_name='Тип состояния'
-    )
-    start_date = models.DateField(
-        verbose_name='Начало состояния',
-        blank=False,
-        null=False,
-    )
-    end_date = models.DateField(
-        verbose_name='Окончание состояния',
-        null=True,
-        blank=True
-    )
-    description = models.TextField(
-        verbose_name='Описание состояния',
-        max_length=500,
-        blank=True
-    )
-    created_by = models.ForeignKey(
-        ModuleUser,
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name='Кем создано'
-    )
-    current_pressure = models.FloatField(
-        verbose_name='Давление, кгс/см²',
-        null=True,
-        blank=True
-    )
-
-    class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Состояние участка'
-        verbose_name_plural = 'Состояния участков'
-        indexes = [
-            models.Index(fields=['pipe']),
-            models.Index(fields=['state_type']),
-            models.Index(fields=['start_date', 'end_date']),
-            models.Index(fields=['created_by']),
-        ]
-
-    def __str__(self):
-        return f'{self.get_state_type_display()} ({self.pipe})'
-
-    @property
-    def color(self):
-        return self.STATE_COLORS.get(self.state_type, '#CCCCCC')
-
-    # def clean(self):
-    #     if self.end_date and self.end_date < self.start_date:
-    #         raise ValidationError('Дата окончания не может быть раньше даты начала')
-
-    def save(self, *args, **kwargs):
-        # Закрываем старые активные состояния (end_date is NULL)
-        PipeState.objects.filter(
-            pipe=self.pipe,
-            end_date__isnull=True
-        ).exclude(pk=self.pk).update(end_date=self.start_date)
-
-        super().save(*args, **kwargs)
-
-
-class PipeLimit(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='limits'
-    )
-    pressure_limit = models.FloatField(
-        verbose_name='Ограничение давления, кгс/см²',
-        null=True,
-        blank=True
-    )
-    limit_reason = models.CharField(
-        max_length=100,
-        verbose_name='Причина ограничения',
-        null=True,
-        blank=True
-    )
-    start_date = models.DateField(
-        verbose_name='Начало ограничения',
-        blank=False,
-        null=False,
-    )
-    end_date = models.DateField(
-        verbose_name='Окончание ограничения',
-        null=True,
-        blank=True,
-        help_text='Указывается когда ограничение фактически будет снято'
-    )
-
-    class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Ограничение давления'
-        verbose_name_plural = 'Ограничения давления'
-
-    def __str__(self):
-        return f'Ограничение {self.pressure_limit} кгс/см² ({self.pipe}) с {self.start_date}'
-
-    def clean(self):
-        # Проверка: если это новый объект или end_date отсутствует
-        if self.end_date is None:
-            existing = PipeLimit.objects.filter(
-                pipe=self.pipe,
-                end_date__isnull=True
-            )
-            # Если редактируем существующий объект — исключаем его
-            if self.pk:
-                existing = existing.exclude(pk=self.pk)
-            if existing.exists():
-                raise ValidationError('Для данного участка уже существует активное ограничение.')
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-
 class Node(models.Model):
     TYPE_CHOICES = [
         ('valve', 'Линейный кран'),
@@ -610,14 +208,285 @@ class Node(models.Model):
             root_department = departments.order_by('tree_id', 'level').first().get_root()
         department_name = root_department.name if root_department else '—'
         if self.node_type == 'bridge':
-            return f'Перемычка {self.location_point} км между "{self.pipeline}" и "{self.sub_pipeline}" ({department_name})'
+            return f'Перемычка {self.location_point} км между "{self.pipeline}" и "{self.sub_pipeline}"'
         else:
             node_type_display = self.get_node_type_display()
-            return f'{node_type_display} {self.location_point} км г-да "{self.pipeline}" ({department_name})'
+            return f'{node_type_display} {self.location_point} км г-да "{self.pipeline}"'
+
+    # @property
+    # def current_state(self):
+    #     return self.states.filter('timestamp').first()
+
+
+class Repair(models.Model):
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='pipe_repairs',
+        null=True,
+        blank=True
+    )
+    node = models.ForeignKey(
+        Node,
+        on_delete=models.CASCADE,
+        related_name='node_repairs',
+        null=True,
+        blank=True
+    )
+    start_date = models.DateField(
+        verbose_name='Начало ремонта',
+        null=True,
+        blank=True
+    )
+    end_date = models.DateField(
+        verbose_name='Окончание ремонта',
+        null=True,
+        blank=True
+    )
+    description = models.TextField(
+        verbose_name='Дополнительная информация',
+        max_length=500,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Ремонт МГ, КУ'
+        verbose_name_plural = 'Ремонты МГ, КУ'
+        indexes = [
+            models.Index(fields=['pipe']),
+            models.Index(fields=['node']),
+            models.Index(fields=['start_date', 'end_date']),
+        ]
+
+    def clean(self):
+        super().clean()
+        if not self.pipe and not self.node:
+            raise ValidationError("Необходимо указать либо участок МГ, либо КУ.")
+        if self.pipe and self.node:
+            raise ValidationError("Нельзя указывать одновременно и участок ЛЧ, и КУ.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # обязательно вызывает clean()
+        super().save(*args, **kwargs)
+
+
+class RepairStage(models.Model):
+    repair = models.ForeignKey(
+        Repair,
+        on_delete=models.CASCADE,
+        related_name='stages'
+    )
+    event_date = models.DateTimeField(
+        verbose_name='Дата проведения',
+        blank=False,
+        null=False,
+    )
+    title = models.CharField(
+        verbose_name='Наименование этапа',
+        max_length=50,
+        blank=False,
+        null=False,
+    )
+    resource = models.TextField(
+        verbose_name='Ресурсы',
+        null=True,
+        blank=True
+    )
+    description = models.TextField(
+        verbose_name='Дополнительная информация',
+        max_length=500,
+        blank=False,
+        null=False,
+    )
+
+    class Meta:
+        verbose_name = 'Документация по ремонту'
+        verbose_name_plural = 'Документация по ремонтам'
+
+
+class Diagnostics(models.Model):
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='pipe_diagnostics',
+        blank=True,
+        null=True,
+    )
+    node = models.ForeignKey(
+        Node,
+        on_delete=models.CASCADE,
+        related_name='node_diagnostics',
+        blank=True,
+        null=True,
+    )
+    start_date = models.DateField(
+        verbose_name='Начало ВТД',
+        null=True,
+        blank=True
+    )
+    end_date = models.DateField(
+        verbose_name='Окончание ВТД',
+        null=True,
+        blank=True
+    )
+    description = models.TextField(
+        verbose_name='Дополнительная информация',
+        max_length=500,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = 'ВТД'
+        verbose_name_plural = 'ВТД'
+        indexes = [
+            models.Index(fields=['pipe']),
+            models.Index(fields=['node']),
+            models.Index(fields=['start_date']),
+            models.Index(fields=['end_date']),
+        ]
+
+    def clean(self):
+        super().clean()
+        if not self.pipe and not self.node:
+            raise ValidationError("Необходимо указать либо участок (pipe), либо узел (node).")
+        if self.pipe and self.node:
+            raise ValidationError("Нельзя указывать одновременно и участок (pipe), и узел (node).")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # обязательно вызывает clean()
+        super().save(*args, **kwargs)
+
+
+class PipeState(models.Model):
+    STATE_CHOICES = [
+        ('repair', 'В ремонте'),
+        ('operation', 'В работе'),
+        ('disabled', 'Отключен'),
+        # ('empty', 'Стравлен'),
+        ('depletion', 'На выработке'),
+        ('diagnostics', 'Проведение ВТД'),
+    ]
+    STATE_COLORS = {
+        'repair': '#FF0000',  # Красный
+        'operation': '#00FF00',  # Зеленый
+        'disabled': '#888888',  # Серый
+        # 'empty': '#FFFFFF',  # Белый
+        'depletion': '#FFA500',  # Оранжевый
+        'diagnostics': '#0000FF',  # Синий
+    }
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='states'
+    )
+    state_type = models.CharField(
+        max_length=25,
+        choices=STATE_CHOICES,
+        verbose_name='Тип состояния'
+    )
+    start_date = models.DateField(
+        verbose_name='Начало состояния',
+        blank=False,
+        null=False,
+    )
+    end_date = models.DateField(
+        verbose_name='Окончание состояния',
+        null=True,
+        blank=True
+    )
+    description = models.TextField(
+        verbose_name='Описание состояния',
+        max_length=500,
+        blank=True
+    )
+    created_by = models.ForeignKey(
+        ModuleUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Кем создано'
+    )
+    current_pressure = models.FloatField(
+        verbose_name='Давление, кгс/см²',
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        ordering = ['-start_date']
+        verbose_name = 'Состояние участка'
+        verbose_name_plural = 'Состояния участков'
+        indexes = [
+            models.Index(fields=['pipe']),
+            models.Index(fields=['state_type']),
+            models.Index(fields=['start_date', 'end_date']),
+            models.Index(fields=['created_by']),
+        ]
+
+    def __str__(self):
+        return f'{self.get_state_type_display()} ({self.pipe})'
 
     @property
-    def current_state(self):
-        return self.states.filter('timestamp').first()
+    def color(self):
+        return self.STATE_COLORS.get(self.state_type, '#CCCCCC')
+
+    # def clean(self):
+    #     if self.end_date and self.end_date < self.start_date:
+    #         raise ValidationError('Дата окончания не может быть раньше даты начала')
+
+    def save(self, *args, **kwargs):
+        PipeState.objects.filter(
+            pipe=self.pipe,
+            end_date__isnull=True
+        ).exclude(pk=self.pk).update(end_date=self.start_date)
+        super().save(*args, **kwargs)
+
+
+class PipeLimit(models.Model):
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='limits'
+    )
+    pressure_limit = models.FloatField(
+        verbose_name='Ограничение давления, кгс/см²',
+        null=True,
+        blank=True
+    )
+    limit_reason = models.CharField(
+        max_length=100,
+        verbose_name='Причина ограничения',
+        null=True,
+        blank=True
+    )
+    start_date = models.DateField(
+        verbose_name='Начало ограничения',
+        blank=False,
+        null=False,
+    )
+    end_date = models.DateField(
+        verbose_name='Окончание ограничения',
+        null=True,
+        blank=True,
+        help_text='Указывается когда ограничение фактически будет снято'
+    )
+
+    class Meta:
+        ordering = ['-start_date']
+        verbose_name = 'Ограничение давления'
+        verbose_name_plural = 'Ограничения давления'
+
+    def __str__(self):
+        return f'Ограничение {self.pressure_limit} кгс/см² ({self.pipe}) с {self.start_date}'
+
+    def save(self, *args, **kwargs):
+        # Закрываем предыдущие активные ограничения
+        if self.start_date and self.pipe:
+            PipeLimit.objects.filter(
+                pipe=self.pipe,
+                end_date__isnull=True
+            ).exclude(pk=self.pk).update(end_date=self.start_date)
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class NodeState(models.Model):
@@ -757,9 +626,9 @@ class PlannedWork(models.Model):
 
     def clean(self):
         if not self.pipe and not self.node:
-            raise ValidationError('Необходимо указать либо участок газопровода, либо крановый узел.')
+            raise ValidationError('Необходимо указать либо участок МГ, либо КУ.')
         if self.pipe and self.node:
-            raise ValidationError('Нельзя одновременно указывать и участок газопровода, и крановый узел.')
+            raise ValidationError('Нельзя одновременно указывать и участок МГ, и КУ.')
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -768,3 +637,214 @@ class PlannedWork(models.Model):
     def __str__(self):
         target = self.pipe or self.node
         return f"{self.get_work_type_display()} — {target} ({self.planned_date})"
+
+
+# class PipeUnit(models.Model):
+#     UNIT_TYPE = [
+#         ('tube', 'Труба'),
+#         ('kss', 'КСС'),
+#         ('sdt', 'СДТ'),
+#     ]
+#     unit_type = models.CharField(
+#         max_length=50,
+#         choices=UNIT_TYPE,
+#         verbose_name='Тип элемента',
+#         blank=False,
+#         null=False,
+#     )
+
+
+# class Defect(models.Model):
+#     DEFECT_TYPE = [
+#         ('krn', 'КРН'),
+#         ('scratch', 'Царапина'),
+#         ('burr', 'Задир'),
+#         ('dent', 'Вмятина'),
+#         ('crack', 'Трещина'),
+#         ('shell', 'Раковина'),
+#         ('potholes', 'Забоина'),
+#         ('risk', 'Риска'),
+#         ('oval', 'Овальность'),
+#         ('curve', 'Кривизна'),
+#         ('goffer', 'Гофр'),
+#         ('notbrewed', 'Непровар'),
+#         ('undercutting', 'Подрез зоны сплавления'),
+#         ('displacement', 'Смещение сваренных кромок'),
+#         ('pore', 'Пора'),
+#         ('slag', 'Шлаковые включения'),
+#         ('fistula', 'Свищ в сварном шве'),
+#     ]
+#     diagnostics = models.ForeignKey(
+#         Diagnostics,
+#         on_delete=models.CASCADE,
+#         related_name='defects'
+#     )
+#     defect_num = models.PositiveSmallIntegerField(
+#         verbose_name='Номер дефекта',
+#         blank=False,
+#         null=False,
+#     )
+#     defect_type = models.CharField(
+#         max_length=50,
+#         choices=DEFECT_TYPE,
+#         verbose_name='Тип дефекта',
+#         blank=False,
+#         null=False,
+#     )
+#     pipe_unit = models.ForeignKey(
+#         PipeUnit,
+#         on_delete=models.CASCADE,
+#         related_name='defects',
+#         blank=True,
+#         null=True,
+#     )
+#     place_num = models.CharField(
+#         verbose_name='Номер трубы (КСС, СДТ)',
+#         blank=True,
+#         null=True,
+#     )
+#     is_fixed = models.BooleanField(
+#         verbose_name='Дефект устранён',
+#         default=False
+#     )
+#     description = models.TextField(
+#         verbose_name='Дополнительная информация',
+#         max_length=500,
+#         blank=True
+#     )
+
+#     class Meta:
+#         verbose_name = 'Дефект'
+#         verbose_name_plural = 'Дефекты'
+#         indexes = [
+#             models.Index(fields=['diagnostics']),
+#             models.Index(fields=['defect_type']),
+#             # models.Index(fields=['pipe_unit']),
+#             models.Index(fields=['is_fixed']),
+#         ]
+
+#     def clean(self):
+#         super().clean()
+#         # Список допустимых типов дефектов для КСС
+#         kss_allowed_defects = [
+#             'notbrewed',
+#             'undercutting',
+#             'displacement',
+#             'pore',
+#             'slag',
+#             'crack',
+#             'shell',
+#             'fistula',
+#         ]
+#         if self.defect_place == 'kss' and self.defect_type not in kss_allowed_defects:
+#             raise ValidationError(
+#                 ("Для места расположения 'КСС' допустимы только следующие типы дефектов: "
+#                  ', '.join([dict(self.DEFECT_TYPE)[d] for d in kss_allowed_defects]))
+#             )
+
+
+class Hole(models.Model):
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='holes'
+    )
+    location_point = models.FloatField(
+        verbose_name='Место расположения, км',
+        blank=False,
+        null=False
+    )
+    cutting_date = models.DateField(
+        verbose_name='Дата вырезки',
+        null=False,
+        blank=False,
+    )
+    welding_date = models.DateField(
+        verbose_name='Дата заварки',
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = 'Технологическое отверстие'
+        verbose_name_plural = 'Технологические отверстия'
+
+
+class HoleDocument(models.Model):
+    hole = models.ForeignKey(
+        Hole,
+        on_delete=models.CASCADE,
+        related_name='hole_docs'
+    )
+    doc = models.FileField(upload_to='pipelines/docs/holes/')
+    title = models.CharField(
+        'Наименование документа',
+        max_length=100,
+        blank=False,
+        null=False,
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Документация по ТО'
+        verbose_name_plural = 'Документация по ТО'
+
+
+class PipeDocument(models.Model):
+    pipe = models.ForeignKey(
+        Repair,
+        on_delete=models.CASCADE,
+        related_name='pipe_docs'
+    )
+    doc = models.FileField(upload_to='pipelines/docs/pipes/')
+    title = models.CharField(
+        'Наименование документа',
+        max_length=100,
+        blank=False,
+        null=False,
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Документация участка МГ'
+        verbose_name_plural = 'Документация участков МГ'
+
+
+class NodeDocument(models.Model):
+    node = models.ForeignKey(
+        Node,
+        on_delete=models.CASCADE,
+        related_name='node_docs'
+    )
+    doc = models.FileField(upload_to='pipelines/docs/nodes/')
+    title = models.CharField(
+        'Наименование документа',
+        max_length=100,
+        blank=False,
+        null=False,
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Документация КУ МГ'
+        verbose_name_plural = 'Документация КУ МГ'
+
+
+class RepairDocument(models.Model):
+    repair = models.ForeignKey(
+        Repair,
+        on_delete=models.CASCADE,
+        related_name='repair_docs'
+    )
+    doc = models.FileField(upload_to='pipelines/docs/repairs/')
+    title = models.CharField(
+        'Наименование документа',
+        max_length=100,
+        blank=False,
+        null=False,
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Документация по ремонту участка МГ'
+        verbose_name_plural = 'Документация по ремонтам участков МГ'

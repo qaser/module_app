@@ -145,8 +145,7 @@ export default class PipelineVisualizer {
     }
 
     openDetailsPopup(type, id) {
-        // Реализация просмотра деталей
-        console.log(`Opening details for ${type} with id ${id}`);
+        window.location.href = type + 's/' + id + '/'
     }
 
     calculatePipelineLength(pipeline) {
@@ -252,19 +251,25 @@ export default class PipelineVisualizer {
     }
 
     createPipeElement(pipeline_title, pipe, yPos, index, pipeWidth) {
-        const svgNS = "http://www.w3.org/2000/svg";
-        const group = document.createElementNS(svgNS, "g");
-        group.classList.add('pipe-group');
+    const svgNS = "http://www.w3.org/2000/svg";
 
-        const x = this.container.clientWidth - this.options.pipelinePadding - (index + 2) * pipeWidth;
-        const rect = document.createElementNS(svgNS, "rect");
+    // Главный контейнер для всех элементов
+    const mainGroup = document.createElementNS(svgNS, "g");
+    mainGroup.classList.add('main-pipe-group');
+
+    // Создаем группу для pipe (как у вас было)
+    const group = document.createElementNS(svgNS, "g");
+    group.classList.add('pipe-group');
+
+    const x = this.container.clientWidth - this.options.pipelinePadding - (index + 2) * pipeWidth;
+    const rect = document.createElementNS(svgNS, "rect");
         rect.setAttribute('x', x);
         rect.setAttribute('y', yPos);
         rect.setAttribute('width', pipeWidth);
         rect.setAttribute('height', this.options.pipelineHeight);
         rect.setAttribute('fill', pipe.state?.color || this.options.pipeColor);
         if (pipe.limit) {
-            rect.setAttribute('stroke', 'red');
+            rect.setAttribute('stroke', '#8B0000');
         }
         rect.classList.add('pipe-element');
         rect.setAttribute('pipe-id', pipe.id);
@@ -307,8 +312,34 @@ export default class PipelineVisualizer {
         if (separator) {
             group.appendChild(separator);
         }
+        if (pipe.limit) {
+            // Создаем фон для текста (прямоугольник)
+            const textBg = document.createElementNS(svgNS, "rect");
+            textBg.setAttribute('x', x + pipeWidth / 2 - 20); // Центрируем и добавляем отступы
+            textBg.setAttribute('y', yPos - 25); // Позиционируем выше pipe
+            textBg.setAttribute('width', 40); // Ширина фона
+            textBg.setAttribute('height', 20); // Высота фона
+            textBg.setAttribute('rx', 3); // Закругленные углы
+            textBg.setAttribute('fill', '#8B0000'); // Темно-красный цвет
+            textBg.setAttribute('class', 'limit-text-bg');
 
-        return group;
+            // Создаем текст
+            const text = document.createElementNS(svgNS, "text");
+            text.setAttribute('x', x + pipeWidth / 2); // Центрируем по ширине pipe
+            text.setAttribute('y', yPos - 10); // Размещаем над pipe
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-size', '12px');
+            text.setAttribute('fill', 'white'); // Белый текст
+            text.setAttribute('font-weight', 'bold');
+            text.setAttribute('class', 'pipe-limit-text');
+            text.textContent = pipe.limit.pressure_limit;
+
+            // Добавляем элементы в правильном порядке (сначала фон, потом текст)
+            mainGroup.appendChild(textBg);
+            mainGroup.appendChild(text);
+        }
+        mainGroup.appendChild(group);
+        return mainGroup; // Возвращаем основной контейнер
     }
 
     createNodeElement(pipeline_title, node, yPos, pipeline, pipeWidth) {
