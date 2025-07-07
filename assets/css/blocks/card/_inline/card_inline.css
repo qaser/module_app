@@ -1,0 +1,9 @@
+.card_inline {
+    gap: 20px;
+}
+
+@media screen and (max-width: 1200px) {
+    .card_inline {
+        gap: 0;
+    }
+}

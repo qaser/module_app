@@ -8,13 +8,18 @@ export default class PipeItem {
     }
 
     renderItem(pipe) {
+        pipe.start_point = pipe.start_point.toFixed(1);
+        pipe.end_point = pipe.end_point.toFixed(1);
+        pipe.exploit_year = pipe.exploit_year ? pipe.exploit_year : '-';
         const start_point = pipe.start_point;
         const end_point = pipe.end_point;
         const pipeline = pipe.pipeline;
+        pipe.departments = pipe.departments.map(d => d.name).join(' / ');
         // const type = valve.valve_type;
         // const diam = valve.diameter;
         // const pressure = valve.pressure;
         // const num = valve.tech_number;
+
         this._title.textContent = `Участок ${start_point}-${end_point} км. газопровода "${pipeline}"`;
         this._values.forEach((item) => {
             item.textContent = pipe[item.id];

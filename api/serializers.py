@@ -565,7 +565,8 @@ class PipeSerializer(serializers.ModelSerializer):
             'end_point',
             'diameter',
             'state',
-            'limit'
+            'limit',
+            'exploit_year'
         ]
 
     def get_departments(self, obj):

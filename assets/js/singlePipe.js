@@ -13,6 +13,7 @@ import FormValidator from '../js/components/FormValidator.js';
 import FileManager from './components/FileManager.js';
 import HiddenElement from './components/HiddenElement.js';
 import AppMenu from '../js/components/AppMenu.js';
+import SinglePipeVisualizer from '../js/components/SinglePipeVisualizer.js'
 
 
 const pipeId = document.querySelector('.card').id;
@@ -21,6 +22,7 @@ let haveFiles = 0;
 const filesContainer = document.querySelector('.card__files'); // контейнер с файлами
 const formValidators = {};
 
+const testPipe = generateTestPipe()
 
 const formFileConfig = {
     formSelector: '.form-popup',
@@ -162,6 +164,56 @@ function renderLoading() {
     constant.loadingScreen.classList.toggle('loader_disactive');
 }
 
+function generateTestPipe(id = 1) {
+  const pipe_units = [];
+  const getRandomLength = () => +(10.5 + Math.random() * (12 - 10.5)).toFixed(2);
+  const getRandomDefects = (length) => {
+    const count = Math.random() < 0.02 ? Math.floor(Math.random() * 5) + 1 : 0; // 10% труб с дефектами
+    return Array.from({ length: count }, () => ({
+      position: +(Math.random() * length).toFixed(2)
+    }));
+  };
+
+  // начальный стык
+  pipe_units.push({ unit_type: 'kss', defects: Math.random() < 0.01 ? [{}] : [] });
+
+  for (let i = 0; i < 3000; i++) {
+    const length = getRandomLength();
+    const defects = getRandomDefects(length);
+    pipe_units.push({
+      unit_type: 'tube',
+      length: length,
+      defects: defects
+    });
+
+    pipe_units.push({
+      unit_type: 'kss',
+      defects: Math.random() < 0.02 ? [{}] : []
+    });
+  }
+
+  // Рассчитаем общую длину участка
+  const totalLength = pipe_units
+    .filter(u => u.unit_type === 'tube')
+    .reduce((sum, tube) => sum + tube.length, 0);
+
+  const start_km = +(Math.random() * 1000).toFixed(3);
+  const end_km = +(start_km + totalLength / 1000).toFixed(3);
+
+  return {
+    id: id,
+    pipeline: "Тестовый газопровод",
+    start_point: start_km,
+    end_point: end_km,
+    diameter: 1420,
+    departments: [{ id: 1, name: "Тестовое ЛПУМГ", start_point: start_km, end_point: end_km }],
+    pipe_units: pipe_units,
+    state: null,
+    limit: null,
+    exploit_year: 2020
+  };
+}
+
 enableValidation(formFileConfig);
 popupWithFormNewFile.setEventListeners();
 new Tooltip();
@@ -171,6 +223,8 @@ Promise.all([api.getMyProfile(), api.getPipeItem(pipeId)])
     .then(([userData, pipe]) => {
         newUserInfo.setUserInfo(userData);
         pipeInstance.renderItem(pipe);
+        const pipeVisualizer = new SinglePipeVisualizer(testPipe, "scheme");
+        pipeVisualizer.render();
         // if (pipe.files.length > 0) {
         //     haveFiles = pipe.files.length;
         //     cardWithFiles.show();

@@ -39,7 +39,7 @@
       <section class="main" id="main">
         <h1 class="main__title"></h1>
         <div class="scheme" id="scheme"></div>
-        <div class="card" id="{{ pipe_id }}">
+        <div class="card card_inline" id="{{ pipe_id }}">
           <div class="card__container">
 
               <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
@@ -54,6 +54,10 @@
                 <div class="card__line">
                   <p class="card__param">Газопровод</p>
                   <p class="card__value" id="pipeline"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Диаметр, мм</p>
+                  <p class="card__value" id="diameter"></p>
                 </div>
                 <div class="card__line">
                   <p class="card__param">Начало участка, км</p>
@@ -82,12 +86,14 @@
                   <p class="card__value_unique" id="prod_date"></p>
                 </div>
               </div>
-              <div class="card__header hidden module-color__header_{{ request.resolver_match.app_name }}" id="cardFiles">
-                <h3 class="card__title">Документация</h3>
-                <button class="button card__button card__button_add hidden" data-tooltip="Добавить файл"></button>
-              </div>
                 <div class="card__files"></div>
             </div>
+          <div class="card__container">
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}" id="cardFiles">
+                <h3 class="card__title">Документация</h3>
+                <button class="button card__button card__button_add" data-tooltip="Добавить файл"></button>
+              </div>
+          </div>
           <div class="card__images"></div>
         </div>
       </section>

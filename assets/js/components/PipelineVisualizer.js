@@ -301,10 +301,10 @@ export default class PipelineVisualizer {
             rect.setAttribute('data-tooltip',
                 `${departmentInfo}\n` +
                 `Газопровод: ${pipeline_title}\n` +
-                `Участок: ${pipe.start_point} - ${pipe.end_point} км.\n` +
+                `Участок: ${pipe.start_point.toFixed(1)} - ${pipe.end_point.toFixed(1)} км.\n` +
                 `Диаметр: ${pipe.diameter} мм\n` +
                 `Состояние: ${pipe.state.state_type_display} c ${pipe.state.start_date}г.\n` +
-                `Ограничение: ${pipe.limit ? pipe.limit.pressure_limit + ' кгс/см²' : 'Нет'}`
+                `Ограничение: ${pipe.limit ? pipe.limit.pressure_limit.toFixed(1) + ' кгс/см²' : 'Нет'}`
             );
         }
 
@@ -391,7 +391,7 @@ export default class PipelineVisualizer {
         element.setAttribute('data-tooltip',
             `Филиал: ${node.department.name}\n` +
             `Газопровод: ${pipeline_title}\n` +
-            `${node.node_type_display}: ${node.location_point} км.\n` +
+            `${node.node_type_display}: ${node.location_point.toFixed(2)} км.\n` +
             `Состояние: ${node.state ? node.state.state_display : 'Неизвестно'}`);
         return element;
     }
@@ -494,7 +494,7 @@ export default class PipelineVisualizer {
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('font-size', '7px');
         text.setAttribute('fill', '#333');
-        text.textContent = node.location_point;
+        text.textContent = node.location_point.toFixed(1);
 
         group.appendChild(leftVerticalPipe);
         group.appendChild(rightVerticalPipe);
@@ -613,8 +613,16 @@ export default class PipelineVisualizer {
 
         this.container.addEventListener('wheel', (e) => {
             e.preventDefault();
-            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            const rect = this.container.getBoundingClientRect();
+            // Координаты указателя относительно контейнера
+            const pointerX = e.clientX - rect.left;
+            const pointerY = e.clientY - rect.top;
+            const oldScale = this.scale;
+            const delta = e.deltaY > 0 ? -0.2 : 0.2;
             this.scale = Math.min(Math.max(0.5, this.scale + delta), 3.0);
+            // Коррекция offsetX и offsetY, чтобы масштабирование было относительно указателя мыши
+            this.offsetX -= (pointerX / oldScale - pointerX / this.scale);
+            this.offsetY -= (pointerY / oldScale - pointerY / this.scale);
             this.applyTransform();
         });
 

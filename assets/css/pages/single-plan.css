@@ -73,6 +73,7 @@
 @import url(../blocks/card/__button/_edit/card__button_edit.css);
 @import url(../blocks/card/__button/_done/card__button_done.css);
 @import url(../blocks/card/__input/card__input.css);
+@import url(../blocks/card/_inline/card_inline.css);
 
 @import url(../blocks/plan/plan.css);
 @import url(../blocks/plan/__card/plan__card.css);
