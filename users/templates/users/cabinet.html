@@ -1,0 +1,72 @@
+{% extends "module_app/base.html" %}
+{% block title %}Кабинет пользователя{% endblock %}
+{% block app_name %}Кабинет пользователя{% endblock %}
+
+{% load static %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="/tpa/" class="sidebar__item module-color_tpa">
+        <div class="sidebar__icon sidebar__icon_app"></div>
+        <h3 class="sidebar__text">Техническое обслуживание ТПА</h3>
+    </a>
+    <a href="/leaks/" class="sidebar__item module-color_leaks">
+        <div class="sidebar__icon sidebar__icon_app"></div>
+        <h3 class="sidebar__text">Регистрация утечек газа</h3>
+    </a>
+    <a href="/rational/" class="sidebar__item module-color_rational">
+        <div class="sidebar__icon sidebar__icon_app"></div>
+        <h3 class="sidebar__text">Рационализаторская работа</h3>
+    </a>
+    <a href="/pipelines/" class="sidebar__item module-color_pipelines">
+        <div class="sidebar__icon sidebar__icon_app"></div>
+        <h3 class="sidebar__text">Магистральные газопроводы</h3>
+    </a>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+      <!-- основная панель -->
+      <section class="main" id="main">
+        <h1 class="main__title">Уведомления</h1>
+        <div class="notifications-container" id="notifications"></div>
+      </section>
+    </main>
+
+    <template class="notification-template">
+    <div class="notification-item" id="">
+        <!-- Индикатор нового сообщения -->
+        <div class="notification-indicator"></div>
+
+        <!-- Иконка модуля -->
+        <div class="sidebar__icon sidebar__icon_app"></div>
+
+        <!-- Контент -->
+        <div class="notification-meta">
+        <div class="notification-meta-header">
+            <span class="notification-meta-user">Фамилия И.О.</span>
+            <span class="notification-date">00.00.0000 00:00</span>
+        </div>
+        <div class="notification-message">Текст сообщения</div>
+        </div>
+
+        <!-- Действия -->
+        <div class="notification-actions">
+        <a href="#" class="notification-button notification-link" target="_blank">
+            <img class="notification-link-icon" src="{% static 'img/link-icon.svg' %}" alt="" />
+        </a>
+        <button class="notification-button notification-read-btn">Прочитано</button>
+        </div>
+    </div>
+    </template>
+
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/mainMenu.js' %}"></script>
+{% endblock %}

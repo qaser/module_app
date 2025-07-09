@@ -9,8 +9,10 @@ handler404 = 'module_app.views.page_not_found'  # noqa
 handler500 = 'module_app.views.server_error'  # noqa
 handler400 = 'module_app.views.bad_request'  # noqa
 
+
 urlpatterns = [
     path('app-admin/', admin.site.urls),
+    path('', include('users.urls')),
     path('leaks/', include('leaks.urls')),
     path('pipelines/', include('pipelines.urls')),
     path('tpa/', include('tpa.urls')),

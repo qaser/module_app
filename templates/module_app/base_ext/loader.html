@@ -1,5 +1,90 @@
-{% load static %}
-
 <div class="loader">
-    <div class="loader__logo"></div>
+  <div class="loader__logo">
+    <svg viewBox="-20 25 200 200" xmlns="http://www.w3.org/2000/svg">
+      <style>
+        /* === Основные анимации === */
+        .ring {
+          fill: none;
+          stroke: white;
+          stroke-width: 4;
+          stroke-dasharray: 100;
+          stroke-dashoffset: 100;
+          animation: draw-ring 0.34s ease-out forwards;
+        }
+
+        .rect {
+          fill: white;
+          opacity: 0;
+          animation: grow-rect 0.27s ease-out forwards;
+        }
+
+        @keyframes draw-ring {
+          to {
+            stroke-dashoffset: 0;
+          }
+        }
+
+        @keyframes grow-rect {
+          to {
+            opacity: 1;
+          }
+        }
+
+        /* Задержки появления (ускорено на треть) */
+        #r3     { animation-delay: 0s;    }
+        #rect1  { animation-delay: 0.34s; }
+        #r5     { animation-delay: 0.61s; }
+        #rect3  { animation-delay: 0.95s; }
+        #r4     { animation-delay: 1.22s; }
+        #rect4  { animation-delay: 1.56s; }
+        #r2     { animation-delay: 1.83s; }
+        #rect2  { animation-delay: 2.17s; }
+        #r1     { animation-delay: 2.44s; }
+
+        /* === Моргающая анимация после появления === */
+        .loader__logo {
+          animation: blink-loop 2s linear infinite;
+          animation-delay: 2s; /* Подождать 5 сек до начала моргания */
+        }
+
+        @keyframes blink-loop {
+          0%, 70%  { opacity: 1; }
+          72%,74%  { opacity: 0; }
+          76%,78%  { opacity: 1; }
+          80%,82%  { opacity: 0; }
+          84%,86%  { opacity: 1; }
+          88%,100% { opacity: 1; }
+        }
+      </style>
+
+      <!-- Нижнее левое кольцо -->
+      <circle id="r3" class="ring" cx="38.22" cy="147.49" r="6.91"/>
+      <!-- Прямоугольник от r3 к r5 -->
+      <rect id="rect1" class="rect" x="36.22" y="108.65" width="3.96" height="27.88"/>
+
+      <!-- Верхнее левое кольцо -->
+      <circle id="r5" class="ring" cx="38.22" cy="95.10" r="9.19"/>
+      <!-- Прямоугольник r5 → r4 -->
+      <rect id="rect4" class="rect"
+            x="105" y="100"
+            width="7" height="18"
+            transform="rotate(53 105 98)"/>
+
+      <!-- Центральное кольцо -->
+      <circle id="r4" class="ring" cx="76.35" cy="122.44" r="11.16"/>
+      <!-- Прямоугольник r4 → r2 -->
+      <rect id="rect3" class="rect"
+            x="50" y="105"
+            width="6" height="15"
+            transform="rotate(-50 50 105)"/>
+
+      <!-- Верхнее правое кольцо -->
+      <circle id="r2" class="ring" cx="120.15" cy="90.89" r="12.81"/>
+      <!-- Прямоугольник вниз к r1 -->
+      <rect id="rect2" class="rect" x="115.61" y="108.55" width="9.09" height="28"/>
+
+      <!-- Нижнее правое кольцо -->
+      <circle id="r1" class="ring" cx="120.15" cy="157.09" r="15.18"/>
+    </svg>
+  </div>
 </div>

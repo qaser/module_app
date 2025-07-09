@@ -175,7 +175,7 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/auth/login/'
-LOGIN_REDIRECT_URL = 'rational:index'
+LOGIN_REDIRECT_URL = 'users:main-menu'
 LOGOUT_REDIRECT_URL = '/auth/login/'
 
 

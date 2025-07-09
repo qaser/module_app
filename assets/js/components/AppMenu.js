@@ -44,6 +44,10 @@ export default class AppMenu {
         this.floatPanel.classList.add('sidebar__float-panel', 'sidebar__float-panel_hidden');
 
         this.floatPanel.innerHTML = `
+            <a href="/" class="sidebar__item module-color_users">
+                <div class="sidebar__icon sidebar__icon_app"></div>
+                <h3 class="sidebar__text">Кабинет пользователя</h3>
+            </a>
             <a href="/tpa/" class="sidebar__item module-color_tpa">
                 <div class="sidebar__icon sidebar__icon_app"></div>
                 <h3 class="sidebar__text">Техническое обслуживание ТПА</h3>

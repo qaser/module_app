@@ -97,3 +97,5 @@
 @import url(../blocks/service/__buttons/service__buttons.css);
 @import url(../blocks/service/__button/_basket/service__button_basket.css);
 @import url(../blocks/service/__button/_add/service__button_add.css);
+
+@import url(../blocks/notifications/notifications.css);

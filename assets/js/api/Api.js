@@ -389,6 +389,23 @@ export default class Api {
         .then(this._checkResponse);
     }
 
+    getNotifications(url) {
+        return fetch(this._baseUrl + url, {
+            headers: this._headers,
+            credentials: 'include'
+        })
+        .then(response => response.json());
+    }
+
+    postNotification(url, body) {
+        return fetch(this._baseUrl + url, {
+            method: 'POST',
+            headers: this._headers,
+            credentials: 'include',
+            body: JSON.stringify(body)
+        })
+        .then(this._checkResponse);
+    }
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();

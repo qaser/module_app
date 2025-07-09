@@ -14,8 +14,6 @@
 
 @import url(../blocks/link/link.css);
 
-@import url(../blocks/popup/popup.css);
-
 @import url(../blocks/enter-site/enter-site.css);
 @import url(../blocks/enter-site/__logo/enter-site__logo.css);
 @import url(../blocks/enter-site/__disclaimer/enter-site__disclaimer.css);
@@ -31,6 +29,7 @@
 @import url(../blocks/form/__file/form__file.css);
 @import url(../blocks/form/__file-button/form__file-button.css);
 @import url(../blocks/form/__footer/form__footer.css);
+@import url(../blocks/form/__button/form__button.css);
 
 @import url(../blocks/button/button.css);
 @import url(../blocks/button/_dark-green/button_dark-green.css);
