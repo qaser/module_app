@@ -25,3 +25,23 @@ psql -U myuser -d mydb -h 127.0.0.1 -W
 посмотреть все конфиги nginx:
 
 ls -la /etc/nginx/sites-enabled/
+
+
+
+Подключитесь к PostgreSQL: Обычно PostgreSQL установлен с пользователем postgres. Подключитесь к нему:
+    sudo -u postgres psql
+
+Создайте базу данных:
+    CREATE DATABASE module_app_db;
+
+Создайте пользователя:
+    CREATE USER module_app_user WITH PASSWORD 'your_secure_password';
+
+Дайте пользователю права на базу данных:
+    GRANT ALL PRIVILEGES ON DATABASE module_app_db TO module_app_user;
+
+Проверьте подключение: Выйдите из psql (\q) и проверьте, что пользователь может подключиться:
+
+    psql -h /var/run/postgresql -U module_app_user -d module_app_db
+
+Введите пароль (your_secure_password). Если подключение удалось, всё настроено правильно.
