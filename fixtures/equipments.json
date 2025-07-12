@@ -1,0 +1,2523 @@
+[
+{
+  "model": "equipments.department",
+  "pk": 1,
+  "fields": {
+    "name": "Бобровское ЛПУМГ",
+    "parent": null,
+    "lft": 1,
+    "rght": 16,
+    "tree_id": 1,
+    "level": 0
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 2,
+  "fields": {
+    "name": "Октябрьское ЛПУМГ",
+    "parent": null,
+    "lft": 1,
+    "rght": 4,
+    "tree_id": 3,
+    "level": 0
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 3,
+  "fields": {
+    "name": "Верхнеказымское ЛПУМГ",
+    "parent": null,
+    "lft": 1,
+    "rght": 4,
+    "tree_id": 2,
+    "level": 0
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 4,
+  "fields": {
+    "name": "ГКС",
+    "parent": 1,
+    "lft": 2,
+    "rght": 13,
+    "tree_id": 1,
+    "level": 1
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 5,
+  "fields": {
+    "name": "ЛЭС",
+    "parent": 1,
+    "lft": 14,
+    "rght": 15,
+    "tree_id": 1,
+    "level": 1
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 6,
+  "fields": {
+    "name": "КЦ-1,4",
+    "parent": 4,
+    "lft": 3,
+    "rght": 4,
+    "tree_id": 1,
+    "level": 2
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 7,
+  "fields": {
+    "name": "КЦ-2,3",
+    "parent": 4,
+    "lft": 5,
+    "rght": 6,
+    "tree_id": 1,
+    "level": 2
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 8,
+  "fields": {
+    "name": "КЦ-5,6",
+    "parent": 4,
+    "lft": 7,
+    "rght": 8,
+    "tree_id": 1,
+    "level": 2
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 9,
+  "fields": {
+    "name": "КЦ-7,8",
+    "parent": 4,
+    "lft": 9,
+    "rght": 10,
+    "tree_id": 1,
+    "level": 2
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 10,
+  "fields": {
+    "name": "КЦ-9,10",
+    "parent": 4,
+    "lft": 11,
+    "rght": 12,
+    "tree_id": 1,
+    "level": 2
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 11,
+  "fields": {
+    "name": "ЛЭС",
+    "parent": 3,
+    "lft": 2,
+    "rght": 3,
+    "tree_id": 2,
+    "level": 1
+  }
+},
+{
+  "model": "equipments.department",
+  "pk": 13,
+  "fields": {
+    "name": "ЛЭС",
+    "parent": 2,
+    "lft": 2,
+    "rght": 3,
+    "tree_id": 3,
+    "level": 1
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 1,
+  "fields": {
+    "name": "КЦ-5",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 6,
+    "level": 0,
+    "departments": [
+      8
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 2,
+  "fields": {
+    "name": "КЦ-6",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 7,
+    "level": 0,
+    "departments": [
+      8
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 4,
+  "fields": {
+    "name": "КЦ-1",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 1,
+    "level": 0,
+    "departments": [
+      6
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 5,
+  "fields": {
+    "name": "КЦ-2",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 3,
+    "level": 0,
+    "departments": [
+      7
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 6,
+  "fields": {
+    "name": "КЦ-3",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 4,
+    "level": 0,
+    "departments": [
+      7
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 7,
+  "fields": {
+    "name": "КЦ-4",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 5,
+    "level": 0,
+    "departments": [
+      6
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 8,
+  "fields": {
+    "name": "КЦ-8",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 9,
+    "level": 0,
+    "departments": [
+      9
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 9,
+  "fields": {
+    "name": "КЦ-7",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 8,
+    "level": 0,
+    "departments": [
+      9
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 10,
+  "fields": {
+    "name": "КЦ-9",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 10,
+    "level": 0,
+    "departments": [
+      10
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 11,
+  "fields": {
+    "name": "КЦ-10",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 2,
+    "level": 0,
+    "departments": [
+      10
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 12,
+  "fields": {
+    "name": "Узел подключения КЦ-1",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 136,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 13,
+  "fields": {
+    "name": "Узел подключения КЦ-2",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 138,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 14,
+  "fields": {
+    "name": "Узел подключения КЦ-3",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 139,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 15,
+  "fields": {
+    "name": "Узел подключения КЦ-4",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 140,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 16,
+  "fields": {
+    "name": "Узел подключения КЦ-5",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 141,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 17,
+  "fields": {
+    "name": "Узел подключения КЦ-6",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 142,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 18,
+  "fields": {
+    "name": "Узел подключения КЦ-7",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 143,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 19,
+  "fields": {
+    "name": "Узел подключения КЦ-8",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 144,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 20,
+  "fields": {
+    "name": "Узел подключения КЦ-9",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 145,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 21,
+  "fields": {
+    "name": "Узел подключения КЦ-10",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 137,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 22,
+  "fields": {
+    "name": "ЛК 603,6 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 13,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 23,
+  "fields": {
+    "name": "ЛК 601,5 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 11,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 24,
+  "fields": {
+    "name": "ЛК 603,1 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 12,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 25,
+  "fields": {
+    "name": "ЛК 708,6 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 20,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 26,
+  "fields": {
+    "name": "ЛК 714,4 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 22,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 27,
+  "fields": {
+    "name": "ЛК 718,4 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 24,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 28,
+  "fields": {
+    "name": "ЛК 722,5 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 29,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 29,
+  "fields": {
+    "name": "ЛК 722,3 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 28,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 30,
+  "fields": {
+    "name": "ЛК 719,5 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 27,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 31,
+  "fields": {
+    "name": "ЛК 719,5 км г-да \"СРТО-Урал\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 26,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 32,
+  "fields": {
+    "name": "ЛК 626,9 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 15,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 33,
+  "fields": {
+    "name": "ЛК 625,8 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 14,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 34,
+  "fields": {
+    "name": "ЛК 628,1 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 16,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 35,
+  "fields": {
+    "name": "ЛК 733,6 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 30,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 36,
+  "fields": {
+    "name": "ЛК 739,8 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 31,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 37,
+  "fields": {
+    "name": "ЛК 743,8 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 34,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 38,
+  "fields": {
+    "name": "ЛК 748,0 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 36,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 39,
+  "fields": {
+    "name": "ЛК 747,8 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 35,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 40,
+  "fields": {
+    "name": "ЛК 743,1 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 32,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 41,
+  "fields": {
+    "name": "ЛК 743,2 км г-да \"СРТО-Урал\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 33,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 42,
+  "fields": {
+    "name": "СОК 652,1 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 127,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 43,
+  "fields": {
+    "name": "СОК 651,2 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 126,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 44,
+  "fields": {
+    "name": "СОК 653,5 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 128,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 45,
+  "fields": {
+    "name": "СОК 758,8 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 129,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 46,
+  "fields": {
+    "name": "СОК 764,9 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 130,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 47,
+  "fields": {
+    "name": "СОК 768,7 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 133,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 48,
+  "fields": {
+    "name": "СОК 772,2 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 134,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 49,
+  "fields": {
+    "name": "СОК 772,2 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 135,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 50,
+  "fields": {
+    "name": "СОК 768,0 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 132,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 51,
+  "fields": {
+    "name": "СОК 767,9 км г-да \"СРТО-Урал\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 131,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 52,
+  "fields": {
+    "name": "ЮОК 654,6 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 147,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 53,
+  "fields": {
+    "name": "ЛК 688,2 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 19,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 54,
+  "fields": {
+    "name": "ЛК 719,0 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 25,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 55,
+  "fields": {
+    "name": "ЮОК 653,5 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 146,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 56,
+  "fields": {
+    "name": "ЛК 683,3 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 17,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 57,
+  "fields": {
+    "name": "ЛК 714,0 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 21,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 58,
+  "fields": {
+    "name": "ЮОК 655,5 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 148,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 59,
+  "fields": {
+    "name": "ЛК 685,4 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 18,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 60,
+  "fields": {
+    "name": "ЛК 716,0 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 23,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 61,
+  "fields": {
+    "name": "ЮОК 760,9 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 149,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 62,
+  "fields": {
+    "name": "ЛК 792,5 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 37,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 63,
+  "fields": {
+    "name": "ЛК 823,0 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 44,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 64,
+  "fields": {
+    "name": "ЮОК 767,0 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 150,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 65,
+  "fields": {
+    "name": "ЛК 797,1 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 38,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 66,
+  "fields": {
+    "name": "ЛК 828,0 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 45,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 67,
+  "fields": {
+    "name": "ЮОК 770,7 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 151,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 68,
+  "fields": {
+    "name": "ЮОК 774,7 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 154,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 69,
+  "fields": {
+    "name": "ЮОК 774,9 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 155,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 70,
+  "fields": {
+    "name": "ЮОК 770,8 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 153,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 71,
+  "fields": {
+    "name": "ЮОК 770,8 км г-да \"СРТО-Урал\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 152,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 72,
+  "fields": {
+    "name": "ЛК 832,0 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 48,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 73,
+  "fields": {
+    "name": "ЛК 836,0 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 49,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 74,
+  "fields": {
+    "name": "ЛК 836,0 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 50,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 75,
+  "fields": {
+    "name": "ЛК 831,0 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 47,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 76,
+  "fields": {
+    "name": "ЛК 831,0 км г-да \"СРТО-Урал\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 46,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 77,
+  "fields": {
+    "name": "ЛК 800,9 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 41,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 78,
+  "fields": {
+    "name": "ЛК 805,4 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 42,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 79,
+  "fields": {
+    "name": "ЛК 805,5 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 43,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 80,
+  "fields": {
+    "name": "ЛК 800,5 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 39,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 81,
+  "fields": {
+    "name": "ЛК 800,8 км г-да \"СРТО-Урал\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 40,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 82,
+  "fields": {
+    "name": "Перемычка 603,65 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 53,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 83,
+  "fields": {
+    "name": "Перемычка 626,85 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 56,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 84,
+  "fields": {
+    "name": "Перемычка 626,95 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 57,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 85,
+  "fields": {
+    "name": "Перемычка 652,15 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 61,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 86,
+  "fields": {
+    "name": "Перемычка 654,55 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 64,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 87,
+  "fields": {
+    "name": "Перемычка 688,15 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 70,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 88,
+  "fields": {
+    "name": "Перемычка 688,25 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 71,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 89,
+  "fields": {
+    "name": "Перемычка 718,95 км г-да \"Уренгой-Ужгород\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 77,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 90,
+  "fields": {
+    "name": "Перемычка 601,55 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 51,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 91,
+  "fields": {
+    "name": "Перемычка 625,75 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 54,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 92,
+  "fields": {
+    "name": "Перемычка 625,85 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 55,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 93,
+  "fields": {
+    "name": "Перемычка 651,25 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 60,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 94,
+  "fields": {
+    "name": "Перемычка 653,45 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 62,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 95,
+  "fields": {
+    "name": "Перемычка 683,25 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 66,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 96,
+  "fields": {
+    "name": "Перемычка 683,35 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 67,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 97,
+  "fields": {
+    "name": "Перемычка 713,95 км г-да \"Уренгой-Центр 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 73,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 98,
+  "fields": {
+    "name": "Перемычка 603,15 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 52,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 99,
+  "fields": {
+    "name": "Перемычка 628,05 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 58,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 100,
+  "fields": {
+    "name": "Перемычка 628,15 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 59,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 101,
+  "fields": {
+    "name": "Перемычка 653,53 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 63,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 102,
+  "fields": {
+    "name": "Перемычка 655,45 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 65,
+    "level": 0,
+    "departments": [
+      7,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 103,
+  "fields": {
+    "name": "Перемычка 685,35 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 68,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 104,
+  "fields": {
+    "name": "Перемычка 685,45 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 69,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 105,
+  "fields": {
+    "name": "Перемычка 715,95 км г-да \"Уренгой-Центр 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 75,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 106,
+  "fields": {
+    "name": "Перемычка 708,65 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 72,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 107,
+  "fields": {
+    "name": "Перемычка 733,55 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 80,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 108,
+  "fields": {
+    "name": "Перемычка 733,65 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 81,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 109,
+  "fields": {
+    "name": "Перемычка 758,85 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 92,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 110,
+  "fields": {
+    "name": "Перемычка 760,85 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 93,
+    "level": 0,
+    "departments": [
+      6,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 111,
+  "fields": {
+    "name": "Перемычка 792,45 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 108,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 112,
+  "fields": {
+    "name": "Перемычка 792,55 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 109,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 113,
+  "fields": {
+    "name": "Перемычка 822,95 км г-да \"Ямбург-Елец 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 120,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 114,
+  "fields": {
+    "name": "Перемычка 714,45 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 74,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 115,
+  "fields": {
+    "name": "Перемычка 739,75 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 82,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 116,
+  "fields": {
+    "name": "Перемычка 739,85 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 83,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 117,
+  "fields": {
+    "name": "Перемычка 764,95 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 94,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 118,
+  "fields": {
+    "name": "Перемычка 766,95 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 95,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 119,
+  "fields": {
+    "name": "Перемычка 797,05 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 110,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 120,
+  "fields": {
+    "name": "Перемычка 797,15 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 111,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 121,
+  "fields": {
+    "name": "Перемычка 827,95 км г-да \"Ямбург-Елец 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 121,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 122,
+  "fields": {
+    "name": "Перемычка 718,45 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 76,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 123,
+  "fields": {
+    "name": "Перемычка 743,75 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 86,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 124,
+  "fields": {
+    "name": "Перемычка 743,85 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 87,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 125,
+  "fields": {
+    "name": "Перемычка 768,75 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 98,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 126,
+  "fields": {
+    "name": "Перемычка 770,65 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 99,
+    "level": 0,
+    "departments": [
+      8,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 127,
+  "fields": {
+    "name": "Перемычка 800,85 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 114,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 128,
+  "fields": {
+    "name": "Перемычка 800,95 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 115,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 129,
+  "fields": {
+    "name": "Перемычка 831,95 км г-да \"Ямбург-Западная граница\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 123,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 130,
+  "fields": {
+    "name": "Перемычка 722,55 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 79,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 131,
+  "fields": {
+    "name": "Перемычка 747,95 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 90,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 132,
+  "fields": {
+    "name": "Перемычка 748,05 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 91,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 133,
+  "fields": {
+    "name": "Перемычка 772,25 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 103,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 134,
+  "fields": {
+    "name": "Перемычка 774,65 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 105,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 135,
+  "fields": {
+    "name": "Перемычка 805,35 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 116,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 136,
+  "fields": {
+    "name": "Перемычка 805,45 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 117,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 137,
+  "fields": {
+    "name": "Перемычка 835,95 км г-да \"Ямбург-Тула 1\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 124,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 138,
+  "fields": {
+    "name": "Перемычка 747,75 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 88,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 139,
+  "fields": {
+    "name": "Перемычка 747,85 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 89,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 140,
+  "fields": {
+    "name": "Перемычка 772,15 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 102,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 141,
+  "fields": {
+    "name": "Перемычка 772,25 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 104,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 142,
+  "fields": {
+    "name": "Перемычка 774,85 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 106,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 143,
+  "fields": {
+    "name": "Перемычка 774,95 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 107,
+    "level": 0,
+    "departments": [
+      9,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 144,
+  "fields": {
+    "name": "Перемычка 805,45 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 118,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 145,
+  "fields": {
+    "name": "Перемычка 805,55 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 119,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 146,
+  "fields": {
+    "name": "Перемычка 835,95 км г-да \"Ямбург-Тула 2\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 125,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 147,
+  "fields": {
+    "name": "Перемычка 719,55 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 78,
+    "level": 0,
+    "departments": [
+      11
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 148,
+  "fields": {
+    "name": "Перемычка 743,05 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 84,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 149,
+  "fields": {
+    "name": "Перемычка 743,15 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 85,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 150,
+  "fields": {
+    "name": "Перемычка 767,95 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 96,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 151,
+  "fields": {
+    "name": "Перемычка 768,05 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 97,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 152,
+  "fields": {
+    "name": "Перемычка 770,75 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 100,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 153,
+  "fields": {
+    "name": "Перемычка 770,85 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 101,
+    "level": 0,
+    "departments": [
+      10,
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 154,
+  "fields": {
+    "name": "Перемычка 800,45 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 112,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 155,
+  "fields": {
+    "name": "Перемычка 800,55 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 113,
+    "level": 0,
+    "departments": [
+      5
+    ]
+  }
+},
+{
+  "model": "equipments.equipment",
+  "pk": 156,
+  "fields": {
+    "name": "Перемычка 831,05 км г-да \"Ямбург-Поволжье\"",
+    "parent": null,
+    "lft": 1,
+    "rght": 2,
+    "tree_id": 122,
+    "level": 0,
+    "departments": [
+      13
+    ]
+  }
+}
+]

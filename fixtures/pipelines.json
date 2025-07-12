@@ -1,0 +1,2774 @@
+[
+{
+  "model": "pipelines.pipeline",
+  "pk": 1,
+  "fields": {
+    "title": "Уренгой - Ужгород",
+    "order": 1,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 2,
+  "fields": {
+    "title": "Уренгой - Центр 1",
+    "order": 2,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 3,
+  "fields": {
+    "title": "Уренгой - Центр 2",
+    "order": 3,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 4,
+  "fields": {
+    "title": "Ямбург - Елец 1",
+    "order": 4,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 5,
+  "fields": {
+    "title": "Ямбург - Елец 2",
+    "order": 5,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 6,
+  "fields": {
+    "title": "Ямбург - Западная граница",
+    "order": 6,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 7,
+  "fields": {
+    "title": "Ямбург - Тула 1",
+    "order": 7,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 8,
+  "fields": {
+    "title": "Ямбург - Тула 2",
+    "order": 8,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 9,
+  "fields": {
+    "title": "Ямбург - Поволжье",
+    "order": 9,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipeline",
+  "pk": 10,
+  "fields": {
+    "title": "СРТО - Урал",
+    "order": 10,
+    "description": ""
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 2,
+  "fields": {
+    "pipeline": 1,
+    "diameter": 1420,
+    "start_point": 603.6,
+    "end_point": 626.9,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 3,
+  "fields": {
+    "pipeline": 1,
+    "diameter": 1420,
+    "start_point": 626.9,
+    "end_point": 652.1,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 4,
+  "fields": {
+    "pipeline": 1,
+    "diameter": 1420,
+    "start_point": 652.1,
+    "end_point": 653.4,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 5,
+  "fields": {
+    "pipeline": 1,
+    "diameter": 1420,
+    "start_point": 653.4,
+    "end_point": 654.6,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 6,
+  "fields": {
+    "pipeline": 1,
+    "diameter": 1420,
+    "start_point": 654.6,
+    "end_point": 688.2,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 7,
+  "fields": {
+    "pipeline": 1,
+    "diameter": 1420,
+    "start_point": 688.2,
+    "end_point": 719.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 8,
+  "fields": {
+    "pipeline": 2,
+    "diameter": 1420,
+    "start_point": 601.5,
+    "end_point": 625.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 9,
+  "fields": {
+    "pipeline": 2,
+    "diameter": 1420,
+    "start_point": 625.8,
+    "end_point": 651.2,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 10,
+  "fields": {
+    "pipeline": 2,
+    "diameter": 1420,
+    "start_point": 651.2,
+    "end_point": 652.1,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 11,
+  "fields": {
+    "pipeline": 2,
+    "diameter": 1420,
+    "start_point": 652.1,
+    "end_point": 653.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 12,
+  "fields": {
+    "pipeline": 2,
+    "diameter": 1420,
+    "start_point": 653.5,
+    "end_point": 683.3,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 13,
+  "fields": {
+    "pipeline": 2,
+    "diameter": 1420,
+    "start_point": 683.3,
+    "end_point": 714.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 14,
+  "fields": {
+    "pipeline": 3,
+    "diameter": 1420,
+    "start_point": 603.1,
+    "end_point": 628.1,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 15,
+  "fields": {
+    "pipeline": 3,
+    "diameter": 1420,
+    "start_point": 628.1,
+    "end_point": 653.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 16,
+  "fields": {
+    "pipeline": 3,
+    "diameter": 1420,
+    "start_point": 653.5,
+    "end_point": 654.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 17,
+  "fields": {
+    "pipeline": 3,
+    "diameter": 1420,
+    "start_point": 654.0,
+    "end_point": 655.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 18,
+  "fields": {
+    "pipeline": 3,
+    "diameter": 1420,
+    "start_point": 655.5,
+    "end_point": 685.4,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 19,
+  "fields": {
+    "pipeline": 3,
+    "diameter": 1420,
+    "start_point": 685.4,
+    "end_point": 716.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 20,
+  "fields": {
+    "pipeline": 4,
+    "diameter": 1420,
+    "start_point": 708.6,
+    "end_point": 733.6,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 21,
+  "fields": {
+    "pipeline": 4,
+    "diameter": 1420,
+    "start_point": 733.6,
+    "end_point": 758.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 22,
+  "fields": {
+    "pipeline": 4,
+    "diameter": 1420,
+    "start_point": 758.8,
+    "end_point": 759.9,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 23,
+  "fields": {
+    "pipeline": 4,
+    "diameter": 1420,
+    "start_point": 759.9,
+    "end_point": 760.9,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 24,
+  "fields": {
+    "pipeline": 4,
+    "diameter": 1420,
+    "start_point": 760.9,
+    "end_point": 792.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 25,
+  "fields": {
+    "pipeline": 4,
+    "diameter": 1420,
+    "start_point": 792.5,
+    "end_point": 823.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 26,
+  "fields": {
+    "pipeline": 5,
+    "diameter": 1420,
+    "start_point": 714.4,
+    "end_point": 739.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 27,
+  "fields": {
+    "pipeline": 5,
+    "diameter": 1420,
+    "start_point": 739.8,
+    "end_point": 764.9,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 28,
+  "fields": {
+    "pipeline": 5,
+    "diameter": 1420,
+    "start_point": 764.9,
+    "end_point": 766.2,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 29,
+  "fields": {
+    "pipeline": 5,
+    "diameter": 1420,
+    "start_point": 766.2,
+    "end_point": 767.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 30,
+  "fields": {
+    "pipeline": 5,
+    "diameter": 1420,
+    "start_point": 767.0,
+    "end_point": 797.1,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 31,
+  "fields": {
+    "pipeline": 5,
+    "diameter": 1420,
+    "start_point": 797.1,
+    "end_point": 828.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 32,
+  "fields": {
+    "pipeline": 6,
+    "diameter": 1420,
+    "start_point": 718.4,
+    "end_point": 743.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 33,
+  "fields": {
+    "pipeline": 6,
+    "diameter": 1420,
+    "start_point": 743.8,
+    "end_point": 768.7,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 34,
+  "fields": {
+    "pipeline": 6,
+    "diameter": 1420,
+    "start_point": 768.7,
+    "end_point": 770.4,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 35,
+  "fields": {
+    "pipeline": 6,
+    "diameter": 1420,
+    "start_point": 770.4,
+    "end_point": 770.7,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 36,
+  "fields": {
+    "pipeline": 6,
+    "diameter": 1420,
+    "start_point": 770.7,
+    "end_point": 800.9,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 37,
+  "fields": {
+    "pipeline": 6,
+    "diameter": 1420,
+    "start_point": 800.9,
+    "end_point": 832.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 38,
+  "fields": {
+    "pipeline": 7,
+    "diameter": 1420,
+    "start_point": 722.5,
+    "end_point": 748.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 39,
+  "fields": {
+    "pipeline": 7,
+    "diameter": 1420,
+    "start_point": 748.0,
+    "end_point": 772.2,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 40,
+  "fields": {
+    "pipeline": 7,
+    "diameter": 1420,
+    "start_point": 772.2,
+    "end_point": 773.3,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 41,
+  "fields": {
+    "pipeline": 7,
+    "diameter": 1420,
+    "start_point": 773.3,
+    "end_point": 774.7,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 42,
+  "fields": {
+    "pipeline": 7,
+    "diameter": 1420,
+    "start_point": 774.7,
+    "end_point": 805.4,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 43,
+  "fields": {
+    "pipeline": 7,
+    "diameter": 1420,
+    "start_point": 805.4,
+    "end_point": 836.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 44,
+  "fields": {
+    "pipeline": 8,
+    "diameter": 1420,
+    "start_point": 722.3,
+    "end_point": 747.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 45,
+  "fields": {
+    "pipeline": 8,
+    "diameter": 1420,
+    "start_point": 747.8,
+    "end_point": 772.2,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 46,
+  "fields": {
+    "pipeline": 8,
+    "diameter": 1420,
+    "start_point": 772.2,
+    "end_point": 773.1,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 47,
+  "fields": {
+    "pipeline": 8,
+    "diameter": 1420,
+    "start_point": 773.1,
+    "end_point": 774.9,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 48,
+  "fields": {
+    "pipeline": 8,
+    "diameter": 1420,
+    "start_point": 774.9,
+    "end_point": 805.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 49,
+  "fields": {
+    "pipeline": 8,
+    "diameter": 1420,
+    "start_point": 805.5,
+    "end_point": 836.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 50,
+  "fields": {
+    "pipeline": 9,
+    "diameter": 1420,
+    "start_point": 719.5,
+    "end_point": 743.1,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 51,
+  "fields": {
+    "pipeline": 9,
+    "diameter": 1420,
+    "start_point": 743.1,
+    "end_point": 768.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 52,
+  "fields": {
+    "pipeline": 9,
+    "diameter": 1420,
+    "start_point": 768.0,
+    "end_point": 769.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 53,
+  "fields": {
+    "pipeline": 9,
+    "diameter": 1420,
+    "start_point": 769.5,
+    "end_point": 770.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 54,
+  "fields": {
+    "pipeline": 9,
+    "diameter": 1420,
+    "start_point": 770.8,
+    "end_point": 800.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 55,
+  "fields": {
+    "pipeline": 9,
+    "diameter": 1420,
+    "start_point": 800.5,
+    "end_point": 831.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 56,
+  "fields": {
+    "pipeline": 10,
+    "diameter": 1420,
+    "start_point": 719.5,
+    "end_point": 743.2,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 57,
+  "fields": {
+    "pipeline": 10,
+    "diameter": 1420,
+    "start_point": 743.2,
+    "end_point": 767.9,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 58,
+  "fields": {
+    "pipeline": 10,
+    "diameter": 1420,
+    "start_point": 767.9,
+    "end_point": 769.5,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 59,
+  "fields": {
+    "pipeline": 10,
+    "diameter": 1420,
+    "start_point": 769.5,
+    "end_point": 770.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 60,
+  "fields": {
+    "pipeline": 10,
+    "diameter": 1420,
+    "start_point": 770.8,
+    "end_point": 800.8,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.pipe",
+  "pk": 61,
+  "fields": {
+    "pipeline": 10,
+    "diameter": 1420,
+    "start_point": 800.8,
+    "end_point": 831.0,
+    "exploit_year": null
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 1,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 1,
+    "sub_pipeline": null,
+    "equipment": 12,
+    "location_point": 653.4,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 2,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 82,
+    "location_point": 603.65,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 3,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 2,
+    "sub_pipeline": null,
+    "equipment": 13,
+    "location_point": 652.1,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 4,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 3,
+    "sub_pipeline": null,
+    "equipment": 14,
+    "location_point": 654.0,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 5,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 4,
+    "sub_pipeline": null,
+    "equipment": 15,
+    "location_point": 759.9,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 6,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 5,
+    "sub_pipeline": null,
+    "equipment": 16,
+    "location_point": 766.2,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 7,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 6,
+    "sub_pipeline": null,
+    "equipment": 17,
+    "location_point": 770.4,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 8,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 7,
+    "sub_pipeline": null,
+    "equipment": 18,
+    "location_point": 773.3,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 9,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 8,
+    "sub_pipeline": null,
+    "equipment": 19,
+    "location_point": 773.1,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 10,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 9,
+    "sub_pipeline": null,
+    "equipment": 20,
+    "location_point": 769.5,
+    "orientation": "reverse",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 11,
+  "fields": {
+    "node_type": "host",
+    "pipeline": 10,
+    "sub_pipeline": null,
+    "equipment": 21,
+    "location_point": 769.5,
+    "orientation": "reverse",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 12,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 1,
+    "sub_pipeline": null,
+    "equipment": 22,
+    "location_point": 603.6,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 13,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 1,
+    "sub_pipeline": null,
+    "equipment": 32,
+    "location_point": 626.9,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 14,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 1,
+    "sub_pipeline": null,
+    "equipment": 42,
+    "location_point": 652.1,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 15,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 1,
+    "sub_pipeline": null,
+    "equipment": 52,
+    "location_point": 654.6,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 16,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 1,
+    "sub_pipeline": null,
+    "equipment": 53,
+    "location_point": 688.2,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 17,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 1,
+    "sub_pipeline": null,
+    "equipment": 54,
+    "location_point": 719.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 18,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 83,
+    "location_point": 626.85,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 19,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 84,
+    "location_point": 626.95,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 20,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 85,
+    "location_point": 652.18,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 21,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 86,
+    "location_point": 654.55,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 22,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 87,
+    "location_point": 688.15,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 23,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 88,
+    "location_point": 688.25,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 24,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 1,
+    "sub_pipeline": 2,
+    "equipment": 89,
+    "location_point": 718.95,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 25,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 2,
+    "sub_pipeline": null,
+    "equipment": 23,
+    "location_point": 601.5,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 26,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 2,
+    "sub_pipeline": null,
+    "equipment": 33,
+    "location_point": 625.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 27,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 2,
+    "sub_pipeline": null,
+    "equipment": 43,
+    "location_point": 651.2,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 28,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 2,
+    "sub_pipeline": null,
+    "equipment": 55,
+    "location_point": 653.5,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 29,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 3,
+    "sub_pipeline": null,
+    "equipment": 44,
+    "location_point": 653.5,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 30,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 3,
+    "sub_pipeline": null,
+    "equipment": 58,
+    "location_point": 655.5,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 31,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 4,
+    "sub_pipeline": null,
+    "equipment": 45,
+    "location_point": 758.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 32,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 4,
+    "sub_pipeline": null,
+    "equipment": 61,
+    "location_point": 760.9,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 33,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 5,
+    "sub_pipeline": null,
+    "equipment": 46,
+    "location_point": 764.9,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 34,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 5,
+    "sub_pipeline": null,
+    "equipment": 64,
+    "location_point": 767.0,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 35,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 6,
+    "sub_pipeline": null,
+    "equipment": 47,
+    "location_point": 768.7,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 36,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 6,
+    "sub_pipeline": null,
+    "equipment": 67,
+    "location_point": 770.7,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 37,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 7,
+    "sub_pipeline": null,
+    "equipment": 48,
+    "location_point": 772.2,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 38,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 7,
+    "sub_pipeline": null,
+    "equipment": 68,
+    "location_point": 774.7,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 39,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 8,
+    "sub_pipeline": null,
+    "equipment": 49,
+    "location_point": 772.2,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 40,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 8,
+    "sub_pipeline": null,
+    "equipment": 69,
+    "location_point": 774.9,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 41,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 9,
+    "sub_pipeline": null,
+    "equipment": 50,
+    "location_point": 768.0,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 42,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 9,
+    "sub_pipeline": null,
+    "equipment": 70,
+    "location_point": 770.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 43,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 10,
+    "sub_pipeline": null,
+    "equipment": 51,
+    "location_point": 767.9,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 44,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 10,
+    "sub_pipeline": null,
+    "equipment": 71,
+    "location_point": 770.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 45,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 2,
+    "sub_pipeline": null,
+    "equipment": 56,
+    "location_point": 683.3,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 46,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 2,
+    "sub_pipeline": null,
+    "equipment": 57,
+    "location_point": 714.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 47,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 3,
+    "sub_pipeline": null,
+    "equipment": 24,
+    "location_point": 603.1,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 48,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 3,
+    "sub_pipeline": null,
+    "equipment": 34,
+    "location_point": 628.1,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 49,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 3,
+    "sub_pipeline": null,
+    "equipment": 59,
+    "location_point": 685.4,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 50,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 3,
+    "sub_pipeline": null,
+    "equipment": 60,
+    "location_point": 716.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 51,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 4,
+    "sub_pipeline": null,
+    "equipment": 25,
+    "location_point": 708.6,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 52,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 4,
+    "sub_pipeline": null,
+    "equipment": 35,
+    "location_point": 733.6,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 53,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 4,
+    "sub_pipeline": null,
+    "equipment": 62,
+    "location_point": 792.5,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 54,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 4,
+    "sub_pipeline": null,
+    "equipment": 63,
+    "location_point": 823.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 55,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 5,
+    "sub_pipeline": null,
+    "equipment": 26,
+    "location_point": 714.4,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 56,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 5,
+    "sub_pipeline": null,
+    "equipment": 36,
+    "location_point": 739.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 57,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 5,
+    "sub_pipeline": null,
+    "equipment": 65,
+    "location_point": 797.1,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 58,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 5,
+    "sub_pipeline": null,
+    "equipment": 66,
+    "location_point": 828.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 59,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 6,
+    "sub_pipeline": null,
+    "equipment": 27,
+    "location_point": 718.4,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 60,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 6,
+    "sub_pipeline": null,
+    "equipment": 37,
+    "location_point": 743.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 61,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 6,
+    "sub_pipeline": null,
+    "equipment": 77,
+    "location_point": 800.9,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 62,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 6,
+    "sub_pipeline": null,
+    "equipment": 72,
+    "location_point": 832.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 63,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 7,
+    "sub_pipeline": null,
+    "equipment": 28,
+    "location_point": 722.5,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 64,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 7,
+    "sub_pipeline": null,
+    "equipment": 38,
+    "location_point": 748.0,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 65,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 7,
+    "sub_pipeline": null,
+    "equipment": 78,
+    "location_point": 805.4,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 66,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 7,
+    "sub_pipeline": null,
+    "equipment": 73,
+    "location_point": 836.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 67,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 8,
+    "sub_pipeline": null,
+    "equipment": 29,
+    "location_point": 722.3,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 68,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 8,
+    "sub_pipeline": null,
+    "equipment": 39,
+    "location_point": 747.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 69,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 8,
+    "sub_pipeline": null,
+    "equipment": 79,
+    "location_point": 805.5,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 70,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 8,
+    "sub_pipeline": null,
+    "equipment": 74,
+    "location_point": 836.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 71,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 9,
+    "sub_pipeline": null,
+    "equipment": 30,
+    "location_point": 719.5,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 72,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 9,
+    "sub_pipeline": null,
+    "equipment": 40,
+    "location_point": 743.1,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 73,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 9,
+    "sub_pipeline": null,
+    "equipment": 80,
+    "location_point": 800.5,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 74,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 9,
+    "sub_pipeline": null,
+    "equipment": 75,
+    "location_point": 831.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 75,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 10,
+    "sub_pipeline": null,
+    "equipment": 31,
+    "location_point": 719.5,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 76,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 10,
+    "sub_pipeline": null,
+    "equipment": 41,
+    "location_point": 743.2,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 77,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 10,
+    "sub_pipeline": null,
+    "equipment": 81,
+    "location_point": 800.8,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 78,
+  "fields": {
+    "node_type": "valve",
+    "pipeline": 10,
+    "sub_pipeline": null,
+    "equipment": 76,
+    "location_point": 831.0,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 79,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 90,
+    "location_point": 601.55,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 80,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 91,
+    "location_point": 625.75,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 81,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 92,
+    "location_point": 625.85,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 82,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 93,
+    "location_point": 651.25,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 83,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 94,
+    "location_point": 653.45,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 84,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 95,
+    "location_point": 683.25,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 85,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 96,
+    "location_point": 683.35,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 86,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 2,
+    "sub_pipeline": 3,
+    "equipment": 97,
+    "location_point": 713.95,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 87,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 98,
+    "location_point": 603.15,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 88,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 99,
+    "location_point": 628.05,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 89,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 100,
+    "location_point": 628.15,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 90,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 101,
+    "location_point": 653.53,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 91,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 102,
+    "location_point": 655.45,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 92,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 103,
+    "location_point": 685.35,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 93,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 104,
+    "location_point": 685.45,
+    "orientation": "normal",
+    "is_shared": false
+  }
+},
+{
+  "model": "pipelines.node",
+  "pk": 94,
+  "fields": {
+    "node_type": "bridge",
+    "pipeline": 3,
+    "sub_pipeline": 4,
+    "equipment": 105,
+    "location_point": 715.95,
+    "orientation": "normal",
+    "is_shared": true
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 1,
+  "fields": {
+    "pipe": 2,
+    "department": 1,
+    "start_point": 617.3,
+    "end_point": 626.9
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 2,
+  "fields": {
+    "pipe": 2,
+    "department": 3,
+    "start_point": 603.6,
+    "end_point": 617.3
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 3,
+  "fields": {
+    "pipe": 3,
+    "department": 1,
+    "start_point": 626.9,
+    "end_point": 652.1
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 4,
+  "fields": {
+    "pipe": 4,
+    "department": 1,
+    "start_point": 652.1,
+    "end_point": 653.4
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 5,
+  "fields": {
+    "pipe": 5,
+    "department": 1,
+    "start_point": 653.4,
+    "end_point": 654.6
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 6,
+  "fields": {
+    "pipe": 6,
+    "department": 1,
+    "start_point": 654.6,
+    "end_point": 688.2
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 7,
+  "fields": {
+    "pipe": 7,
+    "department": 1,
+    "start_point": 688.2,
+    "end_point": 718.7
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 8,
+  "fields": {
+    "pipe": 7,
+    "department": 2,
+    "start_point": 718.7,
+    "end_point": 719.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 9,
+  "fields": {
+    "pipe": 8,
+    "department": 3,
+    "start_point": 601.5,
+    "end_point": 616.3
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 10,
+  "fields": {
+    "pipe": 8,
+    "department": 1,
+    "start_point": 616.3,
+    "end_point": 625.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 11,
+  "fields": {
+    "pipe": 9,
+    "department": 1,
+    "start_point": 625.8,
+    "end_point": 651.2
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 12,
+  "fields": {
+    "pipe": 10,
+    "department": 1,
+    "start_point": 651.2,
+    "end_point": 652.1
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 13,
+  "fields": {
+    "pipe": 11,
+    "department": 1,
+    "start_point": 652.1,
+    "end_point": 653.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 14,
+  "fields": {
+    "pipe": 12,
+    "department": 1,
+    "start_point": 653.5,
+    "end_point": 683.3
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 15,
+  "fields": {
+    "pipe": 13,
+    "department": 1,
+    "start_point": 683.3,
+    "end_point": 713.7
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 16,
+  "fields": {
+    "pipe": 13,
+    "department": 2,
+    "start_point": 713.7,
+    "end_point": 714.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 17,
+  "fields": {
+    "pipe": 14,
+    "department": 3,
+    "start_point": 603.1,
+    "end_point": 618.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 18,
+  "fields": {
+    "pipe": 14,
+    "department": 1,
+    "start_point": 618.5,
+    "end_point": 628.1
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 19,
+  "fields": {
+    "pipe": 15,
+    "department": 1,
+    "start_point": 628.1,
+    "end_point": 653.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 20,
+  "fields": {
+    "pipe": 16,
+    "department": 1,
+    "start_point": 653.5,
+    "end_point": 654.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 21,
+  "fields": {
+    "pipe": 17,
+    "department": 1,
+    "start_point": 654.0,
+    "end_point": 655.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 22,
+  "fields": {
+    "pipe": 18,
+    "department": 1,
+    "start_point": 655.5,
+    "end_point": 685.4
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 23,
+  "fields": {
+    "pipe": 19,
+    "department": 1,
+    "start_point": 685.4,
+    "end_point": 716.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 24,
+  "fields": {
+    "pipe": 19,
+    "department": 2,
+    "start_point": 715.8,
+    "end_point": 716.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 25,
+  "fields": {
+    "pipe": 20,
+    "department": 3,
+    "start_point": 708.6,
+    "end_point": 733.6
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 26,
+  "fields": {
+    "pipe": 20,
+    "department": 1,
+    "start_point": 724.0,
+    "end_point": 733.6
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 27,
+  "fields": {
+    "pipe": 21,
+    "department": 1,
+    "start_point": 733.6,
+    "end_point": 758.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 28,
+  "fields": {
+    "pipe": 22,
+    "department": 1,
+    "start_point": 758.8,
+    "end_point": 759.9
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 29,
+  "fields": {
+    "pipe": 23,
+    "department": 1,
+    "start_point": 759.9,
+    "end_point": 760.9
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 30,
+  "fields": {
+    "pipe": 24,
+    "department": 1,
+    "start_point": 760.9,
+    "end_point": 792.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 31,
+  "fields": {
+    "pipe": 25,
+    "department": 1,
+    "start_point": 792.5,
+    "end_point": 823.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 32,
+  "fields": {
+    "pipe": 25,
+    "department": 2,
+    "start_point": 822.8,
+    "end_point": 823.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 33,
+  "fields": {
+    "pipe": 26,
+    "department": 3,
+    "start_point": 714.4,
+    "end_point": 739.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 34,
+  "fields": {
+    "pipe": 26,
+    "department": 1,
+    "start_point": 729.9,
+    "end_point": 739.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 35,
+  "fields": {
+    "pipe": 27,
+    "department": 1,
+    "start_point": 739.8,
+    "end_point": 764.9
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 36,
+  "fields": {
+    "pipe": 28,
+    "department": 1,
+    "start_point": 764.9,
+    "end_point": 766.2
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 37,
+  "fields": {
+    "pipe": 29,
+    "department": 1,
+    "start_point": 766.2,
+    "end_point": 767.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 38,
+  "fields": {
+    "pipe": 30,
+    "department": 1,
+    "start_point": 767.0,
+    "end_point": 797.1
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 39,
+  "fields": {
+    "pipe": 31,
+    "department": 1,
+    "start_point": 797.1,
+    "end_point": 828.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 40,
+  "fields": {
+    "pipe": 31,
+    "department": 2,
+    "start_point": 827.6,
+    "end_point": 828.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 41,
+  "fields": {
+    "pipe": 32,
+    "department": 3,
+    "start_point": 718.4,
+    "end_point": 743.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 42,
+  "fields": {
+    "pipe": 32,
+    "department": 1,
+    "start_point": 734.0,
+    "end_point": 743.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 43,
+  "fields": {
+    "pipe": 33,
+    "department": 1,
+    "start_point": 743.8,
+    "end_point": 768.7
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 44,
+  "fields": {
+    "pipe": 34,
+    "department": 1,
+    "start_point": 768.7,
+    "end_point": 770.4
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 45,
+  "fields": {
+    "pipe": 35,
+    "department": 1,
+    "start_point": 770.4,
+    "end_point": 770.7
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 46,
+  "fields": {
+    "pipe": 36,
+    "department": 1,
+    "start_point": 770.7,
+    "end_point": 800.9
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 47,
+  "fields": {
+    "pipe": 37,
+    "department": 1,
+    "start_point": 800.9,
+    "end_point": 832.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 48,
+  "fields": {
+    "pipe": 37,
+    "department": 2,
+    "start_point": 831.5,
+    "end_point": 832.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 49,
+  "fields": {
+    "pipe": 38,
+    "department": 3,
+    "start_point": 722.5,
+    "end_point": 748.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 50,
+  "fields": {
+    "pipe": 38,
+    "department": 1,
+    "start_point": 737.9,
+    "end_point": 748.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 51,
+  "fields": {
+    "pipe": 39,
+    "department": 1,
+    "start_point": 748.0,
+    "end_point": 772.2
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 52,
+  "fields": {
+    "pipe": 40,
+    "department": 1,
+    "start_point": 772.2,
+    "end_point": 773.3
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 53,
+  "fields": {
+    "pipe": 41,
+    "department": 1,
+    "start_point": 773.3,
+    "end_point": 774.7
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 54,
+  "fields": {
+    "pipe": 42,
+    "department": 1,
+    "start_point": 774.7,
+    "end_point": 805.4
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 55,
+  "fields": {
+    "pipe": 43,
+    "department": 1,
+    "start_point": 805.4,
+    "end_point": 836.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 56,
+  "fields": {
+    "pipe": 43,
+    "department": 2,
+    "start_point": 835.9,
+    "end_point": 836.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 57,
+  "fields": {
+    "pipe": 44,
+    "department": 3,
+    "start_point": 722.3,
+    "end_point": 747.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 58,
+  "fields": {
+    "pipe": 44,
+    "department": 1,
+    "start_point": 737.9,
+    "end_point": 747.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 59,
+  "fields": {
+    "pipe": 45,
+    "department": 1,
+    "start_point": 747.8,
+    "end_point": 772.2
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 60,
+  "fields": {
+    "pipe": 46,
+    "department": 1,
+    "start_point": 772.2,
+    "end_point": 773.1
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 61,
+  "fields": {
+    "pipe": 47,
+    "department": 1,
+    "start_point": 773.1,
+    "end_point": 774.9
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 62,
+  "fields": {
+    "pipe": 48,
+    "department": 1,
+    "start_point": 774.9,
+    "end_point": 805.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 63,
+  "fields": {
+    "pipe": 49,
+    "department": 1,
+    "start_point": 805.5,
+    "end_point": 836.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 64,
+  "fields": {
+    "pipe": 49,
+    "department": 2,
+    "start_point": 835.9,
+    "end_point": 836.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 65,
+  "fields": {
+    "pipe": 50,
+    "department": 3,
+    "start_point": 719.5,
+    "end_point": 743.1
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 66,
+  "fields": {
+    "pipe": 50,
+    "department": 1,
+    "start_point": 734.0,
+    "end_point": 743.1
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 67,
+  "fields": {
+    "pipe": 51,
+    "department": 1,
+    "start_point": 743.1,
+    "end_point": 768.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 68,
+  "fields": {
+    "pipe": 52,
+    "department": 1,
+    "start_point": 768.0,
+    "end_point": 769.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 69,
+  "fields": {
+    "pipe": 53,
+    "department": 1,
+    "start_point": 769.5,
+    "end_point": 770.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 70,
+  "fields": {
+    "pipe": 54,
+    "department": 1,
+    "start_point": 770.8,
+    "end_point": 800.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 71,
+  "fields": {
+    "pipe": 55,
+    "department": 1,
+    "start_point": 800.5,
+    "end_point": 831.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 72,
+  "fields": {
+    "pipe": 55,
+    "department": 2,
+    "start_point": 830.7,
+    "end_point": 831.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 73,
+  "fields": {
+    "pipe": 56,
+    "department": 3,
+    "start_point": 719.5,
+    "end_point": 743.2
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 74,
+  "fields": {
+    "pipe": 56,
+    "department": 1,
+    "start_point": 733.9,
+    "end_point": 743.2
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 75,
+  "fields": {
+    "pipe": 57,
+    "department": 1,
+    "start_point": 743.2,
+    "end_point": 767.9
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 76,
+  "fields": {
+    "pipe": 58,
+    "department": 1,
+    "start_point": 767.9,
+    "end_point": 769.5
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 77,
+  "fields": {
+    "pipe": 59,
+    "department": 1,
+    "start_point": 769.5,
+    "end_point": 770.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 78,
+  "fields": {
+    "pipe": 60,
+    "department": 1,
+    "start_point": 770.8,
+    "end_point": 800.8
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 79,
+  "fields": {
+    "pipe": 61,
+    "department": 1,
+    "start_point": 800.8,
+    "end_point": 831.0
+  }
+},
+{
+  "model": "pipelines.pipedepartment",
+  "pk": 80,
+  "fields": {
+    "pipe": 61,
+    "department": 2,
+    "start_point": 830.8,
+    "end_point": 831.0
+  }
+}
+]

@@ -1,0 +1,44 @@
+[
+{
+  "model": "users.moduleuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$hEA02UyaPDJPUWqFW430Fv$IFNlMDNoGmAABt+jV0COXGwSehGbbXXj8A23tsUqaCc=",
+    "last_login": "2025-07-03T13:05:41Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "Алексей",
+    "last_name": "Сайгин",
+    "email": "huji@mail.ru",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-07-03T13:05:25Z",
+    "patronymic": "Викторович",
+    "job_position": "Инженер по ЭОГО",
+    "role": "admin",
+    "department": 1,
+    "service_num": "2124523",
+    "birth_date": "1983-03-28",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.userapproute",
+  "pk": 1,
+  "fields": {
+    "app_name": "pipelines",
+    "department": 1,
+    "user": 1
+  }
+},
+{
+  "model": "users.userapproute",
+  "pk": 2,
+  "fields": {
+    "app_name": "rational",
+    "department": 1,
+    "user": 1
+  }
+}
+]

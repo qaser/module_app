@@ -1,0 +1,752 @@
+[
+{
+    "model": "rational.annualplan",
+    "pk": 1,
+    "fields": {
+        "department": 1,
+        "year": 2025,
+        "total_proposals": 112,
+        "total_economy": 11200000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 2,
+    "fields": {
+        "department": 2,
+        "year": 2025,
+        "total_proposals": 112,
+        "total_economy": 11200000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 3,
+    "fields": {
+        "department": 5,
+        "year": 2025,
+        "total_proposals": 18,
+        "total_economy": 1800000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 4,
+    "fields": {
+        "department": 3,
+        "year": 2025,
+        "total_proposals": 36,
+        "total_economy": 3600000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 5,
+    "fields": {
+        "department": 11,
+        "year": 2025,
+        "total_proposals": 7,
+        "total_economy": 700000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 6,
+    "fields": {
+        "department": 12,
+        "year": 2025,
+        "total_proposals": 7,
+        "total_economy": 700000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 7,
+    "fields": {
+        "department": 13,
+        "year": 2025,
+        "total_proposals": 7,
+        "total_economy": 700000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 8,
+    "fields": {
+        "department": 14,
+        "year": 2025,
+        "total_proposals": 7,
+        "total_economy": 700000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 9,
+    "fields": {
+        "department": 15,
+        "year": 2025,
+        "total_proposals": 8,
+        "total_economy": 800000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 10,
+    "fields": {
+        "department": 8,
+        "year": 2025,
+        "total_proposals": 2,
+        "total_economy": 200000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 11,
+    "fields": {
+        "department": 7,
+        "year": 2025,
+        "total_proposals": 16,
+        "total_economy": 1600000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 12,
+    "fields": {
+        "department": 6,
+        "year": 2025,
+        "total_proposals": 4,
+        "total_economy": 400000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 13,
+    "fields": {
+        "department": 9,
+        "year": 2025,
+        "total_proposals": 4,
+        "total_economy": 400000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 14,
+    "fields": {
+        "department": 10,
+        "year": 2025,
+        "total_proposals": 4,
+        "total_economy": 400000.0
+    }
+},
+{
+    "model": "rational.annualplan",
+    "pk": 15,
+    "fields": {
+        "department": 4,
+        "year": 2025,
+        "total_proposals": 28,
+        "total_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 1,
+    "fields": {
+        "annual_plan": 1,
+        "quarter": 1,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 2,
+    "fields": {
+        "annual_plan": 1,
+        "quarter": 2,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 3,
+    "fields": {
+        "annual_plan": 1,
+        "quarter": 3,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 4,
+    "fields": {
+        "annual_plan": 1,
+        "quarter": 4,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 5,
+    "fields": {
+        "annual_plan": 2,
+        "quarter": 1,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 6,
+    "fields": {
+        "annual_plan": 2,
+        "quarter": 2,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 7,
+    "fields": {
+        "annual_plan": 2,
+        "quarter": 3,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 8,
+    "fields": {
+        "annual_plan": 2,
+        "quarter": 4,
+        "planned_proposals": 28,
+        "planned_economy": 2800000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 9,
+    "fields": {
+        "annual_plan": 3,
+        "quarter": 1,
+        "planned_proposals": 5,
+        "planned_economy": 500000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 10,
+    "fields": {
+        "annual_plan": 3,
+        "quarter": 2,
+        "planned_proposals": 4,
+        "planned_economy": 400000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 11,
+    "fields": {
+        "annual_plan": 3,
+        "quarter": 3,
+        "planned_proposals": 5,
+        "planned_economy": 500000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 12,
+    "fields": {
+        "annual_plan": 3,
+        "quarter": 4,
+        "planned_proposals": 4,
+        "planned_economy": 400000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 13,
+    "fields": {
+        "annual_plan": 4,
+        "quarter": 1,
+        "planned_proposals": 9,
+        "planned_economy": 900000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 14,
+    "fields": {
+        "annual_plan": 4,
+        "quarter": 2,
+        "planned_proposals": 9,
+        "planned_economy": 900000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 15,
+    "fields": {
+        "annual_plan": 4,
+        "quarter": 3,
+        "planned_proposals": 9,
+        "planned_economy": 900000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 16,
+    "fields": {
+        "annual_plan": 4,
+        "quarter": 4,
+        "planned_proposals": 9,
+        "planned_economy": 900000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 17,
+    "fields": {
+        "annual_plan": 5,
+        "quarter": 1,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 18,
+    "fields": {
+        "annual_plan": 5,
+        "quarter": 2,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 19,
+    "fields": {
+        "annual_plan": 5,
+        "quarter": 3,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 20,
+    "fields": {
+        "annual_plan": 5,
+        "quarter": 4,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 21,
+    "fields": {
+        "annual_plan": 6,
+        "quarter": 1,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 22,
+    "fields": {
+        "annual_plan": 6,
+        "quarter": 2,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 23,
+    "fields": {
+        "annual_plan": 6,
+        "quarter": 3,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 24,
+    "fields": {
+        "annual_plan": 6,
+        "quarter": 4,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 25,
+    "fields": {
+        "annual_plan": 7,
+        "quarter": 1,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 26,
+    "fields": {
+        "annual_plan": 7,
+        "quarter": 2,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 27,
+    "fields": {
+        "annual_plan": 7,
+        "quarter": 3,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 28,
+    "fields": {
+        "annual_plan": 7,
+        "quarter": 4,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 29,
+    "fields": {
+        "annual_plan": 8,
+        "quarter": 1,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 30,
+    "fields": {
+        "annual_plan": 8,
+        "quarter": 2,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 31,
+    "fields": {
+        "annual_plan": 8,
+        "quarter": 3,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 32,
+    "fields": {
+        "annual_plan": 8,
+        "quarter": 4,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 33,
+    "fields": {
+        "annual_plan": 9,
+        "quarter": 1,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 34,
+    "fields": {
+        "annual_plan": 9,
+        "quarter": 2,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 35,
+    "fields": {
+        "annual_plan": 9,
+        "quarter": 3,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 36,
+    "fields": {
+        "annual_plan": 9,
+        "quarter": 4,
+        "planned_proposals": 2,
+        "planned_economy": 200000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 37,
+    "fields": {
+        "annual_plan": 10,
+        "quarter": 1,
+        "planned_proposals": 0,
+        "planned_economy": 0.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 38,
+    "fields": {
+        "annual_plan": 10,
+        "quarter": 2,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 39,
+    "fields": {
+        "annual_plan": 10,
+        "quarter": 3,
+        "planned_proposals": 0,
+        "planned_economy": 0.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 40,
+    "fields": {
+        "annual_plan": 10,
+        "quarter": 4,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 41,
+    "fields": {
+        "annual_plan": 11,
+        "quarter": 1,
+        "planned_proposals": 4,
+        "planned_economy": 400000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 42,
+    "fields": {
+        "annual_plan": 11,
+        "quarter": 2,
+        "planned_proposals": 4,
+        "planned_economy": 400000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 43,
+    "fields": {
+        "annual_plan": 11,
+        "quarter": 3,
+        "planned_proposals": 4,
+        "planned_economy": 400000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 44,
+    "fields": {
+        "annual_plan": 11,
+        "quarter": 4,
+        "planned_proposals": 4,
+        "planned_economy": 400000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 45,
+    "fields": {
+        "annual_plan": 12,
+        "quarter": 1,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 46,
+    "fields": {
+        "annual_plan": 12,
+        "quarter": 2,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 47,
+    "fields": {
+        "annual_plan": 12,
+        "quarter": 3,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 48,
+    "fields": {
+        "annual_plan": 12,
+        "quarter": 4,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 49,
+    "fields": {
+        "annual_plan": 13,
+        "quarter": 1,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 50,
+    "fields": {
+        "annual_plan": 13,
+        "quarter": 2,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 51,
+    "fields": {
+        "annual_plan": 13,
+        "quarter": 3,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 52,
+    "fields": {
+        "annual_plan": 13,
+        "quarter": 4,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 53,
+    "fields": {
+        "annual_plan": 14,
+        "quarter": 1,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 54,
+    "fields": {
+        "annual_plan": 14,
+        "quarter": 2,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 55,
+    "fields": {
+        "annual_plan": 14,
+        "quarter": 3,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 56,
+    "fields": {
+        "annual_plan": 14,
+        "quarter": 4,
+        "planned_proposals": 1,
+        "planned_economy": 100000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 57,
+    "fields": {
+        "annual_plan": 15,
+        "quarter": 1,
+        "planned_proposals": 7,
+        "planned_economy": 700000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 58,
+    "fields": {
+        "annual_plan": 15,
+        "quarter": 2,
+        "planned_proposals": 7,
+        "planned_economy": 700000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 59,
+    "fields": {
+        "annual_plan": 15,
+        "quarter": 3,
+        "planned_proposals": 7,
+        "planned_economy": 700000.0
+    }
+},
+{
+    "model": "rational.quarterlyplan",
+    "pk": 60,
+    "fields": {
+        "annual_plan": 15,
+        "quarter": 4,
+        "planned_proposals": 7,
+        "planned_economy": 700000.0
+    }
+}
+]
