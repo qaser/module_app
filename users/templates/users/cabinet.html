@@ -34,35 +34,73 @@
       <!-- основная панель -->
       <section class="main" id="main">
         <h1 class="main__title">Уведомления</h1>
+
+          <div class="notification-filters">
+
+            <select id="appFilter">
+                <option value="">Все приложения</option>
+                <option value="gas">Техническое обслуживание ТПА</option>
+                <option value="maintenance">Регистрация утечек газа</option>
+                <option value="maintenance">Рационализаторская работа</option>
+                <option value="maintenance">Магистральные газопроводы</option>
+            <!-- Добавьте остальные приложения -->
+            </select>
+
+            <select id="readFilter">
+                <option value="">Все</option>
+                <option value="true">Прочитано</option>
+                <option value="false">Непрочитано</option>
+            </select>
+
+        </div>
         <div class="notifications-container" id="notifications"></div>
       </section>
     </main>
 
     <template class="notification-template">
-    <div class="notification-item" id="">
-        <!-- Индикатор нового сообщения -->
-        <div class="notification-indicator"></div>
+        <div class="notification-item" id="">
+            <!-- Индикатор нового сообщения -->
+            <div class="notification-indicator"></div>
 
-        <!-- Иконка модуля -->
-        <div class="sidebar__icon sidebar__icon_app"></div>
+            <!-- Иконка модуля -->
+            <div class="sidebar__icon sidebar__icon_app notification__icon"></div>
 
-        <!-- Контент -->
-        <div class="notification-meta">
-        <div class="notification-meta-header">
-            <span class="notification-meta-user">Фамилия И.О.</span>
-            <span class="notification-date">00.00.0000 00:00</span>
-        </div>
-        <div class="notification-message">Текст сообщения</div>
-        </div>
+            <!-- Контент -->
+            <div class="notification-meta">
+            <div class="notification-meta-header">
+                <span class="notification-meta-user">Фамилия И.О.</span>
+                <span class="notification-date">00.00.0000 00:00</span>
+            </div>
+            <div class="notification-message">Текст сообщения</div>
+            </div>
 
-        <!-- Действия -->
-        <div class="notification-actions">
-        <a href="#" class="notification-button notification-link" target="_blank">
-            <img class="notification-link-icon" src="{% static 'img/link-icon.svg' %}" alt="" />
-        </a>
-        <button class="notification-button notification-read-btn">Прочитано</button>
+            <div class="notification-actions">
+                <button
+                    class="notification-button notification-read-btn button"
+                    aria-label="Отметить прочитанным"
+                    data-tooltip="Отметить прочитанным"
+                >
+                    <img
+                    class="notification-link-icon"
+                    src="{% static 'img/mark-read-icon.svg' %}"
+                    alt="Иконка прочитано"
+                    />
+                </button>
+                <a
+                    href="#"
+                    class="notification-button notification-link button"
+                    target="_blank"
+                    aria-label="Перейти по ссылке"
+                    data-tooltip="Перейти по ссылке"
+                >
+                    <img
+                    class="notification-link-icon"
+                    src="{% static 'img/link-icon.svg' %}"
+                    alt="Иконка ссылки"
+                    />
+                </a>
+            </div>
         </div>
-    </div>
     </template>
 
 {% endblock %}

@@ -17,6 +17,7 @@ from users.models import ModuleUser, Role, UserAppRoute
 
 class NotificationSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     class Meta:
         model = Notification
@@ -34,6 +35,9 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     def get_url(self, obj):
         return obj.get_absolute_url()
+
+    def get_user(self, obj):
+        return obj.user.lastname_and_initials
 
 
 class LeakImageSerializer(serializers.ModelSerializer):

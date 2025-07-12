@@ -137,7 +137,6 @@ function submitFormChangeState(data) {
 }
 
 
-// new Tooltip();
 new AppMenu();
 enableValidation(formConfig);
 

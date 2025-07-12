@@ -1,0 +1,27 @@
+1. Установка PostgreSQL
+
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+
+2. Проверка работы PostgreSQL
+
+sudo systemctl status postgresql
+
+3. Подключение к PostgreSQL
+
+sudo -u postgres psql
+
+Создание нового пользователя и базы данных
+CREATE USER myuser WITH PASSWORD 'mypassword';
+CREATE DATABASE mydb OWNER myuser;
+\q  -- Выход из psql
+
+Подключение от имени нового пользователя
+psql -U myuser -d mydb -h 127.0.0.1 -W
+
+
+
+
+посмотреть все конфиги nginx:
+
+ls -la /etc/nginx/sites-enabled/

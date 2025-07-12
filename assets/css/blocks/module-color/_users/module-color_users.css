@@ -1,9 +1,10 @@
+/* Blue Scheme for Users */
 .module-color_users {
-    background-color: #D8DEE3;
+    background-color: #B0C4DE; /* Light steel blue */
 }
 
 .module-color__header_users {
-    background-color: #5A6B78;
+    background-color: #4682B4; /* Darker steel blue */
 }
 
 .module-color__button_users {

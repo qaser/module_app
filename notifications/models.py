@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import NoReverseMatch, reverse
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from users.models import ModuleUser, UserAppRoute
 
@@ -12,6 +14,7 @@ class Notification(models.Model):
         EQUIPMENT = 'equipment', 'Оборудование'
         PIPELINES = 'pipelines', 'Магистральные газопроводы'
         VALVES = 'tpa', 'Техническое обслуживание ТПА'
+        USERS = 'users', 'Кабинет пользователя'
 
     user = models.ForeignKey(
         ModuleUser,
@@ -69,3 +72,16 @@ class Notification(models.Model):
             return admin_url
         except NoReverseMatch:
             return '#'
+
+
+@receiver(post_save, sender=ModuleUser)
+def create_welcome_notification(sender, instance, created, **kwargs):
+    if created:
+        Notification.objects.create(
+            user=instance,
+            app_name=Notification.AppChoices.USERS,
+            object_id=0,
+            title='Добро пожаловать!',
+            message='Ваш аккаунт успешно создан. Добро пожаловать в систему!',
+            is_read=False
+        )

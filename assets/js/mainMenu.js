@@ -41,21 +41,24 @@ function renderLoading(isLoading) {
 }
 
 function handleMarkAsReadClick(id, element) {
-    // Пример API-запроса
-    api.markAsRead(id).then(() => {
-        element.classList.remove('notification_unread');
-        const button = element.querySelector('.notification-read-btn');
-        button.textContent = 'Отмечено';
-        button.disabled = true;
-    }).catch((err) => {
-        console.error('Ошибка при отметке как прочитано:', err);
-    });
+    const button = element.querySelector('.notification-read-btn');
+    button.disabled = true;
+    button.textContent = '...';
+
+    api.markAsRead(id)
+        .then(() => {
+            element.classList.remove('notification_unread');
+            button.textContent = 'Отмечено';
+        })
+        .catch((err) => {
+            console.error('Ошибка при отметке как прочитано:', err);
+            button.disabled = false;
+            button.textContent = 'Повторить';
+        });
 }
 
 
 function notificationCard(item, handleMarkAsReadClick) {
-    console.log(item);
-
     const notification = new NotificationManager(
         item,
         '.notification-template',
@@ -72,7 +75,7 @@ new AppMenu();
 Promise.all([api.getMyProfile(), api.getNotifications('/notifications/')])
     .then(([userData, msgs]) => {
         newUserInfo.setUserInfo(userData);
-        // notificationSection.clear();
+        notificationSection.clear();
         notificationSection.renderItems(msgs);
     })
     .catch(err => {

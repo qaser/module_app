@@ -6,6 +6,7 @@ export default class Tooltip {
             <div class='tooltip-glass'>
                 <div class='tooltip-content'></div>
             </div>
+            <div class='tooltip-arrow'></div>
         `;
         document.body.appendChild(this.tooltipElement);
         this.currentElement = null;
@@ -38,7 +39,8 @@ export default class Tooltip {
 
     _showTooltip(element) {
         const tooltipText = element.getAttribute('data-tooltip');
-        this.tooltipElement.querySelector('.tooltip-content').textContent = tooltipText;
+        // Заменяем \n на <br> для отображения переносов строк
+        this.tooltipElement.querySelector('.tooltip-content').innerHTML = tooltipText.replaceAll('\n', '<br>');
         const rect = element.getBoundingClientRect();
         const tooltipRect = this.tooltipElement.getBoundingClientRect();
         const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
