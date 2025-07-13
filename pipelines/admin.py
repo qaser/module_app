@@ -3,7 +3,7 @@ from django.db.models import Count
 from django.utils.html import format_html
 
 from .models import (ComplexPlan, Hole, HoleDocument, Node, NodeState,
-                     Pipe, PipeDepartment, Diagnostics, PipeLimit, Pipeline, Repair,
+                     Pipe, PipeDepartment, Diagnostics, PipeDocument, PipeLimit, Pipeline, Repair,
                      RepairDocument, RepairStage, PipeState,
                      PlannedWork)
 
@@ -93,6 +93,11 @@ class RepairDocumentInline(admin.TabularInline):
     extra = 0
 
 
+class PipeDocumentInline(admin.TabularInline):
+    model = PipeDocument
+    extra = 0
+
+
 # class DefectInline(admin.TabularInline):
 #     model = Defect
 #     extra = 0
@@ -134,7 +139,7 @@ class PipeAdmin(admin.ModelAdmin):
     )
     list_filter = ('pipeline', 'departments', StateFilter)
     search_fields = ('pipeline__title', 'departments__name')
-    inlines = [PipeStateInline, PipeLimitInline, PipeDepartmentInline]
+    inlines = [PipeStateInline, PipeLimitInline, PipeDepartmentInline, PipeDocumentInline]
 
     def current_state_display(self, obj):
         state = obj.current_state

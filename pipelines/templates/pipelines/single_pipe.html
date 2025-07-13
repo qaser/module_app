@@ -71,30 +71,54 @@
                   <p class="card__param">Год ввода в эксплуатацию</p>
                   <p class="card__value" id="exploit_year"></p>
                 </div>
-
+                <div class="card__line">
+                  <p class="card__param">Текущее состояние</p>
+                  <p class="card__value_unique" id="state_type_display"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Давление ограничения</p>
+                  <p class="card__value_unique" id="pressure_limit"></p>
+                </div>
               </div>
+
               <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
                   <h3 class="card__title">Информация о последнем ремонте</h3>
+                  <button class="button card__button card__button_link hidden" data-tooltip="Перейти к ремонту" id="repair_link_btn"></button>
               </div>
-              <div class="card__field" id="service_info">
+              <div class="card__field" id="repair_info">
                 <div class="card__line">
-                  <p class="card__param">Вид ТО</p>
-                  <p class="card__value_unique" id="service_type"></p>
+                  <p class="card__param">Начало ремонта</p>
+                  <p class="card__value_unique" id="repair_start_date"></p>
                 </div>
                 <div class="card__line">
-                  <p class="card__param">Дата проведения</p>
-                  <p class="card__value_unique" id="prod_date"></p>
+                  <p class="card__param">Окончание ремонта</p>
+                  <p class="card__value_unique" id="repair_end_date"></p>
                 </div>
               </div>
-                <div class="card__files"></div>
+
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                  <h3 class="card__title">Информация о последнем ВТД</h3>
+                  <button class="button card__button card__button_link hidden" data-tooltip="Перейти к ВТД" id="diagnostics_link_btn"></button>
+              </div>
+              <div class="card__field" id="diagnostics_info">
+                <div class="card__line">
+                  <p class="card__param">Начало ВТД</p>
+                  <p class="card__value_unique" id="diagnostics_start_date"></p>
+                </div>
+                <div class="card__line">
+                  <p class="card__param">Окончание ВТД</p>
+                  <p class="card__value_unique" id="diagnostics_end_date"></p>
+                </div>
+              </div>
             </div>
+
           <div class="card__container">
-              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}" id="cardFiles">
+              <div class="card__header module-color__header_{{ request.resolver_match.app_name }}" id="card_files">
                 <h3 class="card__title">Документация</h3>
-                <button class="button card__button card__button_add" data-tooltip="Добавить файл"></button>
+                <button class="button card__button card__button_add hidden" data-tooltip="Добавить файл"></button>
               </div>
+              <div class="card__files"></div>
           </div>
-          <div class="card__images"></div>
         </div>
       </section>
     </main>
@@ -111,8 +135,8 @@
                 </label>
                 <label class="form-popup__file-field">
                     <span class="form-popup__file-title">Файл:</span>
-                    <input class="form-popup__input" type="file" id="work-files" name="files" accept="image/*, application/pdf">
-                    <span class="form-popup__input-error" id="work-files-error"></span>
+                    <input class="form-popup__input module-color__button_pipelines" type="file" id="pipe-files" name="files" accept="image/*, application/pdf" required>
+                    <span class="form-popup__input-error" id="pipe-files-error"></span>
                 </label>
                 <progress id="progressBar" value="0" max="100"></progress>
                 <div class="form-popup__container">

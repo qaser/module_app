@@ -406,6 +406,27 @@ export default class Api {
         })
         .then(this._checkResponse);
     }
+
+
+    // добавление новой файла pipe
+    addPipeFile(form) {
+        // delete this._headers['Content-Type']
+        return fetch(`${this._baseUrl}/pipe-docs/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: form
+        })
+        .then(response => response.json());
+    }
+
+    // удаление файла pipe
+    deletePipeFile(id) {
+        return fetch(`${this._baseUrl}/pipe-docs/${id}/`, {
+            method: 'DELETE',
+            headers: this._headers,
+        })
+        // .then(this._checkResponse);
+    }
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();

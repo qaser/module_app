@@ -3,11 +3,8 @@ import * as constant from '../js/utils/constants.js';
 import Api from '../js/api/Api.js';
 import UserInfo from '../js/components/UserInfo.js';
 import PipeItem from './components/PipeItem.js';
-import Image from './components/Image.js';
 import Section from '../js/components/Section.js';
-import PopupWithImage from '../js/components/PopupWithImage.js';
 import PopupWithForm from './components/PopupWithForm.js';
-import FormHandler from './components/FormHandler.js';
 import Tooltip from '../js/components/Tooltip.js';
 import FormValidator from '../js/components/FormValidator.js';
 import FileManager from './components/FileManager.js';
@@ -17,7 +14,6 @@ import SinglePipeVisualizer from '../js/components/SinglePipeVisualizer.js'
 
 
 const pipeId = document.querySelector('.card').id;
-let isUploadButtonAdded = false;
 let haveFiles = 0;
 const filesContainer = document.querySelector('.card__files'); // контейнер с файлами
 const formValidators = {};
@@ -43,18 +39,18 @@ const api = new Api({
 });
 
 
-const cardWithFiles = new HiddenElement('#cardFiles')
-// const btnFileAdd = new HiddenElement('.card__button_add')
+const cardWithFiles = new HiddenElement('#card_files')
+const btnFileAdd = new HiddenElement('.card__button_add')
 
 
 // экземпляр карточки c файлами
-// const fileInstance = new Section({
-//     renderer: (item) => {
-//         const newFile = filesCard(item);
-//         fileInstance.setItem(newFile);
-//     },
-// },
-// '.card__files');
+const fileInstance = new Section({
+    renderer: (item) => {
+        const newFile = filesCard(item);
+        fileInstance.setItem(newFile);
+    },
+},
+'.card__files');
 
 
 // создание объекта с данными пользователя
@@ -108,43 +104,43 @@ function submitFormNewFile(data) {
 }
 
 
-// function filesCard(item) {
-//     const file = new FileManager(
-//         item,
-//         '.file-template',
-//         handleFileDeleteClick
-//     );
-//     const instance = file.renderFile();
-//     return instance;
-// }
+function filesCard(item) {
+    const file = new FileManager(
+        item,
+        '.file-template',
+        handleFileDeleteClick
+    );
+    const instance = file.renderFile();
+    return instance;
+}
 
 
-// function handleFileDeleteClick(evt, fileId) {
-//     const id = fileId.replace(/\D/g, '')
-//     // renderLoading()
-//     api.deletePipeFile(id)
-//         .then((res) => {
-//             if (res.status == 204) {
-//                 elementDelete(fileId, filesContainer);
-//                 haveFiles -= 1
-//             }
-//         })
-//         // .finally(() => renderLoading());
-// };
+function handleFileDeleteClick(evt, fileId) {
+    const id = fileId.replace(/\D/g, '')
+    renderLoading()
+    api.deletePipeFile(id)
+        .then((res) => {
+            if (res.status == 204) {
+                elementDelete(fileId, filesContainer);
+                haveFiles -= 1
+            }
+        })
+        .finally(() => renderLoading());
+};
 
 
-// function elementDelete(id, container) {
-//     const elem = container.querySelector(`#${id}`)
-//     elem.remove()
-// }
+function elementDelete(id, container) {
+    const elem = container.querySelector(`#${id}`)
+    elem.remove()
+}
 
 
-// function filesClassDeleteToggle() {
-//     const btnsFileDelete = document.querySelectorAll('.card__delete')
-//     btnsFileDelete.forEach((btn) => {
-//         btn.classList.toggle('hidden')
-//     })
-// }
+function filesClassDeleteVisible() {
+    const btnsFileDelete = document.querySelectorAll('.card__delete')
+    btnsFileDelete.forEach((btn) => {
+        btn.classList.remove('hidden')
+    })
+}
 
 
 // универсальная функция для валидации форм (доступ по имени формы)
@@ -214,6 +210,7 @@ function generateTestPipe(id = 1) {
   };
 }
 
+
 enableValidation(formFileConfig);
 popupWithFormNewFile.setEventListeners();
 new Tooltip();
@@ -225,13 +222,20 @@ Promise.all([api.getMyProfile(), api.getPipeItem(pipeId)])
         pipeInstance.renderItem(pipe);
         const pipeVisualizer = new SinglePipeVisualizer(testPipe, "scheme");
         pipeVisualizer.render();
-        // if (pipe.files.length > 0) {
-        //     haveFiles = pipe.files.length;
-        //     cardWithFiles.show();
-        //     fileInstance.renderItems(pipe.files);
-        // } else {
-        //     cardWithFiles.hide();
-        // }
+        if (pipe.files.length > 0) {
+            haveFiles = pipe.files.length;
+            cardWithFiles.show();
+            fileInstance.renderItems(pipe.files);
+        } else {
+            cardWithFiles.hide();
+        }
+        if (userData.role == 'admin' || userData.role == 'manager') {
+            btnFileAdd.show();
+            filesClassDeleteVisible();
+            btnFileAdd.rawElem().addEventListener('click', () => {
+                popupWithFormNewFile.open();
+            })
+        }
     })
     .catch(err => {
         console.log(err);

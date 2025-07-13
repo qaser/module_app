@@ -639,108 +639,168 @@ class PlannedWork(models.Model):
         return f"{self.get_work_type_display()} — {target} ({self.planned_date})"
 
 
-# class PipeUnit(models.Model):
-#     UNIT_TYPE = [
-#         ('tube', 'Труба'),
-#         ('kss', 'КСС'),
-#         ('sdt', 'СДТ'),
-#     ]
-#     unit_type = models.CharField(
-#         max_length=50,
-#         choices=UNIT_TYPE,
-#         verbose_name='Тип элемента',
-#         blank=False,
-#         null=False,
-#     )
+class Tube(models.Model):
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='tubes'
+    )
+    tube_num = models.PositiveSmallIntegerField(
+        'Номер трубы',
+        null=False,
+        blank=False,
+    )
+    tube_length = models.FloatField(
+        'Длина трубы',
+        null=False,
+        blank=False,
+    )
+    thickness = models.FloatField(
+        'Толщина трубы',
+        null=False,
+        blank=False,
+    )
+
+    class Meta:
+        verbose_name = 'Труба'
+        verbose_name_plural = 'Трубы'
+
+    def __str__(self):
+        return f'Труба №{self.tube_num}, участок {self.pipe}'
 
 
-# class Defect(models.Model):
-#     DEFECT_TYPE = [
-#         ('krn', 'КРН'),
-#         ('scratch', 'Царапина'),
-#         ('burr', 'Задир'),
-#         ('dent', 'Вмятина'),
-#         ('crack', 'Трещина'),
-#         ('shell', 'Раковина'),
-#         ('potholes', 'Забоина'),
-#         ('risk', 'Риска'),
-#         ('oval', 'Овальность'),
-#         ('curve', 'Кривизна'),
-#         ('goffer', 'Гофр'),
-#         ('notbrewed', 'Непровар'),
-#         ('undercutting', 'Подрез зоны сплавления'),
-#         ('displacement', 'Смещение сваренных кромок'),
-#         ('pore', 'Пора'),
-#         ('slag', 'Шлаковые включения'),
-#         ('fistula', 'Свищ в сварном шве'),
-#     ]
-#     diagnostics = models.ForeignKey(
-#         Diagnostics,
-#         on_delete=models.CASCADE,
-#         related_name='defects'
-#     )
-#     defect_num = models.PositiveSmallIntegerField(
-#         verbose_name='Номер дефекта',
-#         blank=False,
-#         null=False,
-#     )
-#     defect_type = models.CharField(
-#         max_length=50,
-#         choices=DEFECT_TYPE,
-#         verbose_name='Тип дефекта',
-#         blank=False,
-#         null=False,
-#     )
-#     pipe_unit = models.ForeignKey(
-#         PipeUnit,
-#         on_delete=models.CASCADE,
-#         related_name='defects',
-#         blank=True,
-#         null=True,
-#     )
-#     place_num = models.CharField(
-#         verbose_name='Номер трубы (КСС, СДТ)',
-#         blank=True,
-#         null=True,
-#     )
-#     is_fixed = models.BooleanField(
-#         verbose_name='Дефект устранён',
-#         default=False
-#     )
-#     description = models.TextField(
-#         verbose_name='Дополнительная информация',
-#         max_length=500,
-#         blank=True
-#     )
+class PipeUnit(models.Model):
+    UNIT_TYPE = [
+        ('valv', 'Кран'),
+        ('offt', 'Отвод-врезка'),
+        ('tee', 'Тройник'),
+        ('cpco', 'Подключение системы ЭХЗ'),
+        ('wiwd', 'Заварка окна'),
+        ('casb', 'Футляр-начало'),
+        ('case', 'Футляр-конец'),
+        ('mark', 'Маркер'),
+    ]
+    unit_type = models.CharField(
+        max_length=50,
+        choices=UNIT_TYPE,
+        verbose_name='Тип элемента',
+        blank=False,
+        null=False,
+    )
+    tube = models.ForeignKey(
+        Tube,
+        on_delete=models.CASCADE,
+        related_name='pipe_units',
+        blank=True,
+        null=True,
+    )
+    distance = models.FloatField(
+        'Расстояние',
+        null=False,
+        blank=False,
+    )
 
-#     class Meta:
-#         verbose_name = 'Дефект'
-#         verbose_name_plural = 'Дефекты'
-#         indexes = [
-#             models.Index(fields=['diagnostics']),
-#             models.Index(fields=['defect_type']),
-#             # models.Index(fields=['pipe_unit']),
-#             models.Index(fields=['is_fixed']),
-#         ]
+    class Meta:
+        verbose_name = 'Элемент трубопровода'
+        verbose_name_plural = 'Элементы трубопроводов'
 
-#     def clean(self):
-#         super().clean()
-#         # Список допустимых типов дефектов для КСС
-#         kss_allowed_defects = [
-#             'notbrewed',
-#             'undercutting',
-#             'displacement',
-#             'pore',
-#             'slag',
-#             'crack',
-#             'shell',
-#             'fistula',
-#         ]
-#         if self.defect_place == 'kss' and self.defect_type not in kss_allowed_defects:
-#             raise ValidationError(
-#                 ("Для места расположения 'КСС' допустимы только следующие типы дефектов: "
-#                  ', '.join([dict(self.DEFECT_TYPE)[d] for d in kss_allowed_defects]))
-#             )
+    def __str__(self):
+        return f'{self.unit_type}, {self.tube}'
+
+
+class Anomaly(models.Model):
+    ANOMALY_TYPE = [
+        ('gwan', 'Аномалия кольцевого шва'),
+        ('goug', 'Механическое повреждение'),
+        ('scc', 'Зона продольных трещин'),
+    ]
+    diagnostics = models.ForeignKey(
+        Diagnostics,
+        on_delete=models.CASCADE,
+        related_name='diagnostics_anomalies'
+    )
+    anomaly_num = models.PositiveSmallIntegerField(
+        verbose_name='Номер аномалии',
+        blank=False,
+        null=False,
+    )
+    anomaly_type = models.CharField(
+        max_length=50,
+        choices=ANOMALY_TYPE,
+        verbose_name='Тип аномалии',
+        blank=False,
+        null=False,
+    )
+    tube = models.ForeignKey(
+        Tube,
+        on_delete=models.CASCADE,
+        related_name='anomalies',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Аномалия'
+        verbose_name_plural = 'Аномалии'
+        indexes = [
+            models.Index(fields=['diagnostics']),
+            models.Index(fields=['anomaly_type']),
+            models.Index(fields=['tube']),
+        ]
+
+    def __str__(self):
+        return f'{self.anomaly_type}, труба №{self.tube.tube_num}'
+
+
+class Defect(models.Model):
+    DEFECT_TYPE = [
+        ('krn', 'КРН'),
+        ('scratch', 'Царапина'),
+        ('burr', 'Задир'),
+        ('dent', 'Вмятина'),
+        ('crack', 'Трещина'),
+        ('shell', 'Раковина'),
+        ('potholes', 'Забоина'),
+        ('risk', 'Риска'),
+        ('oval', 'Овальность'),
+        ('curve', 'Кривизна'),
+        ('goffer', 'Гофр'),
+        ('notbrewed', 'Непровар'),
+        ('undercutting', 'Подрез зоны сплавления'),
+        ('displacement', 'Смещение сваренных кромок'),
+        ('pore', 'Пора'),
+        ('slag', 'Шлаковые включения'),
+        ('fistula', 'Свищ в сварном шве'),
+    ]
+    anomaly = models.OneToOneField(
+        Anomaly,
+        on_delete=models.CASCADE,
+        related_name='defects'
+    )
+    defect_num = models.PositiveSmallIntegerField(
+        verbose_name='Номер дефекта',
+        blank=False,
+        null=False,
+    )
+    defect_type = models.CharField(
+        max_length=50,
+        choices=DEFECT_TYPE,
+        verbose_name='Тип дефекта',
+        blank=False,
+        null=False,
+    )
+    description = models.TextField(
+        verbose_name='Дополнительная информация',
+        max_length=500,
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = 'Дефект'
+        verbose_name_plural = 'Дефекты'
+        indexes = [
+            models.Index(fields=['defect_type']),
+        ]
 
 
 class Hole(models.Model):
@@ -777,7 +837,7 @@ class HoleDocument(models.Model):
         related_name='hole_docs'
     )
     doc = models.FileField(upload_to='pipelines/docs/holes/')
-    title = models.CharField(
+    name = models.CharField(
         'Наименование документа',
         max_length=100,
         blank=False,
@@ -792,12 +852,12 @@ class HoleDocument(models.Model):
 
 class PipeDocument(models.Model):
     pipe = models.ForeignKey(
-        Repair,
+        Pipe,
         on_delete=models.CASCADE,
         related_name='pipe_docs'
     )
     doc = models.FileField(upload_to='pipelines/docs/pipes/')
-    title = models.CharField(
+    name = models.CharField(
         'Наименование документа',
         max_length=100,
         blank=False,
@@ -817,7 +877,7 @@ class NodeDocument(models.Model):
         related_name='node_docs'
     )
     doc = models.FileField(upload_to='pipelines/docs/nodes/')
-    title = models.CharField(
+    name = models.CharField(
         'Наименование документа',
         max_length=100,
         blank=False,
@@ -837,7 +897,7 @@ class RepairDocument(models.Model):
         related_name='repair_docs'
     )
     doc = models.FileField(upload_to='pipelines/docs/repairs/')
-    title = models.CharField(
+    name = models.CharField(
         'Наименование документа',
         max_length=100,
         blank=False,

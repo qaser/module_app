@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from equipments.models import Department, Equipment
 from leaks.models import Leak
 from notifications.models import Notification
-from pipelines.models import Node, NodeState, Pipe, PipeDepartment, PipeState, Pipeline
+from pipelines.models import Node, NodeState, Pipe, PipeDepartment, PipeDocument, PipeState, Pipeline
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -23,7 +23,7 @@ from users.models import ModuleUser, Role
 
 from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, NodeStateSerializer, NotificationSerializer, PipeSerializer, PipeStateSerializer,
+                          LeakSerializer, NodeStateSerializer, NotificationSerializer, PipeDocumentSerializer, PipeSerializer, PipeStateSerializer,
                           PipelineSerializer, ProposalDocumentSerializer,
                           ProposalSerializer, QuarterlyPlanSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
@@ -45,6 +45,16 @@ class ValveImageViewSet(viewsets.ModelViewSet):
 class ValveDocumentViewSet(viewsets.ModelViewSet):
     queryset = ValveDocument.objects.all()
     serializer_class = ValveDocumentSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+
+class PipeDocumentViewSet(viewsets.ModelViewSet):
+    queryset = PipeDocument.objects.all()
+    serializer_class = PipeDocumentSerializer
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticated]
 

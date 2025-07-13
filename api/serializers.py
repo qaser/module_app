@@ -5,7 +5,7 @@ from rest_framework import serializers
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
-from pipelines.models import (PipeDepartment, PipeLimit, Pipeline, Pipe, Node, PipeState, NodeState,
+from pipelines.models import (PipeDepartment, PipeDocument, PipeLimit, Pipeline, Pipe, Node, PipeState, NodeState,
                               ComplexPlan, PlannedWork, Repair,
                               Diagnostics, Hole)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
@@ -82,6 +82,17 @@ class ValveDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = ValveDocument
         fields = ('id', 'doc', 'name', 'valve_id')
+
+
+class PipeDocumentSerializer(serializers.ModelSerializer):
+    pipe_id = serializers.PrimaryKeyRelatedField(
+        queryset=Pipe.objects.all(),
+        source='pipe'
+    )
+
+    class Meta:
+        model = PipeDocument
+        fields = ('id', 'doc', 'name', 'pipe_id')
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
@@ -559,6 +570,9 @@ class PipeSerializer(serializers.ModelSerializer):
     state = serializers.SerializerMethodField()
     limit = serializers.SerializerMethodField()
     pipeline = serializers.SerializerMethodField()
+    last_repair = serializers.SerializerMethodField()
+    last_diagnostics = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
 
     class Meta:
         model = Pipe
@@ -569,9 +583,12 @@ class PipeSerializer(serializers.ModelSerializer):
             'start_point',
             'end_point',
             'diameter',
+            'exploit_year',
             'state',
             'limit',
-            'exploit_year'
+            'last_repair',
+            'last_diagnostics',
+            'files',
         ]
 
     def get_departments(self, obj):
@@ -599,6 +616,31 @@ class PipeSerializer(serializers.ModelSerializer):
         if limit:
             return PipeLimitSerializer(limit).data
         return None
+
+    def get_last_repair(self, obj):
+        last_repair = obj.pipe_repairs.order_by('-start_date').first()
+        if last_repair:
+            return {
+                'id': last_repair.id,
+                'start_date': last_repair.start_date.strftime('%d.%m.%Y') if last_repair.start_date else None,
+                'end_date': last_repair.end_date.strftime('%d.%m.%Y') if last_repair.end_date else None
+            }
+        return None
+
+    def get_last_diagnostics(self, obj):
+        last_diagnostics = obj.pipe_diagnostics.order_by('-start_date').first()
+        if last_diagnostics:
+            return {
+                'id': last_diagnostics.id,
+                'start_date': last_diagnostics.start_date.strftime('%d.%m.%Y') if last_diagnostics.start_date else None,
+                'end_date': last_diagnostics.end_date.strftime('%d.%m.%Y') if last_diagnostics.end_date else None
+            }
+        return None
+
+    def get_files(self, obj):
+        selected_files = PipeDocument.objects.filter(pipe=obj)
+        return PipeDocumentSerializer(selected_files, many=True, required=False).data
+
 
 
 class NodeSerializer(serializers.ModelSerializer):

@@ -6,7 +6,7 @@ from equipments.models import Equipment
 from pipelines.filters import DiagnosticsFilter, RepairFilter
 from pipelines.tables import DiagnosticsTable, RepairTable
 from users.models import ModuleUser, Role
-from .models import Diagnostics, PipeDepartment, Pipeline, PipeState, Repair, Pipe
+from .models import ComplexPlan, Diagnostics, PipeDepartment, Pipeline, PipeState, Repair, Pipe
 from django.db.models import OuterRef, QuerySet, Subquery, Q
 
 from django_tables2 import SingleTableMixin
@@ -96,3 +96,31 @@ class DiagnosticsView(SingleTableMixin, FilterView):
                 ).distinct()
                 return (pipe_diagnostics | node_diagnostics).distinct()
             return queryset.none()
+
+
+# class PlansView(SingleTableMixin, FilterView):
+#     model = ComplexPlan
+#     table_class = ComplexPlanTable
+#     paginate_by = 39
+#     template_name = 'pipelines/pipelines_plans.html'
+#     filterset_class = ComplexPlanFilter
+
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         user = self.request.user
+
+#         if user.role == Role.ADMIN:
+#             return queryset  # ADMIN видит все ремонты
+
+#         else:
+#             if user.department:
+#                 root_department = user.department.get_root()
+#                 departments = root_department.get_descendants(include_self=True)
+#                 pipe_diagnostics = queryset.filter(
+#                     pipe__pipedepartment__department__in=departments
+#                 ).distinct()
+#                 node_diagnostics = queryset.filter(
+#                     node__equipment__departments__in=departments
+#                 ).distinct()
+#                 return (pipe_diagnostics | node_diagnostics).distinct()
+#             return queryset.none()

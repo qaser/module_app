@@ -165,7 +165,7 @@
                 </label>
                 <label class="form-popup__file-field">
                     <span class="form-popup__file-title">Файл:</span>
-                    <input class="form-popup__input" type="file" id="work-files" name="files" accept="image/*, application/pdf">
+                    <input class="form-popup__input" type="file" id="work-files" name="files" accept="image/*, application/pdf" required>
                     <span class="form-popup__input-error" id="work-files-error"></span>
                 </label>
                 <progress id="progressBar" value="0" max="100"></progress>
@@ -173,7 +173,7 @@
                     <span class="form-popup__status" id="uploadForm_Status"></span>
                     <span id="uploadForm_Size"></span>
                 </div>
-                <button class="form-popup__button button module-color__button_tpa" type="submit">Сохранить</button>
+                <button class="form-popup__button button module-color__button_{{ request.resolver_match.app_name }}" type="submit">Сохранить</button>
             </form>
         </div>
     </div>

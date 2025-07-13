@@ -45,3 +45,17 @@ ls -la /etc/nginx/sites-enabled/
     psql -h /var/run/postgresql -U module_app_user -d module_app_db
 
 Введите пароль (your_secure_password). Если подключение удалось, всё настроено правильно.
+
+
+
+
+cd /root/module_app
+pm2 start /root/module_app/venv/bin/gunicorn \
+  --name module_app \
+  --interpreter /root/module_app/venv/bin/python \
+  -- --bind 127.0.0.1:8001 module_app.wsgi:application \
+  -e DB_NAME= \
+  -e POSTGRES_USER= \
+  -e POSTGRES_PASSWORD= \
+  -e DB_HOST=/var/run/postgresql \
+  -e DB_PORT=
