@@ -12,5 +12,6 @@ urlpatterns = [
     # path('plans/', login_required(views.PlansView.as_view()), name='plans'),
     path('plans/', views.scheme_pipelines, name='plans'),
     path('pipes/<int:pipe_id>/', views.single_pipe, name='single_pipe'),
+    path('pipes/<int:pipe_id>/tubes/', login_required(views.TubesView.as_view()), name='pipe-tubes'),
     # path('rapairs/<int:repair_id>/', views.single_repair, name='single_repair'),
 ]

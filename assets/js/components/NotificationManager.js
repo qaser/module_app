@@ -55,8 +55,7 @@ export default class NotificationManager {
         this._element.querySelector('.notification-date').textContent = dateStr;
 
         // Автор
-        this._element.querySelector('.notification-meta-user').textContent =
-            this._notification.user || 'Система';
+        this._element.querySelector('.notification-meta-user').textContent = 'Система';
 
         // Текст сообщения
         this._element.querySelector('.notification-message').textContent =

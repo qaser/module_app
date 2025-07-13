@@ -2,7 +2,36 @@ import django_tables2 as tables
 
 from users.models import Role
 
-from .models import Diagnostics, PipeDepartment, Repair
+from .models import Diagnostics, PipeDepartment, Repair, Tube
+
+
+class TubeTable(tables.Table):
+    # department_root = tables.Column(verbose_name='Филиал', accessor='pk')
+    pipe = tables.Column(verbose_name='Участок')
+    tube_num = tables.Column(verbose_name='Номер трубы')
+    tube_length = tables.Column(verbose_name='Длина, м')
+    thickness = tables.Column(verbose_name='Толщина, мм')
+    seam_num = tables.Column(verbose_name='Количество швов')
+
+    class Meta:
+        model = Tube
+        fields = [
+            # 'department_root',
+            'pipe',
+            'tube_num',
+            'tube_length',
+            'thickness',
+            'seam_num',
+        ]
+        attrs = {'class': 'table table_pipelines'}
+        row_attrs = {'id': lambda record: record.id}
+        orderable = False
+        template_name = 'module_app/table/new_table.html'
+
+    # def render_department_root(self, record):
+    #     departments = record.pipe.pipedepartment_set.select_related('department')
+    #     roots = [pd.department.get_root().name for pd in departments if pd.department]
+    #     return ' / '.join(sorted(set(roots))) if roots else '—'
 
 
 class RepairTable(tables.Table):

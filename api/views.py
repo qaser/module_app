@@ -14,7 +14,8 @@ from rest_framework.views import APIView
 from equipments.models import Department, Equipment
 from leaks.models import Leak
 from notifications.models import Notification
-from pipelines.models import Node, NodeState, Pipe, PipeDepartment, PipeDocument, PipeState, Pipeline
+from pipelines.models import (Node, NodeState, Pipe, PipeDepartment,
+                              PipeDocument, Pipeline, PipeState, Tube)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -23,11 +24,13 @@ from users.models import ModuleUser, Role
 
 from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           EquipmentSerializer, FactorySerializer,
-                          LeakSerializer, NodeStateSerializer, NotificationSerializer, PipeDocumentSerializer, PipeSerializer, PipeStateSerializer,
-                          PipelineSerializer, ProposalDocumentSerializer,
+                          LeakSerializer, NodeStateSerializer,
+                          NotificationSerializer, PipeDocumentSerializer,
+                          PipelineSerializer, PipeSerializer,
+                          PipeStateSerializer, ProposalDocumentSerializer,
                           ProposalSerializer, QuarterlyPlanSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
-                          StatusSerializer, UserSerializer,
+                          StatusSerializer, TubeSerializer, UserSerializer,
                           ValveDocumentSerializer, ValveImageSerializer,
                           ValveSerializer, WorkServiceSerializer)
 
@@ -428,3 +431,17 @@ class PipeViewSet(viewsets.ModelViewSet):
     serializer_class = PipeSerializer
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticated]
+
+
+class TubesViewSet(viewsets.ViewSet):
+    def list(self, request, pipe_id=None):
+        try:
+            pipe = Pipe.objects.get(id=pipe_id)
+            tubes = Tube.objects.filter(pipe=pipe)
+            serializer = TubeSerializer(tubes, many=True)
+            return Response(serializer.data)
+        except Pipe.DoesNotExist:
+            return Response(
+                {"detail": f"Pipe с id={pipe_id} не найден"},
+                status=status.HTTP_404_NOT_FOUND
+            )

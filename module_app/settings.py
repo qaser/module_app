@@ -93,7 +93,7 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'mydb',
+            'NAME': 'module_db',
             'USER': 'postgres',
             'PASSWORD': 'qazaq1',
             'HOST': 'localhost',

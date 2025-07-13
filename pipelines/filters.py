@@ -1,8 +1,36 @@
 import django_filters as df
-from django.db.models import Q
-from pipelines.models import Diagnostics, Repair, Pipeline, PipeDepartment, Node
-from equipments.models import Department
 from django import forms
+from django.db.models import Q
+
+from equipments.models import Department
+from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment, Pipeline,
+                              Repair, Tube)
+
+
+class TubeFilter(df.FilterSet):
+    tube_num = df.NumberFilter(
+        label='Номер трубы',
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    tube_length = df.ChoiceFilter(
+        label='Длина трубы (м)',
+        choices=lambda: [(val, val) for val in Tube.objects.values_list('tube_length', flat=True).distinct()],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    thickness = df.ChoiceFilter(
+        label='Толщина (мм)',
+        choices=lambda: [(val, val) for val in Tube.objects.values_list('thickness', flat=True).distinct()],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    seam_num = df.ChoiceFilter(
+        label='Количество швов',
+        choices=lambda: [(val, val) for val in Tube.objects.values_list('seam_num', flat=True).distinct()],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Tube
+        fields = ['tube_num', 'tube_length', 'thickness', 'seam_num']
 
 
 class RepairFilter(df.FilterSet):

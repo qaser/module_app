@@ -22,7 +22,7 @@ export default class PipeItem {
         const pipeline = pipe.pipeline;
         pipe.departments = pipe.departments.map(d => d.name).join(' / ');
 
-        this._title.textContent = `Участок ${start_point}-${end_point} км. газопровода "${pipeline}"`;
+        this._title.textContent = `Участок ${start_point}-${end_point} км газопровода "${pipeline}"`;
         this._values.forEach((item) => {
             item.textContent = pipe[item.id];
         });

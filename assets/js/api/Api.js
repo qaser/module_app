@@ -427,6 +427,13 @@ export default class Api {
         })
         // .then(this._checkResponse);
     }
+
+    getTubes(pipe_id) {
+        return fetch(`${this._baseUrl}/pipes/${pipe_id}/tubes/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();

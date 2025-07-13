@@ -656,7 +656,13 @@ class Tube(models.Model):
         blank=False,
     )
     thickness = models.FloatField(
-        'Толщина трубы',
+        'Толщина трубы, мм',
+        null=False,
+        blank=False,
+    )
+    seam_num = models.PositiveSmallIntegerField(
+        'Количество швов',
+        default=1,
         null=False,
         blank=False,
     )
@@ -709,10 +715,14 @@ class PipeUnit(models.Model):
 
 
 class Anomaly(models.Model):
-    ANOMALY_TYPE = [
+    ANOMALY_NATURE = [
         ('gwan', 'Аномалия кольцевого шва'),
         ('goug', 'Механическое повреждение'),
         ('scc', 'Зона продольных трещин'),
+    ]
+    ANOMALY_TYPE = [
+        ('int', 'Внутренняя'),
+        ('ext', 'Внешняя'),
     ]
     diagnostics = models.ForeignKey(
         Diagnostics,
@@ -723,6 +733,13 @@ class Anomaly(models.Model):
         verbose_name='Номер аномалии',
         blank=False,
         null=False,
+    )
+    anomaly_nature = models.CharField(
+        max_length=50,
+        choices=ANOMALY_NATURE,
+        verbose_name='Характер аномалии',
+        blank=True,
+        null=True,
     )
     anomaly_type = models.CharField(
         max_length=50,
@@ -737,6 +754,24 @@ class Anomaly(models.Model):
         related_name='anomalies',
         blank=True,
         null=True,
+    )
+    anomaly_length = models.PositiveSmallIntegerField(
+        verbose_name='Длина аномалии, мм',
+        default=0,
+        blank=False,
+        null=False,
+    )
+    anomaly_width = models.PositiveSmallIntegerField(
+        verbose_name='Ширина аномалии, мм',
+        default=0,
+        blank=False,
+        null=False,
+    )
+    anomaly_depth = models.PositiveSmallIntegerField(
+        verbose_name='Глубина аномалии, %',
+        default=0,
+        blank=False,
+        null=False,
     )
 
     class Meta:

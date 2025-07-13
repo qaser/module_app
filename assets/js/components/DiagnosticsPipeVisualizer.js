@@ -1,7 +1,6 @@
 export default class SinglePipeVisualizer {
-  constructor(pipe, tubes, containerId) {
+  constructor(pipe, containerId) {
     this.pipe = pipe;
-    this.tubes = tubes || [];
     this.container = document.getElementById(containerId);
     this.svgNS = "http://www.w3.org/2000/svg";
     this.svg = document.createElementNS(this.svgNS, "svg");
@@ -18,7 +17,7 @@ export default class SinglePipeVisualizer {
     this.offsetY = 0;
     this.zoomSpeed = 0.2;
 
-    this.tubeCount = this.tubes.length;
+    this.tubeCount = (this.pipe.pipe_units || []).filter(u => u.unit_type === 'tube').length;
     this.maxZoom = Math.max(10, this.tubeCount * 0.4); // Пример: 1000 → 400, 100 → 40
 
     this.pipeOutlineElement = null;
@@ -26,10 +25,47 @@ export default class SinglePipeVisualizer {
     this.setupZoom();
     this.setupPan();
     this.createResetButton();
+    this.initTooltips();
 
     // центрируем при первой отрисовке
     this.centeredInitially = false;
     this.render();
+  }
+
+  initTooltips() {
+    this.tooltip = document.createElement('div');
+    this.tooltip.className = 'pipeline-tooltip';
+    document.body.appendChild(this.tooltip);
+
+    this.container.addEventListener('mouseover', (e) => {
+      const target = e.target.closest('[data-tooltip]');
+      if (target) {
+        const tooltipText = target.getAttribute('data-tooltip');
+        this.showTooltip(e, tooltipText);
+      }
+    });
+
+    this.container.addEventListener('mouseout', () => {
+      this.hideTooltip();
+    });
+
+    this.container.addEventListener('mousemove', (e) => {
+      if (this.tooltip.style.display === 'block') {
+        this.tooltip.style.left = `${e.pageX + 10}px`;
+        this.tooltip.style.top = `${e.pageY + 10}px`;
+      }
+    });
+  }
+
+  showTooltip(e, text) {
+    this.tooltip.textContent = text;
+    this.tooltip.style.display = 'block';
+    this.tooltip.style.left = `${e.pageX + 10}px`;
+    this.tooltip.style.top = `${e.pageY + 10}px`;
+  }
+
+  hideTooltip() {
+    this.tooltip.style.display = 'none';
   }
 
   setupZoom() {
@@ -40,6 +76,10 @@ export default class SinglePipeVisualizer {
 
       const rect = this.svg.getBoundingClientRect();
       const cursorX = e.clientX - rect.left;
+    //   const cursorY = e.clientY - rect.top;
+
+    //   const svgViewWidth = this.container.clientWidth;
+    //   const svgViewHeight = 100;
 
       const newZoom = Math.min(this.maxZoom, Math.max(this.minZoom, this.zoomScale * factor));
 
@@ -106,15 +146,19 @@ export default class SinglePipeVisualizer {
         this.render();
     });
     this.container.appendChild(button);
-  }
+    }
 
   render() {
     this.svg.innerHTML = "";
 
+    const units = this.pipe.pipe_units || [];
     const totalPipeLength = (this.pipe.end_point - this.pipe.start_point) * 1000;
-    const showAll = this.zoomScale >= Math.max(1, this.tubeCount * 0.002);
+    const showAll = this.zoomScale >= Math.max(1, this.tubeCount * 0.01);
+    const showDefectDetails = this.zoomScale >= Math.max(5, this.tubeCount * 0.1);
 
-    const totalTubesLength = this.tubes.reduce((sum, tube) => sum + (tube.tube_length || 0), 0);
+ const totalUnitsLength = units.reduce((sum, unit) => {
+      return unit.unit_type !== 'kss' && unit.length ? sum + unit.length : sum;
+    }, 0);
 
     const containerWidth = this.container.clientWidth || 1000;
     const containerHeight = 100;
@@ -130,30 +174,65 @@ export default class SinglePipeVisualizer {
       this.centeredInitially = true;
     }
 
-    if (showAll) {
-      this.tubes.forEach((tube) => {
-        const scaledLength = tube.tube_length * pixelsPerMeter;
-        const nextX = currentX - scaledLength;
+    units.forEach((unit) => {
+      if (unit.unit_type === 'kss') {
+        const hasDefects = unit.defects && unit.defects.length > 0;
+        if (showAll || hasDefects) {
+          const line = document.createElementNS(this.svgNS, "rect");
+          line.setAttribute("x", currentX);
+          line.setAttribute("y", y);
+          line.setAttribute("width", 1);
+          line.setAttribute("height", height);
+          line.setAttribute("fill", hasDefects ? "red" : "#000");
+          this.svg.appendChild(line);
+        }
+        return;
+      }
 
+      const scaledLength = unit.length * pixelsPerMeter;
+      const nextX = currentX - scaledLength;
+      const hasDefects = unit.defects && unit.defects.length > 0;
+
+      if (showAll || hasDefects) {
         const rect = document.createElementNS(this.svgNS, "rect");
         rect.setAttribute("x", nextX);
         rect.setAttribute("y", y);
         rect.setAttribute("width", scaledLength);
         rect.setAttribute("height", height);
-        rect.setAttribute("fill", "#ffffff");
+        rect.setAttribute("fill", hasDefects ? "#f44336" : (unit.unit_type === 'tube' ? '#ffffff' : '#2196F3'));
         rect.setAttribute("stroke", "black");
 
         // Добавляем подсказку для трубы
-        rect.setAttribute('data-tooltip',
-          `Труба №${tube.tube_num}\n` +
-          `Длина: ${tube.tube_length} м\n` +
-          `Толщина: ${tube.thickness} мм`
-        );
+        if (unit.unit_type === 'tube') {
+          const defectsInfo = hasDefects
+            ? `Дефекты: ${unit.defects.map(d => `${d.defect_type} (${d.position} м)`).join(', ')}`
+            : 'Дефекты: нет';
+          rect.setAttribute('data-tooltip',
+            `Труба №${unit.tube_num}\n` +
+            `Диаметр: ${unit.diameter} мм\n` +
+            defectsInfo
+          );
+        }
 
         this.svg.appendChild(rect);
-        currentX = nextX;
-      });
-    }
+
+        if (showDefectDetails && hasDefects) {
+          unit.defects.forEach(def => {
+            if (def.position != null) {
+              const defectX = nextX + scaledLength - (def.position * pixelsPerMeter);
+              const mark = document.createElementNS(this.svgNS, "circle");
+              mark.setAttribute("cx", defectX);
+              mark.setAttribute("cy", y + height / 2);
+              mark.setAttribute("r", 2);
+              mark.setAttribute("fill", "black");
+              this.svg.appendChild(mark);
+            }
+          });
+        }
+      }
+
+      currentX = nextX;
+    });
 
     this.pipeOutlineElement = document.createElementNS(this.svgNS, "rect");
     this.pipeOutlineElement.setAttribute("y", y);

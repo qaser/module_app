@@ -5,14 +5,21 @@ from rest_framework import serializers
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
-from pipelines.models import (PipeDepartment, PipeDocument, PipeLimit, Pipeline, Pipe, Node, PipeState, NodeState,
-                              ComplexPlan, PlannedWork, Repair,
-                              Diagnostics, Hole)
+from pipelines.models import (Anomaly, ComplexPlan, Diagnostics, Hole, Node,
+                              NodeState, Pipe, PipeDepartment, PipeDocument,
+                              PipeLimit, Pipeline, PipeState, PlannedWork,
+                              Repair, Tube)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkProof, WorkService)
 from users.models import ModuleUser, Role, UserAppRoute
+
+
+class TubeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tube
+        fields = ['id', 'tube_num', 'tube_length', 'thickness', 'seam_num']
 
 
 class NotificationSerializer(serializers.ModelSerializer):

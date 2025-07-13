@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
 
-from .models import (ComplexPlan, Hole, HoleDocument, Node, NodeState,
-                     Pipe, PipeDepartment, Diagnostics, PipeDocument, PipeLimit, Pipeline, Repair,
-                     RepairDocument, RepairStage, PipeState,
-                     PlannedWork)
+from .models import (Anomaly, ComplexPlan, Diagnostics, Hole, HoleDocument,
+                     Node, NodeState, Pipe, PipeDepartment, PipeDocument,
+                     PipeLimit, Pipeline, PipeState, PlannedWork, Repair,
+                     RepairDocument, RepairStage, Tube)
 
 
 class PipeDepartmentInline(admin.TabularInline):
@@ -32,6 +32,11 @@ class StateFilter(admin.SimpleListFilter):
 
 class PipeLimitInline(admin.TabularInline):
     model = PipeLimit
+    extra = 0
+
+
+class AnomalyInline(admin.TabularInline):
+    model = Anomaly
     extra = 0
 
 
@@ -240,7 +245,6 @@ class DiagnosticsAdmin(admin.ModelAdmin):
     list_display = ('pipe', 'node', 'start_date', 'end_date', 'description')
     list_filter = ('pipe__pipeline',)
     search_fields = ('pipe__pipeline__title',)
-    # inlines = [DefectInline]
 
 
 @admin.register(Hole)
@@ -267,3 +271,48 @@ class PlannedWorkAdmin(admin.ModelAdmin):
     def target_object(self, obj):
         return obj.pipe or obj.node
     target_object.short_description = 'Объект'
+
+
+@admin.register(Tube)
+class TubeAdmin(admin.ModelAdmin):
+    list_display = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num')
+    list_filter = ('tube_length', 'thickness', 'seam_num')
+    search_fields = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num')
+
+
+from django.contrib import admin
+
+from .models import Anomaly
+
+
+@admin.register(Anomaly)
+class AnomalyAdmin(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'anomaly_num',
+        'anomaly_type',
+        'anomaly_nature',
+        'tube_display',
+        'diagnostics',
+        'anomaly_length',
+        'anomaly_width',
+        'anomaly_depth',
+    )
+    list_filter = (
+        'anomaly_type',
+        'anomaly_nature',
+        'diagnostics',
+    )
+    search_fields = (
+        'anomaly_num',
+        'tube__tube_num',
+        'tube__pipe__id',
+    )
+    autocomplete_fields = ['diagnostics', 'tube']
+
+    def tube_display(self, obj):
+        if obj.tube:
+            return f'№{obj.tube.tube_num} (Pipe ID {obj.tube.pipe_id})'
+        return '—'
+
+    tube_display.short_description = 'Труба'
