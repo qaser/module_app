@@ -275,9 +275,9 @@ class PlannedWorkAdmin(admin.ModelAdmin):
 
 @admin.register(Tube)
 class TubeAdmin(admin.ModelAdmin):
-    list_display = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num')
-    list_filter = ('tube_length', 'thickness', 'seam_num')
-    search_fields = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num')
+    list_display = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num', 'diameter')
+    list_filter = ('tube_length', 'thickness', 'seam_num', 'diameter')
+    search_fields = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num', 'diameter')
 
 
 from django.contrib import admin

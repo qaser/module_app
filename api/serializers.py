@@ -7,7 +7,7 @@ from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
 from pipelines.models import (Anomaly, ComplexPlan, Diagnostics, Hole, Node,
                               NodeState, Pipe, PipeDepartment, PipeDocument,
-                              PipeLimit, Pipeline, PipeState, PlannedWork,
+                              PipeLimit, PipeUnit, Pipeline, PipeState, PlannedWork,
                               Repair, Tube)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
@@ -19,7 +19,7 @@ from users.models import ModuleUser, Role, UserAppRoute
 class TubeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tube
-        fields = ['id', 'tube_num', 'tube_length', 'thickness', 'seam_num']
+        fields = ['id', 'tube_num', 'tube_length', 'thickness', 'seam_num', 'diameter']
 
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -580,6 +580,8 @@ class PipeSerializer(serializers.ModelSerializer):
     last_repair = serializers.SerializerMethodField()
     last_diagnostics = serializers.SerializerMethodField()
     files = serializers.SerializerMethodField()
+    tube_count = serializers.SerializerMethodField()
+    unit_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Pipe
@@ -591,6 +593,8 @@ class PipeSerializer(serializers.ModelSerializer):
             'end_point',
             'diameter',
             'exploit_year',
+            'tube_count',
+            'unit_count',
             'state',
             'limit',
             'last_repair',
@@ -647,6 +651,15 @@ class PipeSerializer(serializers.ModelSerializer):
     def get_files(self, obj):
         selected_files = PipeDocument.objects.filter(pipe=obj)
         return PipeDocumentSerializer(selected_files, many=True, required=False).data
+
+    def get_tube_count(self, obj):
+        """Возвращает количество труб, связанных с участком"""
+        return obj.tubes.count()  # Используем related_name='tubes' из модели Tube
+
+    def get_unit_count(self, obj):
+        """Возвращает количество элементов, связанных с участком"""
+        # Считаем элементы через связанные трубы
+        return PipeUnit.objects.filter(tube__pipe=obj).count()
 
 
 

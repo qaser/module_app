@@ -666,6 +666,12 @@ class Tube(models.Model):
         null=False,
         blank=False,
     )
+    diameter = models.PositiveSmallIntegerField(
+        'Диаметр трубы, мм',
+        default=1420,
+        null=False,
+        blank=False,
+    )
 
     class Meta:
         verbose_name = 'Труба'

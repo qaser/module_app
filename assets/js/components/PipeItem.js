@@ -10,7 +10,10 @@ export default class PipeItem {
         this._diagnostics_start_date = document.getElementById('diagnostics_start_date');
         this._diagnostics_end_date = document.getElementById('diagnostics_end_date');
         this._repair_link_btn = document.getElementById('repair_link_btn');
+        this._tubes_link_btn = document.getElementById('tubes_link_btn');
         this._diagnostics_link_btn = document.getElementById('diagnostics_link_btn');
+        this._tube_count = document.getElementById('tube_count');
+        this._unit_count = document.getElementById('unit_count');
     }
 
     renderItem(pipe) {
@@ -44,7 +47,7 @@ export default class PipeItem {
             this._repair_end_date.textContent = pipe.last_repair.end_date || '-';
             this._repair_link_btn.classList.remove('hidden');
             this._repair_link_btn.onclick = () => {
-                window.location.href = `/repairs/${pipe.last_repair.id}/`;
+                window.location.href = `repairs/${pipe.last_repair.id}/`;
             };
         } else {
             this._repair_start_date.textContent = '-';
@@ -57,13 +60,17 @@ export default class PipeItem {
             this._diagnostics_end_date.textContent = pipe.last_diagnostics.end_date || '-';
             this._diagnostics_link_btn.classList.remove('hidden');
             this._diagnostics_link_btn.onclick = () => {
-                window.location.href = `/diagnostics/${pipe.last_diagnostics.id}/`;
+                window.location.href = `diagnostics/${pipe.last_diagnostics.id}/`;
             };
         } else {
             this._diagnostics_start_date.textContent = '-';
             this._diagnostics_end_date.textContent = '-';
             this._diagnostics_link_btn.onclick = null;
         }
-
+        this._tube_count.textContent = pipe.tube_count;
+        this._unit_count.textContent = pipe.unit_count;
+        this._tubes_link_btn.onclick = () => {
+            window.location.href = `tubes/`;
+        };
     }
 }

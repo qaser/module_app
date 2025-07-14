@@ -1,91 +1,147 @@
 export default class SinglePipeVisualizer {
-  constructor(pipe, tubes, containerId) {
-    this.pipe = pipe;
-    this.tubes = tubes || [];
+  constructor(tubes, containerId) {
+    this.tubes = tubes;
     this.container = document.getElementById(containerId);
-    this.svgNS = "http://www.w3.org/2000/svg";
-    this.svg = document.createElementNS(this.svgNS, "svg");
-    this.svg.setAttribute("width", "100%");
-    this.svg.setAttribute("height", "200px");
-    this.svg.setAttribute("background-color", "white");
-    this.container.innerHTML = "";
-    this.container.style.position = "relative";
-    this.container.appendChild(this.svg);
 
-    this.zoomScale = 1;
-    this.minZoom = 1;
+    this.zoomLevel = 1;
+    this.initialZoomLevel = 1;
     this.offsetX = 0;
     this.offsetY = 0;
-    this.zoomSpeed = 0.2;
+    this.dragging = false;
+    this.startX = 0;
+    this.startY = 0;
 
-    this.tubeCount = this.tubes.length;
-    this.maxZoom = Math.max(10, this.tubeCount * 0.4); // Пример: 1000 → 400, 100 → 40
+    this.TUBE_HEIGHT = 20;
+    this.TUBE_GAP = 2; // увеличен для видимого белого зазора
+    this.SCALE_FACTOR = 5;
 
-    this.pipeOutlineElement = null;
+    this.MIN_ZOOM = 0.1;
+    this.MAX_ZOOM = 5;
+  }
 
-    this.setupZoom();
-    this.setupPan();
+  render() {
+    this.container.innerHTML = "";
+    this.container.style.position = "relative";
+    this.container.style.backgroundColor = "#fff";
+
+    this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    this.svg.setAttribute("width", "100%");
+    this.svg.setAttribute("height", "100%");
+    this.svg.style.display = "block";
+    this.svg.style.cursor = "grab";
+
+    this.container.appendChild(this.svg);
+
+    this.tubeGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    this.svg.appendChild(this.tubeGroup);
+
+    this.svg.addEventListener("wheel", (e) => this.onZoom(e));
+    this.svg.addEventListener("mousedown", (e) => this.onMouseDown(e));
+    this.svg.addEventListener("mousemove", (e) => this.onMouseMove(e));
+    this.svg.addEventListener("mouseup", () => this.onMouseUp());
+    this.svg.addEventListener("mouseleave", () => this.onMouseUp());
+
+    this.drawTubes();
+    this.fitToContainer();
     this.createResetButton();
-
-    // центрируем при первой отрисовке
-    this.centeredInitially = false;
-    this.render();
   }
 
-  setupZoom() {
-    this.container.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const direction = e.deltaY > 0 ? -1 : 1;
-      const factor = 1 + (this.zoomSpeed * direction);
+    drawTubes() {
+        this.tubeGroup.innerHTML = "";
 
-      const rect = this.svg.getBoundingClientRect();
-      const cursorX = e.clientX - rect.left;
+        const reversed = [...this.tubes].reverse(); // труба №1 — слева
+        let x = 0;
 
-      const newZoom = Math.min(this.maxZoom, Math.max(this.minZoom, this.zoomScale * factor));
+        for (let tube of reversed) {
+            const width = tube.tube_length * this.SCALE_FACTOR;
 
-      const scaleRatio = newZoom / this.zoomScale;
-      this.offsetX = (this.offsetX + cursorX) * scaleRatio - cursorX;
-      this.zoomScale = newZoom;
+            const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            rect.setAttribute("x", x);
+            rect.setAttribute("y", 0);
+            rect.setAttribute("width", width);
+            rect.setAttribute("height", this.TUBE_HEIGHT);
+            rect.setAttribute("fill", "#a5c8f5"); // светлая заливка
+            rect.setAttribute("stroke", "black"); // чёрная обводка
+            rect.setAttribute("stroke-width", 0.5);
+            rect.setAttribute("data-id", tube.id);
+            rect.setAttribute("data-tooltip",
+            `Труба №${tube.tube_num}\nДиаметр: ${tube.diameter} мм\nТолщина: ${tube.thickness} мм\nДлина: ${tube.tube_length} м\nКоличество швов: ${tube.seam_num}`);
+            rect.style.cursor = "pointer";
 
-      this.render();
-    });
+            rect.addEventListener("mouseenter", () => {
+            rect.setAttribute("fill", "#c4dbf8");
+            });
+            rect.addEventListener("mouseleave", () => {
+            rect.setAttribute("fill", "#a5c8f5");
+            });
+
+            this.tubeGroup.appendChild(rect);
+            x += width + this.TUBE_GAP; // белый зазор между трубами создаётся отступом
+        }
+
+        this.totalWidth = x;
+    }
+
+
+  fitToContainer() {
+    const containerRect = this.container.getBoundingClientRect();
+    const padding = 40;
+    const availableWidth = containerRect.width - padding * 2;
+
+    this.initialZoomLevel = availableWidth / this.totalWidth;
+    this.initialZoomLevel = Math.min(this.initialZoomLevel, 1);
+    this.zoomLevel = this.initialZoomLevel;
+
+    this.offsetX = (containerRect.width - this.totalWidth * this.zoomLevel) / 2;
+    this.offsetY = (containerRect.height - this.TUBE_HEIGHT) / 2;
+
+    this.updateTransform();
   }
 
-  setupPan() {
-    let isDragging = false;
-    let startX, startY;
+  updateTransform() {
+    this.tubeGroup.setAttribute(
+      "transform",
+      `translate(${this.offsetX}, ${this.offsetY}) scale(${this.zoomLevel}, 1)`
+    );
+  }
 
-    this.container.addEventListener('mousedown', (e) => {
-      isDragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      this.container.style.cursor = 'grabbing';
-    });
+  onZoom(event) {
+    event.preventDefault();
+    const rect = this.svg.getBoundingClientRect();
+    const cursorX = event.clientX - rect.left;
 
-    this.container.addEventListener('mouseup', () => {
-      isDragging = false;
-      this.container.style.cursor = 'grab';
-    });
+    const zoomFactor = event.deltaY < 0 ? 1.1 : 0.9;
+    const prevZoom = this.zoomLevel;
+    const newZoom = Math.max(this.initialZoomLevel, Math.min(this.MAX_ZOOM, this.zoomLevel * zoomFactor));
+    const zoomRatio = newZoom / prevZoom;
 
-    this.container.addEventListener('mouseleave', () => {
-      isDragging = false;
-      this.container.style.cursor = 'grab';
-    });
+    this.offsetX = cursorX - (cursorX - this.offsetX) * zoomRatio;
+    this.zoomLevel = newZoom;
 
-    this.container.addEventListener('mouseenter', () => {
-      this.container.style.cursor = 'grab';
-    });
+    this.updateTransform();
+  }
 
-    this.container.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      this.offsetX -= dx;
-      this.offsetY -= dy;
-      startX = e.clientX;
-      startY = e.clientY;
-      this.render();
-    });
+  onMouseDown(event) {
+    this.dragging = true;
+    this.startX = event.clientX;
+    this.startY = event.clientY;
+    this.svg.style.cursor = "grabbing";
+  }
+
+  onMouseMove(event) {
+    if (!this.dragging) return;
+    const dx = event.clientX - this.startX;
+    const dy = event.clientY - this.startY;
+    this.startX = event.clientX;
+    this.startY = event.clientY;
+    this.offsetX += dx;
+    this.offsetY += dy;
+    this.updateTransform();
+  }
+
+  onMouseUp() {
+    this.dragging = false;
+    this.svg.style.cursor = "grab";
   }
 
   createResetButton() {
@@ -98,74 +154,11 @@ export default class SinglePipeVisualizer {
     button.style.padding = "6px 10px";
     button.style.fontSize = "16px";
     button.style.cursor = "pointer";
+
     button.addEventListener("click", () => {
-        this.zoomScale = 1;
-        this.offsetX = 0;
-        this.offsetY = 0;
-        this.centeredInitially = false;
-        this.render();
+      this.fitToContainer();
     });
+
     this.container.appendChild(button);
-  }
-
-  render() {
-    this.svg.innerHTML = "";
-
-    const totalPipeLength = (this.pipe.end_point - this.pipe.start_point) * 1000;
-    const showAll = this.zoomScale >= Math.max(1, this.tubeCount * 0.002);
-
-    const totalTubesLength = this.tubes.reduce((sum, tube) => sum + (tube.tube_length || 0), 0);
-
-    const containerWidth = this.container.clientWidth || 1000;
-    const containerHeight = 100;
-    const desiredWidth = containerWidth * 0.8 * this.zoomScale;
-    const pixelsPerMeter = desiredWidth / totalPipeLength;
-
-    let currentX = desiredWidth + 10;
-    const y = 30;
-    const height = 40;
-
-    if (!this.centeredInitially) {
-      this.offsetX = (desiredWidth - containerWidth) / 2;
-      this.centeredInitially = true;
-    }
-
-    if (showAll) {
-      this.tubes.forEach((tube) => {
-        const scaledLength = tube.tube_length * pixelsPerMeter;
-        const nextX = currentX - scaledLength;
-
-        const rect = document.createElementNS(this.svgNS, "rect");
-        rect.setAttribute("x", nextX);
-        rect.setAttribute("y", y);
-        rect.setAttribute("width", scaledLength);
-        rect.setAttribute("height", height);
-        rect.setAttribute("fill", "#ffffff");
-        rect.setAttribute("stroke", "black");
-
-        // Добавляем подсказку для трубы
-        rect.setAttribute('data-tooltip',
-          `Труба №${tube.tube_num}\n` +
-          `Длина: ${tube.tube_length} м\n` +
-          `Толщина: ${tube.thickness} мм`
-        );
-
-        this.svg.appendChild(rect);
-        currentX = nextX;
-      });
-    }
-
-    this.pipeOutlineElement = document.createElementNS(this.svgNS, "rect");
-    this.pipeOutlineElement.setAttribute("y", y);
-    this.pipeOutlineElement.setAttribute("height", height);
-    this.pipeOutlineElement.setAttribute("fill", "none");
-    this.pipeOutlineElement.setAttribute("stroke", "black");
-    this.svg.appendChild(this.pipeOutlineElement);
-
-    this.pipeOutlineElement.setAttribute("x", 0);
-    this.pipeOutlineElement.setAttribute("width", desiredWidth);
-    this.pipeOutlineElement.style.display = 'inline';
-
-    this.svg.setAttribute("viewBox", `${this.offsetX} ${this.offsetY} ${containerWidth} ${containerHeight}`);
   }
 }

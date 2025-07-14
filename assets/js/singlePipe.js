@@ -168,7 +168,7 @@ Promise.all([api.getMyProfile(), api.getPipeItem(pipeId), api.getTubes(pipeId)])
     .then(([userData, pipe, tubes]) => {
         newUserInfo.setUserInfo(userData);
         pipeInstance.renderItem(pipe);
-        const pipeVisualizer = new SinglePipeVisualizer(pipe, tubes, "scheme");
+        const pipeVisualizer = new SinglePipeVisualizer(tubes, "scheme");
         pipeVisualizer.render();
         if (pipe.files.length > 0) {
             haveFiles = pipe.files.length;

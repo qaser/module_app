@@ -8,6 +8,7 @@ from .models import Diagnostics, PipeDepartment, Repair, Tube
 class TubeTable(tables.Table):
     # department_root = tables.Column(verbose_name='Филиал', accessor='pk')
     pipe = tables.Column(verbose_name='Участок')
+    diameter = tables.Column(verbose_name='Диаметр, мм')
     tube_num = tables.Column(verbose_name='Номер трубы')
     tube_length = tables.Column(verbose_name='Длина, м')
     thickness = tables.Column(verbose_name='Толщина, мм')
@@ -19,6 +20,7 @@ class TubeTable(tables.Table):
             # 'department_root',
             'pipe',
             'tube_num',
+            'diameter',
             'tube_length',
             'thickness',
             'seam_num',

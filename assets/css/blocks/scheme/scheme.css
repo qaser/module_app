@@ -2,16 +2,16 @@
     width: 100%;
     border: 1px solid #6A5A8C;
     border-radius: 10px;
-    overflow: auto;
+    overflow: hidden;
     margin-top: 20px;
     /* padding-bottom: 20px; */
 }
 
-.scheme svg {
+/* .scheme svg {
     display: block;
     min-width: 100%;
     min-height: 100%;
-}
+} */
 
 /* Общие стили для интерактивных элементов */
 /* .pipe-element,
