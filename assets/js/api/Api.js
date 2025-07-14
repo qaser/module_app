@@ -376,7 +376,7 @@ export default class Api {
     }
 
     getPipeItem(id) {
-        return fetch(`${this._baseUrl}/pipes/${id}`, {
+        return fetch(`${this._baseUrl}/pipes/${id}/`, {
             headers: this._headers,
         })
         .then(response => response.json());

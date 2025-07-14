@@ -8,7 +8,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'the-best-secret-key')
 DEBUG = False
 # DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['poeks.ru', 'www.poeks.ru']
 
 INSTALLED_APPS = [
