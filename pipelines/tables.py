@@ -12,7 +12,7 @@ class TubeTable(tables.Table):
     tube_num = tables.Column(verbose_name='Номер трубы')
     tube_length = tables.Column(verbose_name='Длина, м')
     thickness = tables.Column(verbose_name='Толщина, мм')
-    seam_num = tables.Column(verbose_name='Количество швов')
+    tube_type = tables.Column(verbose_name='Тип трубы')
 
     class Meta:
         model = Tube
@@ -23,7 +23,7 @@ class TubeTable(tables.Table):
             'diameter',
             'tube_length',
             'thickness',
-            'seam_num',
+            'tube_type',
         ]
         attrs = {'class': 'table table_pipelines'}
         row_attrs = {'id': lambda record: record.id}

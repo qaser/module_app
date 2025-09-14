@@ -7,7 +7,7 @@ from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
 from pipelines.models import (Anomaly, ComplexPlan, Diagnostics, Hole, Node,
                               NodeState, Pipe, PipeDepartment, PipeDocument,
-                              PipeLimit, PipeUnit, Pipeline, PipeState, PlannedWork,
+                              PipeLimit, TubeUnit, Pipeline, PipeState, PlannedWork,
                               Repair, Tube)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
@@ -19,7 +19,7 @@ from users.models import ModuleUser, Role, UserAppRoute
 class TubeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tube
-        fields = ['id', 'tube_num', 'tube_length', 'thickness', 'seam_num', 'diameter']
+        fields = ['id', 'tube_num', 'tube_length', 'thickness', 'tube_type', 'diameter']
 
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -659,7 +659,7 @@ class PipeSerializer(serializers.ModelSerializer):
     def get_unit_count(self, obj):
         """Возвращает количество элементов, связанных с участком"""
         # Считаем элементы через связанные трубы
-        return PipeUnit.objects.filter(tube__pipe=obj).count()
+        return TubeUnit.objects.filter(tube__pipe=obj).count()
 
 
 

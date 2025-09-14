@@ -65,7 +65,7 @@ export default class SinglePipeVisualizer {
             rect.setAttribute("stroke-width", 0.5);
             rect.setAttribute("data-id", tube.id);
             rect.setAttribute("data-tooltip",
-            `Труба №${tube.tube_num}\nДиаметр: ${tube.diameter} мм\nТолщина: ${tube.thickness} мм\nДлина: ${tube.tube_length} м\nКоличество швов: ${tube.seam_num}`);
+            `Труба №${tube.tube_num}\nДиаметр: ${tube.diameter} мм\nТолщина: ${tube.thickness} мм\nДлина: ${tube.tube_length} м\nТип трубы: ${tube.tube_type}`);
             rect.style.cursor = "pointer";
 
             rect.addEventListener("mouseenter", () => {

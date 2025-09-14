@@ -6,6 +6,33 @@ from mptt.models import MPTTModel, TreeForeignKey
 from module_app.utils import get_installed_apps
 
 
+class EquipmentType(MPTTModel):
+    name = models.CharField(
+        verbose_name='Название',
+        max_length=500,
+        blank=False,
+        null=False
+    )
+    parent = TreeForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='children',
+        verbose_name='Родительский объект'
+    )
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
+    class Meta:
+        verbose_name = 'Тип оборудования'
+        verbose_name_plural = 'Типы оборудования'
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Department(MPTTModel):
     name = models.CharField(
         verbose_name='Название',
@@ -57,6 +84,14 @@ class Equipment(MPTTModel):
         Department,
         related_name='equipments',
         verbose_name='Подразделения'
+    )
+    equipment_type = models.ForeignKey(
+        EquipmentType,
+        related_name='equipment_types',
+        verbose_name='Тип оборудования',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     class MPTTMeta:

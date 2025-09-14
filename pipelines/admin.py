@@ -103,11 +103,6 @@ class PipeDocumentInline(admin.TabularInline):
     extra = 0
 
 
-# class DefectInline(admin.TabularInline):
-#     model = Defect
-#     extra = 0
-
-
 class HoleDocumentInline(admin.TabularInline):
     model = HoleDocument
     extra = 0
@@ -275,22 +270,15 @@ class PlannedWorkAdmin(admin.ModelAdmin):
 
 @admin.register(Tube)
 class TubeAdmin(admin.ModelAdmin):
-    list_display = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num', 'diameter')
-    list_filter = ('tube_length', 'thickness', 'seam_num', 'diameter')
-    search_fields = ('pipe', 'tube_num', 'tube_length', 'thickness', 'seam_num', 'diameter')
-
-
-from django.contrib import admin
-
-from .models import Anomaly
+    list_display = ('pipe', 'tube_num', 'tube_length', 'thickness', 'tube_type', 'diameter')
+    list_filter = ('tube_length', 'thickness', 'tube_type', 'diameter')
+    search_fields = ('pipe', 'tube_num', 'tube_length', 'thickness', 'tube_type', 'diameter')
 
 
 @admin.register(Anomaly)
 class AnomalyAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'anomaly_num',
-        'anomaly_type',
         'anomaly_nature',
         'tube_display',
         'diagnostics',
@@ -299,12 +287,10 @@ class AnomalyAdmin(admin.ModelAdmin):
         'anomaly_depth',
     )
     list_filter = (
-        'anomaly_type',
         'anomaly_nature',
         'diagnostics',
     )
     search_fields = (
-        'anomaly_num',
         'tube__tube_num',
         'tube__pipe__id',
     )

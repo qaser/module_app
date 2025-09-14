@@ -1,7 +1,7 @@
 from django.contrib import admin
 from mptt.admin import DraggableMPTTAdmin
 
-from .models import Department, Equipment
+from .models import Department, Equipment, EquipmentType
 
 
 @admin.register(Department)
@@ -20,6 +20,24 @@ class DepartmentAdmin(DraggableMPTTAdmin):
             )
         self.message_user(request, "Дочерние подразделения успешно созданы")
     add_child_department.short_description = "Создать дочернее подразделение"
+
+
+@admin.register(EquipmentType)
+class EquipmentTypeAdmin(DraggableMPTTAdmin):
+    list_display = ('indented_title', 'parent')
+    search_fields = ('name', 'parent__name')  # Поиск по имени и родителю
+    list_filter = ('parent',)
+    fields = ('name', 'parent')
+    autocomplete_fields = ['parent']
+
+    def add_child_equipment_type(self, request, queryset):
+        for eq_type in queryset:
+            EquipmentType.objects.create(
+                name=f"Новый тип оборудования {eq_type.name}",
+                parent=eq_type
+            )
+        self.message_user(request, "Дочерние типы оборудования успешно созданы")
+    add_child_equipment_type.short_description = "Создать дочерний птип оборудования"
 
 
 @admin.register(Equipment)

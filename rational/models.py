@@ -1,19 +1,17 @@
 import os
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.core.exceptions import ValidationError
 from django.core.files import File
-from django.core.mail import send_mail
 from django.db import models
-from django.db.models import Count, Exists, OuterRef, Q, Sum
+from django.db.models import Sum
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.utils import timezone
-from mptt.models import MPTTModel, TreeForeignKey
+from mptt.models import TreeForeignKey
 
-from equipments.models import Department
-from module_app.utils import compress_image
+from equipments.models import Department, EquipmentType
 from notifications.models import Notification
 from users.models import ModuleUser, UserAppRoute
 
@@ -101,6 +99,14 @@ class Proposal(models.Model):
         max_length=500,
         blank=True,
         null=True,
+    )
+    equipment_type = models.ForeignKey(
+        EquipmentType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name='Тип оборудования'
     )
     # Флаг для отслеживания готовности к созданию файла
     is_ready = models.BooleanField(default=False)

@@ -640,12 +640,25 @@ class PlannedWork(models.Model):
 
 
 class Tube(models.Model):
+    TUBE_TYPE = [
+        ('one', '1Ш'),
+        ('two', '2Ш'),
+        ('spiral', 'СШ'),
+        ('without', 'БШ'),
+    ]
+    CATEGORY_CHOICES = [
+        ('B', 'B'),
+        ('I', 'I'),
+        ('II', 'II'),
+        ('III', 'III'),
+        ('IV', 'IV'),
+    ]
     pipe = models.ForeignKey(
         Pipe,
         on_delete=models.CASCADE,
         related_name='tubes'
     )
-    tube_num = models.PositiveSmallIntegerField(
+    tube_num = models.CharField(
         'Номер трубы',
         null=False,
         blank=False,
@@ -660,11 +673,13 @@ class Tube(models.Model):
         null=False,
         blank=False,
     )
-    seam_num = models.PositiveSmallIntegerField(
-        'Количество швов',
-        default=1,
-        null=False,
+    tube_type = models.CharField(
+        max_length=50,
+        choices=TUBE_TYPE,
+        default='2Ш',
+        verbose_name='Тип трубы',
         blank=False,
+        null=False,
     )
     diameter = models.PositiveSmallIntegerField(
         'Диаметр трубы, мм',
@@ -672,16 +687,98 @@ class Tube(models.Model):
         null=False,
         blank=False,
     )
+    yield_strength = models.PositiveSmallIntegerField(
+        'Предел текучести стали, МПа',
+        default=0,
+        null=False,
+        blank=False,
+    )
+    tear_strength = models.PositiveSmallIntegerField(
+        'Сопротивление разрыву стали, МПа',
+        default=0,
+        null=False,
+        blank=False,
+    )
+    category = models.CharField(
+        max_length=10,
+        choices=CATEGORY_CHOICES,
+        default='II',
+        verbose_name='Категория трубы',
+        blank=False,
+        null=False,
+    )
+    reliability_material = models.FloatField(
+        'Коэффициент надёжности по материалу',
+        null=True,
+        blank=True,
+        help_text='Согласно СНиП 2.05.06-85'
+    )
+    working_conditions = models.FloatField(
+        'Коэффициент условий работы трубопровода',
+        null=True,
+        blank=True,
+        help_text='Согласно СНиП 2.05.06-85'
+    )
+    reliability_pressure = models.FloatField(
+        'Коэффициент надёжности по внутреннему рабочему давлению',
+        null=True,
+        blank=True,
+        help_text='Согласно СНиП 2.05.06-85'
+    )
+    reliability_coef = models.FloatField(
+        'Коэффициент надёжности трубопровода',
+        null=True,
+        blank=True,
+        help_text='Согласно СНиП 2.05.06-85'
+    )
+    impact_strength = models.FloatField(
+        'Ударная вязкость стали, Дж/см²',
+        null=True,
+        blank=True
+    )
+    steel_grade = models.CharField(
+        'Марка стали',
+        max_length=50,
+        null=True,
+        blank=True
+    )
+    weld_position = models.CharField(
+        'Положение швов, час',
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text='Формат: "2.3 = 8.3" для двухшовных, "2.3 // 11.5" для спиральных, "-" для бесшовных'
+    )
+    # Реперные точки
+    from_reference_start = models.CharField(
+        verbose_name='От репера, м',
+        max_length=50,
+        blank=True,
+        null=True,
+    )
+    to_reference_end = models.CharField(
+        verbose_name='До репера, м',
+        max_length=50,
+        blank=True,
+        null=True,
+    )
+    comment = models.TextField(
+        'Комментарий',
+        null=True,
+        blank=True,
+        help_text='Любой значимый комментарий для данной трубы'
+    )
 
     class Meta:
         verbose_name = 'Труба'
         verbose_name_plural = 'Трубы'
+        ordering = ['tube_num']
 
     def __str__(self):
         return f'Труба №{self.tube_num}, участок {self.pipe}'
 
 
-class PipeUnit(models.Model):
+class TubeUnit(models.Model):
     UNIT_TYPE = [
         ('valv', 'Кран'),
         ('offt', 'Отвод-врезка'),
@@ -691,6 +788,8 @@ class PipeUnit(models.Model):
         ('casb', 'Футляр-начало'),
         ('case', 'Футляр-конец'),
         ('mark', 'Маркер'),
+        ('anch', 'Пригруз'),
+        ('pfix', 'Элемент обустройства'),
     ]
     unit_type = models.CharField(
         max_length=50,
@@ -702,19 +801,20 @@ class PipeUnit(models.Model):
     tube = models.ForeignKey(
         Tube,
         on_delete=models.CASCADE,
-        related_name='pipe_units',
+        related_name='tube_units',
         blank=True,
         null=True,
     )
-    distance = models.FloatField(
-        'Расстояние',
-        null=False,
-        blank=False,
+    comment = models.TextField(
+        'Комментарий',
+        null=True,
+        blank=True,
+        help_text='Любой значимый комментарий для данного элемента'
     )
 
     class Meta:
-        verbose_name = 'Элемент трубопровода'
-        verbose_name_plural = 'Элементы трубопроводов'
+        verbose_name = 'Элемент обустройства'
+        verbose_name_plural = 'Элементы обустройства'
 
     def __str__(self):
         return f'{self.unit_type}, {self.tube}'
@@ -723,23 +823,115 @@ class PipeUnit(models.Model):
 class Anomaly(models.Model):
     ANOMALY_NATURE = [
         ('gwan', 'Аномалия кольцевого шва'),
+        ('lwan', 'Аномалия продольного шва'),
         ('goug', 'Механическое повреждение'),
+        ('corr', 'Коррозия'),
+        ('dent', 'Вмятина'),
+        ('wrin', 'Гофр'),
+        ('artd', 'Технологический дефект'),
+        ('mian', 'Заводской дефект'),
         ('scc', 'Зона продольных трещин'),
+        ('lwcr', 'Трещина на продольном шве'),
     ]
-    ANOMALY_TYPE = [
-        ('int', 'Внутренняя'),
-        ('ext', 'Внешняя'),
+    SIZE_CLASS = [
+        ('', 'Не указан'),
+        ('gene', 'Обширный'),
+        ('pitt', 'Каверна'),
+        ('cigr', 'Поперечная канавка'),
+        ('axgr', 'Продольная канавка'),
+        ('axsl', 'Продольный паз'),
+        ('cisl', 'Поперечный паз'),
     ]
+    LOCATION = [
+        ('int', 'INT'),
+        ('ext', 'EXT'),
+        ('mid', 'MID'),
+        ('n/a', 'N/A'),
+    ]
+
     diagnostics = models.ForeignKey(
         Diagnostics,
         on_delete=models.CASCADE,
         related_name='diagnostics_anomalies'
     )
-    anomaly_num = models.PositiveSmallIntegerField(
-        verbose_name='Номер аномалии',
+    tube = models.ForeignKey(
+        Tube,
+        on_delete=models.CASCADE,
+        related_name='anomalies',
         blank=False,
         null=False,
     )
+    distance = models.FloatField(
+        verbose_name='Расстояние, м',
+        blank=True,
+        null=True,
+    )
+    # Геометрические параметры
+    from_left_weld_to_max = models.FloatField(
+        verbose_name='От левого шва до точки максимума, м',
+        blank=True,
+        null=True,
+    )
+    from_left_weld_to_start = models.FloatField(
+        verbose_name='От левого шва до начала, м',
+        blank=True,
+        null=True,
+    )
+    from_right_weld_to_max = models.FloatField(
+        verbose_name='От правого шва до точки максимума, м',
+        blank=True,
+        null=True,
+    )
+    from_right_weld_to_start = models.FloatField(
+        verbose_name='От правого шва до начала, м',
+        blank=True,
+        null=True,
+    )
+    # Ориентационные параметры
+    from_long_weld_to_start = models.IntegerField(
+        verbose_name='От продольного шва до точки начала дефекта, мм',
+        blank=True,
+        null=True,
+    )
+    from_long_weld_to_max = models.IntegerField(
+        verbose_name='От продольного шва до точки максимума, мм',
+        blank=True,
+        null=True,
+    )
+    from_long_weld_to_center = models.IntegerField(
+        verbose_name='От продольного шва до центра, мм',
+        blank=True,
+        null=True,
+    )
+    min_distance_to_long_weld = models.IntegerField(
+        verbose_name='Минимальное расстояние до продольного шва, мм',
+        blank=True,
+        null=True,
+    )
+    min_distance_to_circ_weld = models.IntegerField(
+        verbose_name='Минимальное расстояние до кольцевого шва, мм',
+        blank=True,
+        null=True,
+    )
+    start_point_orientation = models.CharField(
+        verbose_name='Ориентация точки начала дефекта, ч:мин',
+        max_length=5,
+        blank=True,
+        null=True,
+    )
+    max_point_orientation = models.CharField(
+        verbose_name='Ориентация точки максимума, ч:мин',
+        max_length=5,
+        blank=True,
+        null=True,
+    )
+    center_orientation = models.CharField(
+        verbose_name='Ориентация центра, ч:мин',
+        max_length=5,
+        blank=True,
+        null=True,
+    )
+    # Характеристики аномалии
     anomaly_nature = models.CharField(
         max_length=50,
         choices=ANOMALY_NATURE,
@@ -747,20 +939,20 @@ class Anomaly(models.Model):
         blank=True,
         null=True,
     )
-    anomaly_type = models.CharField(
-        max_length=50,
-        choices=ANOMALY_TYPE,
-        verbose_name='Тип аномалии',
-        blank=False,
-        null=False,
-    )
-    tube = models.ForeignKey(
-        Tube,
-        on_delete=models.CASCADE,
-        related_name='anomalies',
+    anomaly_description = models.CharField(
+        verbose_name='Описание',
+        max_length=200,
         blank=True,
         null=True,
     )
+    size_class = models.CharField(
+        max_length=50,
+        choices=SIZE_CLASS,
+        verbose_name='Класс размера',
+        blank=True,
+        null=True,
+    )
+    # Геометрические размеры
     anomaly_length = models.PositiveSmallIntegerField(
         verbose_name='Длина аномалии, мм',
         default=0,
@@ -779,18 +971,38 @@ class Anomaly(models.Model):
         blank=False,
         null=False,
     )
+    location = models.CharField(
+        max_length=10,
+        choices=LOCATION,
+        verbose_name='Расположение',
+        blank=True,
+        null=True,
+    )
+    danger_level = models.CharField(
+        verbose_name='Опасность',
+        max_length=10,
+        blank=True,
+        null=True,
+    )
+    # Комментарии
+    comment = models.TextField(
+        verbose_name='Комментарий',
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = 'Аномалия'
         verbose_name_plural = 'Аномалии'
         indexes = [
             models.Index(fields=['diagnostics']),
-            models.Index(fields=['anomaly_type']),
             models.Index(fields=['tube']),
+            models.Index(fields=['anomaly_nature']),
         ]
+        ordering = ['tube__tube_num',]
 
     def __str__(self):
-        return f'{self.anomaly_type}, труба №{self.tube.tube_num}'
+        return f'Аномалия на трубе №{self.tube.tube_num if self.tube else "N/A"}'
 
 
 class Defect(models.Model):

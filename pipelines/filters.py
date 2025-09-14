@@ -8,29 +8,29 @@ from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment, Pipeline,
 
 
 class TubeFilter(df.FilterSet):
-    tube_num = df.NumberFilter(
+    tube_num = df.CharFilter(
         label='Номер трубы',
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     tube_length = df.ChoiceFilter(
         label='Длина трубы (м)',
-        choices=lambda: [(val, val) for val in Tube.objects.values_list('tube_length', flat=True).distinct()],
+        choices=lambda: [(val, f"{val} м") for val in sorted(set(round(tube_length, 2) for tube_length in Tube.objects.values_list('tube_length', flat=True)))],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     thickness = df.ChoiceFilter(
         label='Толщина (мм)',
-        choices=lambda: [(val, val) for val in Tube.objects.values_list('thickness', flat=True).distinct()],
+        choices=lambda: [(val, f"{val} мм") for val in sorted(set(round(thickness, 1) for thickness in Tube.objects.values_list('thickness', flat=True)))],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    seam_num = df.ChoiceFilter(
-        label='Количество швов',
-        choices=lambda: [(val, val) for val in Tube.objects.values_list('seam_num', flat=True).distinct()],
+    tube_type = df.ChoiceFilter(
+        label='Тип трубы',
+        choices=lambda: [(val, val) for val in sorted(set(Tube.objects.values_list('tube_type', flat=True)))],
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
     class Meta:
         model = Tube
-        fields = ['tube_num', 'tube_length', 'thickness', 'seam_num']
+        fields = ['tube_num', 'tube_length', 'thickness', 'tube_type']
 
 
 class RepairFilter(df.FilterSet):

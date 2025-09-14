@@ -53,6 +53,7 @@ class ProposalAdmin(admin.ModelAdmin):
         'title',
         'category',
         'is_economy',
+        'equipment_type',
     )
     list_filter = (
         'category',
