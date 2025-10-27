@@ -640,6 +640,26 @@ class PlannedWork(models.Model):
 
 
 class Tube(models.Model):
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='tubes'
+    )
+    tube_num = models.CharField("Номер трубы", max_length=20)
+    active = models.BooleanField(default=True, verbose_name="Актуальная труба")
+    installed_date = models.DateField("Дата установки", null=True, blank=True)
+    removed_date = models.DateField("Дата удаления", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Труба (физическая)"
+        verbose_name_plural = "Трубы (физические)"
+        ordering = ["tube_num"]
+
+    def __str__(self):
+        return f"Труба №{self.tube_num} ({'активна' if self.active else 'удалена'})"
+
+
+class TubeVersion(models.Model):
     TUBE_TYPE = [
         ('one', '1Ш'),
         ('two', '2Ш'),
@@ -653,15 +673,31 @@ class Tube(models.Model):
         ('III', 'III'),
         ('IV', 'IV'),
     ]
-    pipe = models.ForeignKey(
-        Pipe,
+    tube = models.ForeignKey(
+        Tube,
         on_delete=models.CASCADE,
-        related_name='tubes'
+        related_name='versions'
     )
-    tube_num = models.CharField(
-        'Номер трубы',
-        null=False,
-        blank=False,
+    diagnostics = models.ForeignKey(
+        "Diagnostics",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    repair = models.ForeignKey(
+        "Repair",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+    date = models.DateField(null=True, blank=True)
+    version_type = models.CharField(
+        max_length=20,
+        choices=[
+            ("initial", "Первичное состояние"),
+            ("diagnostic", "После диагностики"),
+            ("repair", "После ремонта"),
+        ],
     )
     tube_length = models.FloatField(
         'Длина трубы',
@@ -772,10 +808,10 @@ class Tube(models.Model):
     class Meta:
         verbose_name = 'Труба'
         verbose_name_plural = 'Трубы'
-        ordering = ['tube_num']
+        # ordering = ['tube_num']
 
-    def __str__(self):
-        return f'Труба №{self.tube_num}, участок {self.pipe}'
+    # def __str__(self):
+    #     return f'Труба №{self.tube_num}, участок {self.pipe}'
 
 
 class TubeUnit(models.Model):
@@ -855,7 +891,7 @@ class Anomaly(models.Model):
         related_name='diagnostics_anomalies'
     )
     tube = models.ForeignKey(
-        Tube,
+        TubeVersion,
         on_delete=models.CASCADE,
         related_name='anomalies',
         blank=False,
@@ -999,7 +1035,7 @@ class Anomaly(models.Model):
             models.Index(fields=['tube']),
             models.Index(fields=['anomaly_nature']),
         ]
-        ordering = ['tube__tube_num',]
+        # ordering = ['tube__tube_num',]
 
     def __str__(self):
         return f'Аномалия на трубе №{self.tube.tube_num if self.tube else "N/A"}'

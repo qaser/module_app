@@ -12,7 +12,7 @@ from pipelines.tables import DiagnosticsTable, RepairTable, TubeTable
 from users.models import ModuleUser, Role
 
 from .models import (ComplexPlan, Diagnostics, Pipe, PipeDepartment, Pipeline,
-                     PipeState, Repair, Tube)
+                     PipeState, Repair, Tube, TubeVersion)
 
 
 @login_required
@@ -108,18 +108,47 @@ class TubesView(SingleTableMixin, FilterView):
     paginate_by = 50
 
     def get_queryset(self):
+        """
+        Возвращаем активные трубы указанного участка (pipe)
+        с аннотированными данными из последней версии.
+        """
         pipe_id = self.kwargs['pipe_id']
-        return Tube.objects.filter(pipe_id=pipe_id)
+
+        # Находим последнюю версию для каждой трубы
+        latest_version_subquery = TubeVersion.objects.filter(
+            tube=OuterRef('pk')
+        ).order_by('-date')
+
+        queryset = (
+            Tube.objects.filter(pipe_id=pipe_id, active=True)
+            .annotate(
+                last_version_date=Subquery(latest_version_subquery.values('date')[:1]),
+                last_length=Subquery(latest_version_subquery.values('tube_length')[:1]),
+                last_thickness=Subquery(latest_version_subquery.values('thickness')[:1]),
+                last_diameter=Subquery(latest_version_subquery.values('diameter')[:1]),
+                last_category=Subquery(latest_version_subquery.values('category')[:1]),
+                last_type=Subquery(latest_version_subquery.values('version_type')[:1]),
+            )
+            .order_by('tube_num')
+        )
+        return queryset
 
     def get_filterset_kwargs(self, filterset_class):
+        """
+        Передаём отфильтрованный queryset в фильтр.
+        """
         kwargs = super().get_filterset_kwargs(filterset_class)
         kwargs['queryset'] = self.get_queryset()
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """
+        Добавляем ID участка в контекст.
+        """
         context = super().get_context_data(**kwargs)
         context['pipe_id'] = self.kwargs['pipe_id']
         return context
+
 
 
 # class PlansView(SingleTableMixin, FilterView):

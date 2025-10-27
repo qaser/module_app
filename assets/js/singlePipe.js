@@ -10,7 +10,7 @@ import FormValidator from '../js/components/FormValidator.js';
 import FileManager from './components/FileManager.js';
 import HiddenElement from './components/HiddenElement.js';
 import AppMenu from '../js/components/AppMenu.js';
-import SinglePipeVisualizer from '../js/components/SinglePipeVisualizer.js'
+import PollingClient from './api/PollingClient.js';
 
 
 const pipeId = document.querySelector('.card').id;
@@ -72,6 +72,10 @@ const popupWithFormNewFile = new PopupWithForm(
         submitFormNewFile(data);
     },
 );
+
+const pollingClient = new PollingClient({
+    endpoint: '/api/notifications/unread/'
+});
 
 
 // функция отправки данных о новом файле, введенных в форму
@@ -164,12 +168,11 @@ popupWithFormNewFile.setEventListeners();
 new Tooltip();
 new AppMenu();
 
-Promise.all([api.getMyProfile(), api.getPipeItem(pipeId), api.getTubes(pipeId)])
-    .then(([userData, pipe, tubes]) => {
+Promise.all([api.getMyProfile(), api.getPipeItem(pipeId)])
+    .then(([userData, pipe]) => {
+        pollingClient.start();
         newUserInfo.setUserInfo(userData);
         pipeInstance.renderItem(pipe);
-        const pipeVisualizer = new SinglePipeVisualizer(tubes, "scheme");
-        pipeVisualizer.render();
         if (pipe.files.length > 0) {
             haveFiles = pipe.files.length;
             fileInstance.renderItems(pipe.files);
@@ -185,4 +188,4 @@ Promise.all([api.getMyProfile(), api.getPipeItem(pipeId), api.getTubes(pipeId)])
     .catch(err => {
         console.log(err);
     })
-    .finally(() => renderLoading());
+    .finally(() => renderLoading(true));

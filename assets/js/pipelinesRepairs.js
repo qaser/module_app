@@ -8,6 +8,8 @@ import AppMenu from '../js/components/AppMenu.js';
 import PollingClient from './api/PollingClient.js';
 
 
+const pipeId = document.querySelector('.card').id;
+
 // создание объекта api
 const api = new Api({
     baseUrl: config.apiConfig.url,

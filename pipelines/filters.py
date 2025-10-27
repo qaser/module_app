@@ -4,33 +4,59 @@ from django.db.models import Q
 
 from equipments.models import Department
 from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment, Pipeline,
-                              Repair, Tube)
+                              Repair, Tube, TubeVersion)
 
 
 class TubeFilter(df.FilterSet):
+    def get_tube_type_choices():
+        qs = (TubeVersion.objects
+            .exclude(tube_type__isnull=True)
+            .exclude(tube_type__exact='')
+            .values_list('tube_type', flat=True)
+            .distinct())
+        choices = [(val, dict(TubeVersion.TUBE_TYPE).get(val, val)) for val in sorted(qs)]
+        return choices
+
     tube_num = df.CharFilter(
         label='Номер трубы',
+        lookup_expr='icontains',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
-    tube_length = df.ChoiceFilter(
+    last_length = df.ChoiceFilter(
         label='Длина трубы (м)',
-        choices=lambda: [(val, f"{val} м") for val in sorted(set(round(tube_length, 2) for tube_length in Tube.objects.values_list('tube_length', flat=True)))],
-        widget=forms.Select(attrs={'class': 'form-control'})
+        choices=lambda: [
+            (val, f"{val} м") for val in sorted(
+                set(round(v, 2) for v in TubeVersion.objects.values_list('tube_length', flat=True).distinct() if v)
+            )
+        ],
+        field_name='last_length',
+        widget=forms.Select(attrs={'class': 'form-control'}),
     )
-    thickness = df.ChoiceFilter(
+    last_thickness = df.ChoiceFilter(
         label='Толщина (мм)',
-        choices=lambda: [(val, f"{val} мм") for val in sorted(set(round(thickness, 1) for thickness in Tube.objects.values_list('thickness', flat=True)))],
-        widget=forms.Select(attrs={'class': 'form-control'})
+        choices=lambda: [
+            (val, f"{val} мм") for val in sorted(
+                set(round(v, 1) for v in TubeVersion.objects.values_list('thickness', flat=True).distinct() if v)
+            )
+        ],
+        field_name='last_thickness',
+        widget=forms.Select(attrs={'class': 'form-control'}),
     )
-    tube_type = df.ChoiceFilter(
+    last_type = df.ChoiceFilter(
         label='Тип трубы',
-        choices=lambda: [(val, val) for val in sorted(set(Tube.objects.values_list('tube_type', flat=True)))],
-        widget=forms.Select(attrs={'class': 'form-control'})
+        choices=get_tube_type_choices,
+        field_name='last_type',
+        widget=forms.Select(attrs={'class': 'form-control'}),
     )
 
     class Meta:
         model = Tube
-        fields = ['tube_num', 'tube_length', 'thickness', 'tube_type']
+        fields = [
+            'tube_num',
+            'last_length',
+            'last_thickness',
+            'last_type',
+        ]
 
 
 class RepairFilter(df.FilterSet):

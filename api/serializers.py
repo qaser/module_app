@@ -8,7 +8,7 @@ from notifications.models import Notification
 from pipelines.models import (Anomaly, ComplexPlan, Diagnostics, Hole, Node,
                               NodeState, Pipe, PipeDepartment, PipeDocument,
                               PipeLimit, TubeUnit, Pipeline, PipeState, PlannedWork,
-                              Repair, Tube)
+                              Repair, Tube, TubeVersion)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -16,10 +16,68 @@ from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
 from users.models import ModuleUser, Role, UserAppRoute
 
 
+class TubeVersionSerializer(serializers.ModelSerializer):
+    version_type_display = serializers.CharField(source="get_version_type_display", read_only=True)
+    tube_num = serializers.CharField(source="tube.tube_num", read_only=True)
+
+    class Meta:
+        model = TubeVersion
+        fields = [
+            "id",
+            "tube",
+            "tube_num",
+            "version_type",
+            "version_type_display",
+            "date",
+            "diagnostics",
+            "repair",
+            "tube_length",
+            "thickness",
+            "tube_type",
+            "diameter",
+            "yield_strength",
+            "tear_strength",
+            "category",
+            "reliability_material",
+            "working_conditions",
+            "reliability_pressure",
+            "reliability_coef",
+            "impact_strength",
+            "steel_grade",
+            "weld_position",
+            "from_reference_start",
+            "to_reference_end",
+            "comment",
+        ]
+        read_only_fields = ["id", "tube_num", "version_type_display"]
+
+
 class TubeSerializer(serializers.ModelSerializer):
+    pipe_name = serializers.CharField(source="pipe.name", read_only=True)
+    current_version = serializers.SerializerMethodField()
+    versions = TubeVersionSerializer(many=True, read_only=True)
+
     class Meta:
         model = Tube
-        fields = ['id', 'tube_num', 'tube_length', 'thickness', 'tube_type', 'diameter']
+        fields = [
+            "id",
+            "pipe",
+            "pipe_name",
+            "tube_num",
+            "active",
+            "installed_date",
+            "removed_date",
+            "current_version",
+            "versions",
+        ]
+        read_only_fields = ["id", "pipe_name"]
+
+    def get_current_version(self, obj):
+        """Возвращает последнюю версию трубы (актуальное состояние)."""
+        version = obj.versions.order_by("-date").first()
+        if not version:
+            return None
+        return TubeVersionSerializer(version).data
 
 
 class NotificationSerializer(serializers.ModelSerializer):

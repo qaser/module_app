@@ -6,24 +6,24 @@ from .models import Diagnostics, PipeDepartment, Repair, Tube
 
 
 class TubeTable(tables.Table):
-    # department_root = tables.Column(verbose_name='Филиал', accessor='pk')
     pipe = tables.Column(verbose_name='Участок')
-    diameter = tables.Column(verbose_name='Диаметр, мм')
     tube_num = tables.Column(verbose_name='Номер трубы')
-    tube_length = tables.Column(verbose_name='Длина, м')
-    thickness = tables.Column(verbose_name='Толщина, мм')
-    tube_type = tables.Column(verbose_name='Тип трубы')
+    last_diameter = tables.Column(verbose_name='Диаметр, мм')
+    last_length = tables.Column(verbose_name='Длина, м')
+    last_thickness = tables.Column(verbose_name='Толщина, мм')
+    last_type = tables.Column(verbose_name='Тип трубы')
+    last_version_date = tables.DateColumn(verbose_name='Дата состояния')
 
     class Meta:
         model = Tube
         fields = [
-            # 'department_root',
             'pipe',
             'tube_num',
-            'diameter',
-            'tube_length',
-            'thickness',
-            'tube_type',
+            'last_diameter',
+            'last_length',
+            'last_thickness',
+            'last_type',
+            'last_version_date',
         ]
         attrs = {'class': 'table table_pipelines'}
         row_attrs = {'id': lambda record: record.id}

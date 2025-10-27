@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from .models import (Anomaly, ComplexPlan, Diagnostics, Hole, HoleDocument,
                      Node, NodeState, Pipe, PipeDepartment, PipeDocument,
                      PipeLimit, Pipeline, PipeState, PlannedWork, Repair,
-                     RepairDocument, RepairStage, Tube)
+                     RepairDocument, RepairStage, Tube, TubeVersion)
 
 
 class PipeDepartmentInline(admin.TabularInline):
@@ -268,11 +268,118 @@ class PlannedWorkAdmin(admin.ModelAdmin):
     target_object.short_description = 'Объект'
 
 
+@admin.register(TubeVersion)
+class TubeVersionAdmin(admin.ModelAdmin):
+    list_display = (
+        "tube",
+        "version_type",
+        "date",
+        "tube_length",
+        "thickness",
+        "diameter",
+        "tube_type",
+        "category",
+        "steel_grade",
+    )
+    list_filter = (
+        "version_type",
+        "tube_type",
+        "category",
+        "steel_grade",
+        "diagnostics",
+        "repair",
+    )
+    search_fields = (
+        "tube__tube_num",
+        "steel_grade",
+        "comment",
+    )
+    autocomplete_fields = ("tube", "diagnostics", "repair")
+    date_hierarchy = "date"
+    ordering = ("-date",)
+    fieldsets = (
+        ("Основные данные", {
+            "fields": (
+                "tube",
+                "version_type",
+                "date",
+                "diagnostics",
+                "repair",
+                "comment",
+            )
+        }),
+        ("Геометрические характеристики", {
+            "fields": (
+                "tube_length",
+                "thickness",
+                "diameter",
+                "tube_type",
+                "category",
+                "steel_grade",
+                "weld_position",
+            ),
+            "classes": ("collapse",),
+        }),
+        ("Надёжность и расчётные параметры", {
+            "fields": (
+                "yield_strength",
+                "tear_strength",
+                "reliability_material",
+                "working_conditions",
+                "reliability_pressure",
+                "reliability_coef",
+                "impact_strength",
+            ),
+            "classes": ("collapse",),
+        }),
+        ("Привязка к реперам", {
+            "fields": (
+                "from_reference_start",
+                "to_reference_end",
+            ),
+            "classes": ("collapse",),
+        }),
+    )
+
+
+class TubeVersionInline(admin.TabularInline):
+    """Позволяет смотреть версии трубы прямо в карточке Tube."""
+    model = TubeVersion
+    extra = 0
+    fields = ("version_type", "date", "tube_length", "thickness", "diameter", "steel_grade")
+    readonly_fields = ("version_type", "date", "tube_length", "thickness", "diameter", "steel_grade")
+    ordering = ("-date",)
+
+
 @admin.register(Tube)
 class TubeAdmin(admin.ModelAdmin):
-    list_display = ('pipe', 'tube_num', 'tube_length', 'thickness', 'tube_type', 'diameter')
-    list_filter = ('tube_length', 'thickness', 'tube_type', 'diameter')
-    search_fields = ('pipe', 'tube_num', 'tube_length', 'thickness', 'tube_type', 'diameter')
+    list_display = (
+        "tube_num",
+        "pipe",
+        "active",
+        "installed_date",
+        "removed_date",
+        "latest_version_date",
+        "latest_version_length",
+    )
+    list_filter = ("active", "pipe")
+    search_fields = ("tube_num",)
+    inlines = [TubeVersionInline]
+    ordering = ("pipe", "tube_num")
+    autocomplete_fields = ("pipe",)
+
+    def latest_version(self, obj):
+        return obj.versions.order_by("-date").first()
+
+    def latest_version_date(self, obj):
+        version = self.latest_version(obj)
+        return version.date if version else None
+    latest_version_date.short_description = "Дата версии"
+
+    def latest_version_length(self, obj):
+        version = self.latest_version(obj)
+        return version.tube_length if version else None
+    latest_version_length.short_description = "Длина (текущая)"
 
 
 @admin.register(Anomaly)
@@ -289,10 +396,6 @@ class AnomalyAdmin(admin.ModelAdmin):
     list_filter = (
         'anomaly_nature',
         'diagnostics',
-    )
-    search_fields = (
-        'tube__tube_num',
-        'tube__pipe__id',
     )
     autocomplete_fields = ['diagnostics', 'tube']
 

@@ -22,6 +22,7 @@ const pollingClient = new PollingClient({
     endpoint: '/api/notifications/unread/'
 });
 
+
 // создание объекта таблицы со строками ссылками
 const newTable = new Table({table: '.table__body'});
 

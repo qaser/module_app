@@ -8,7 +8,7 @@
 {% load pipelines_filters %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/pages/pipe-tubes.css' %}">
 {% endblock %}
 
 {% block sidepanel %}
@@ -50,7 +50,8 @@
 {% csrf_token %}
 <main class="content">
   <section class="main" id="main">
-    <h1 class="main__title">Трубный журнал</h1>
+    <h1 class="main__title" id="{{ pipe_id }}">Трубный журнал</h1>
+    <div class="scheme" id="scheme"></div>
     {% render_table table %}
   </section>
 </main>

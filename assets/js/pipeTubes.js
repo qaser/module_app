@@ -6,7 +6,11 @@ import Table from './components/Table.js';
 import FormFilter from './components/FormFilter.js';
 import Tooltip from '../js/components/Tooltip.js';
 import AppMenu from '../js/components/AppMenu.js';
+import PollingClient from './api/PollingClient.js';
+import SinglePipeVisualizer from '../js/components/SinglePipeVisualizer.js'
 
+
+const pipeId = document.querySelector('.main__title').id;
 
 // создание объекта api
 const api = new Api({
@@ -26,6 +30,10 @@ const newUserInfo = new UserInfo({
 // создание объекта таблицы со строками ссылками
 const newTable = new Table({table: '.table__body'});
 
+const pollingClient = new PollingClient({
+    endpoint: '/api/notifications/unread/'
+});
+
 
 function renderLoading(isLoading) {
   if (isLoading) {
@@ -38,11 +46,15 @@ new AppMenu();
 newTable.init();
 
 
-api.getMyProfile()
-    .then((userData) => {
+Promise.all([api.getMyProfile(), api.getTubes(pipeId)])
+    .then(([userData, tubes]) => {
+        pollingClient.start();
         newUserInfo.setUserInfo(userData);
+        // pipeInstance.renderItem(pipe);
+        const pipeVisualizer = new SinglePipeVisualizer(tubes, "scheme");
+        pipeVisualizer.render();
     })
     .catch(err => {
-        console.log(`Ошибка: ${err}`);
+        console.log(err);
     })
     .finally(() => renderLoading(true));
