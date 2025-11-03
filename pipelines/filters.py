@@ -17,6 +17,15 @@ class TubeFilter(df.FilterSet):
         choices = [(val, dict(TubeVersion.TUBE_TYPE).get(val, val)) for val in sorted(qs)]
         return choices
 
+    def get_steel_grade_choices():
+        qs = (TubeVersion.objects
+            .exclude(steel_grade__isnull=True)
+            .exclude(steel_grade__exact='')
+            .values_list('steel_grade', flat=True)
+            .distinct())
+        choices = [(val, val) for val in sorted(qs)]
+        return choices
+
     tube_num = df.CharFilter(
         label='Номер трубы',
         lookup_expr='icontains',
@@ -48,6 +57,12 @@ class TubeFilter(df.FilterSet):
         field_name='last_type',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
+    last_steel_grade = df.ChoiceFilter(
+        label='Марка стали',
+        choices=get_steel_grade_choices,
+        field_name='last_steel_grade',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
 
     class Meta:
         model = Tube
@@ -56,6 +71,7 @@ class TubeFilter(df.FilterSet):
             'last_length',
             'last_thickness',
             'last_type',
+            'last_steel_grade',
         ]
 
 
@@ -160,18 +176,6 @@ class DiagnosticsFilter(df.FilterSet):
         queryset=Department.objects.filter(level=0).order_by('name'),
         method='filter_department'
     )
-    object_type = df.ChoiceFilter(
-        label='Тип объекта',
-        choices=[
-            ('pipe', 'Участок газопровода'),
-            ('valve', 'Линейный кран'),
-            ('host', 'Узел подключения'),
-            ('bridge', 'Перемычка'),
-            ('tails', 'Шлейфы'),
-            ('ks', 'КС'),
-        ],
-        method='filter_object_type'
-    )
     status = df.ChoiceFilter(
         label='Статус',
         choices=STATUS_CHOICES,
@@ -195,31 +199,30 @@ class DiagnosticsFilter(df.FilterSet):
             'class': 'form-control',
         })
     )
+    # Дополнительные фильтры для участков
+    start_point = df.NumberFilter(
+        label='Начало участка от (км)',
+        method='filter_start_point',
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    end_point = df.NumberFilter(
+        label='Конец участка до (км)',
+        method='filter_end_point',
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
 
     class Meta:
         model = Diagnostics
         fields = []
 
     def filter_pipeline(self, queryset, name, value):
-        return queryset.filter(
-            Q(pipe__pipeline=value) |
-            Q(node__pipeline=value) |
-            Q(node__sub_pipeline=value)
-        )
+        return queryset.filter(pipes__pipeline=value).distinct()
 
     def filter_department(self, queryset, name, value):
         return queryset.filter(
-            Q(pipe__pipedepartment__department__tree_id=value.tree_id,
-                 pipe__pipedepartment__department__level__gte=value.level) |
-            Q(node__equipment__departments__tree_id=value.tree_id,
-                 node__equipment__departments__level__gte=value.level)
+            pipes__pipedepartment__department__tree_id=value.tree_id,
+            pipes__pipedepartment__department__level__gte=value.level
         ).distinct()
-
-    def filter_object_type(self, queryset, name, value):
-        if value == 'pipe':
-            return queryset.filter(pipe__isnull=False)
-        else:
-            return queryset.filter(node__node_type=value)
 
     def filter_status(self, queryset, name, value):
         if value == 'completed':
@@ -227,3 +230,11 @@ class DiagnosticsFilter(df.FilterSet):
         elif value == 'in_progress':
             return queryset.filter(end_date__isnull=True)
         return queryset
+
+    def filter_start_point(self, queryset, name, value):
+        # Фильтруем диагностики, у которых есть участки с началом >= указанного значения
+        return queryset.filter(pipes__start_point__gte=value).distinct()
+
+    def filter_end_point(self, queryset, name, value):
+        # Фильтруем диагностики, у которых есть участки с концом <= указанного значения
+        return queryset.filter(pipes__end_point__lte=value).distinct()

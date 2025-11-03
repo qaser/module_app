@@ -7,7 +7,7 @@ import FormFilter from './components/FormFilter.js';
 import Tooltip from '../js/components/Tooltip.js';
 import AppMenu from '../js/components/AppMenu.js';
 import PollingClient from './api/PollingClient.js';
-import SinglePipeVisualizer from '../js/components/SinglePipeVisualizer.js'
+// import SinglePipeVisualizer from '../js/components/SinglePipeVisualizer.js'
 
 
 const pipeId = document.querySelector('.main__title').id;
@@ -46,13 +46,24 @@ new AppMenu();
 newTable.init();
 
 
-Promise.all([api.getMyProfile(), api.getTubes(pipeId)])
-    .then(([userData, tubes]) => {
+// Promise.all([api.getMyProfile(), api.getTubes(pipeId)])
+//     .then(([userData, tubes]) => {
+//         pollingClient.start();
+//         newUserInfo.setUserInfo(userData);
+//         pipeInstance.renderItem(pipe);
+//         const pipeVisualizer = new SinglePipeVisualizer(tubes, "scheme");
+//         pipeVisualizer.render();
+//     })
+//     .catch(err => {
+//         console.log(err);
+//     })
+//     .finally(() => renderLoading(true));
+
+
+api.getMyProfile()
+    .then(userData => {
         pollingClient.start();
         newUserInfo.setUserInfo(userData);
-        // pipeInstance.renderItem(pipe);
-        const pipeVisualizer = new SinglePipeVisualizer(tubes, "scheme");
-        pipeVisualizer.render();
     })
     .catch(err => {
         console.log(err);

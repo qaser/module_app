@@ -305,19 +305,10 @@ class RepairStage(models.Model):
 
 
 class Diagnostics(models.Model):
-    pipe = models.ForeignKey(
+    pipes = models.ManyToManyField(
         Pipe,
-        on_delete=models.CASCADE,
-        related_name='pipe_diagnostics',
-        blank=True,
-        null=True,
-    )
-    node = models.ForeignKey(
-        Node,
-        on_delete=models.CASCADE,
-        related_name='node_diagnostics',
-        blank=True,
-        null=True,
+        related_name="pipe_diagnostics",
+        verbose_name="Участки трубопровода",
     )
     start_date = models.DateField(
         verbose_name='Начало ВТД',
@@ -338,23 +329,11 @@ class Diagnostics(models.Model):
     class Meta:
         verbose_name = 'ВТД'
         verbose_name_plural = 'ВТД'
+        ordering = ['-start_date', '-end_date']  # Добавьте эту строку
         indexes = [
-            models.Index(fields=['pipe']),
-            models.Index(fields=['node']),
             models.Index(fields=['start_date']),
             models.Index(fields=['end_date']),
         ]
-
-    def clean(self):
-        super().clean()
-        if not self.pipe and not self.node:
-            raise ValidationError("Необходимо указать либо участок (pipe), либо узел (node).")
-        if self.pipe and self.node:
-            raise ValidationError("Нельзя указывать одновременно и участок (pipe), и узел (node).")
-
-    def save(self, *args, **kwargs):
-        self.full_clean()  # обязательно вызывает clean()
-        super().save(*args, **kwargs)
 
 
 class PipeState(models.Model):
@@ -680,12 +659,14 @@ class TubeVersion(models.Model):
     )
     diagnostics = models.ForeignKey(
         "Diagnostics",
+        verbose_name='ВТД',
         on_delete=models.SET_NULL,
         null=True,
         blank=True
     )
     repair = models.ForeignKey(
         "Repair",
+        verbose_name='Ремонт',
         on_delete=models.SET_NULL,
         null=True,
         blank=True
@@ -699,8 +680,13 @@ class TubeVersion(models.Model):
             ("repair", "После ремонта"),
         ],
     )
+    odometr_data = models.FloatField(
+        'Расстояние по одометру, м',
+        null=True,
+        blank=True,
+    )
     tube_length = models.FloatField(
-        'Длина трубы',
+        'Длина трубы, м',
         null=False,
         blank=False,
     )
@@ -827,6 +813,11 @@ class TubeUnit(models.Model):
         ('anch', 'Пригруз'),
         ('pfix', 'Элемент обустройства'),
     ]
+    odometr_data = models.FloatField(
+        'Расстояние по одометру, м',
+        null=True,
+        blank=True,
+    )
     unit_type = models.CharField(
         max_length=50,
         choices=UNIT_TYPE,
@@ -835,7 +826,7 @@ class TubeUnit(models.Model):
         null=False,
     )
     tube = models.ForeignKey(
-        Tube,
+        TubeVersion,
         on_delete=models.CASCADE,
         related_name='tube_units',
         blank=True,

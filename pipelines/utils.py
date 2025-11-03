@@ -3,88 +3,125 @@ import os
 import re
 import django
 from openpyxl import load_workbook
+from datetime import datetime, date
 
 # Настройка Django окружения
-sys.path.append(r"C:\Dev\module_app")
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'module_app.settings')
+sys.path.append(r"H:\WorkDocuments\Dev\module_app")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "module_app.settings")
 django.setup()
 
-from pipelines.models import Tube, Pipe
+from pipelines.models import Pipe, Tube, TubeVersion, Diagnostics
+
+Tube.objects.all().delete()
+TubeVersion.objects.all().delete()
+Diagnostics.objects.all().delete()
+
+
+HEADER_KEYWORDS = ["Номер трубы", "Толщина", "Тип трубы"]
+
+
+from pipelines.models import Pipe, Tube, TubeVersion, Diagnostics
 
 
 HEADER_KEYWORDS = ["Номер трубы", "Толщина", "Тип трубы"]
 
 
 def is_header(row):
-    """Проверяем, является ли строка заголовком таблицы."""
-    row_str = " ".join([str(x) for x in row if x is not None])
-    return any(word in row_str for word in HEADER_KEYWORDS)
+    """Определяем, является ли строка заголовком таблицы."""
+    row_str = " ".join([str(x) for x in row if x])
+    return any(k in row_str for k in HEADER_KEYWORDS)
 
 
-def extract_number_and_suffix(tube_num: str) -> tuple[int | None, str]:
-    """
-    Извлекаем число и буквенный суффикс из номера трубы.
-    '2941а' -> (2941, 'а'), '195б' -> (195, 'б')
-    """
+def extract_number_and_suffix(tube_num: str):
+    """Извлекаем числовую часть и суффикс (например, 2941а → 2941, 'а')."""
     if not tube_num:
         return None, ""
     m = re.match(r"(\d+)(.*)", str(tube_num).strip())
     if not m:
         return None, ""
-    num = int(m.group(1))
-    suffix = m.group(2).strip().lower()
-    return num, suffix
+    return int(m.group(1)), m.group(2).strip().lower()
 
 
-def parse_range(range_str: str) -> tuple[int, int]:
-    """Парсим строку диапазона вида '2941а - 5195' → (2941, 5195)."""
+def parse_range(range_str: str):
+    """Парсим диапазон '2941а - 5195' → (2941, 5195)."""
     parts = [p.strip() for p in range_str.split("-")]
-    if len(parts) != 2:
-        raise ValueError(f"Неверный формат диапазона: {range_str}")
     start, _ = extract_number_and_suffix(parts[0])
     end, _ = extract_number_and_suffix(parts[1])
     return start, end
 
 
-def find_pipe_for_tube(tube_num: str, pipe_ranges: dict) -> Pipe | None:
-    """
-    Определяем Pipe для трубы по её номеру и диапазонам.
-    Теперь диапазон открыт: (start, end), крайние значения не включаются.
-    """
-    num, suffix = extract_number_and_suffix(tube_num)
+def find_pipe_for_tube(tube_num, pipe_ranges):
+    """Определяем участок (Pipe) по номеру трубы."""
+    num, _ = extract_number_and_suffix(tube_num)
     if num is None:
         return None
-
     for pipe_id, range_str in pipe_ranges.items():
         start, end = parse_range(range_str)
-
-        # включаем только внутренние значения диапазона
+        # диапазон открытый (не включаем края)
         if start < num < end:
             try:
                 return Pipe.objects.get(id=pipe_id)
             except Pipe.DoesNotExist:
-                print(f"⚠️ Pipe с id={pipe_id} не найден в БД")
+                print(f"⚠️ Pipe id={pipe_id} не найден")
                 return None
-
     return None
 
 
-def import_tubes(filepath, pipe_ranges: dict):
-    print(filepath)
+def get_or_create_diagnostics_for_pipes(pipe_ids, start_str, end_str):
+    """Создаёт (или получает) один объект Diagnostics, связанный со всеми участками."""
+    start_date = datetime.strptime(start_str, "%d.%m.%Y").date()
+    end_date = datetime.strptime(end_str, "%d.%m.%Y").date()
+
+    # Пробуем найти существующую диагностику
+    diagnostics = Diagnostics.objects.filter(
+        start_date=start_date,
+        end_date=end_date,
+    ).first()
+
+    if not diagnostics:
+        # Создаём без вызова full_clean()
+        diagnostics = Diagnostics.objects.create(
+            start_date=start_date,
+            end_date=end_date,
+            description=f"Диагностика участков {', '.join(map(str, pipe_ids))} ({start_date}–{end_date})"
+        )
+        print(f"🧾 Создан новый объект диагностики (id={diagnostics.id})")
+    else:
+        print(f"ℹ️ Найдена существующая диагностика ({start_date}–{end_date}) id={diagnostics.id}")
+
+    # Теперь безопасно добавляем участки (M2M)
+    for pipe_id in pipe_ids:
+        try:
+            pipe = Pipe.objects.get(id=pipe_id)
+            diagnostics.pipes.add(pipe)
+        except Pipe.DoesNotExist:
+            print(f"⚠️ Участок id={pipe_id} не найден")
+
+    # Теперь вызываем clean(), чтобы модель прошла проверку
+    diagnostics.full_clean()
+    diagnostics.save()
+    return diagnostics
+
+
+
+def import_tubes(filepath, pipe_ranges: dict, diagnostics_start: str, diagnostics_end: str):
+    print(f"📘 Импорт из файла: {filepath}")
     wb = load_workbook(filepath, read_only=True, data_only=True)
     ws = wb.active
 
-    tubes_to_create = []
+    # создаём/находим диагностику, связанную со всеми участками
+    diagnostics = get_or_create_diagnostics_for_pipes(pipe_ranges.keys(), diagnostics_start, diagnostics_end)
+
     header_found = False
+    created_versions = 0
+    created_tubes = 0
 
     for i, row in enumerate(ws.iter_rows(values_only=True), start=1):
         if is_header(row):
             header_found = True
             continue
-
         if not header_found:
-            continue  # пропускаем строки до таблицы
-
+            continue
         if not row[1]:  # пустая строка
             continue
         if is_header(row):  # повторная шапка
@@ -93,15 +130,27 @@ def import_tubes(filepath, pipe_ranges: dict):
         tube_num = str(row[1]).strip()
         pipe = find_pipe_for_tube(tube_num, pipe_ranges)
         if pipe is None:
-            continue  # труба вне диапазонов
+            continue
 
+        # --- Tube ---
+        tube, created = Tube.objects.get_or_create(
+            pipe=pipe,
+            tube_num=tube_num,
+            defaults={"active": True, "installed_date": date.today()},
+        )
+        if created:
+            created_tubes += 1
+
+        # --- TubeVersion ---
         try:
-            tube = Tube(
-                pipe=pipe,
-                tube_num=tube_num,
-                tube_length=float(row[2]) if row[2] is not None else 0,
-                thickness=float(row[3]) if row[3] is not None else 0,
-                tube_type=str(row[4]).strip() if row[4] else 'without',
+            TubeVersion.objects.create(
+                tube=tube,
+                diagnostics=diagnostics,
+                version_type="diagnostic",
+                date=diagnostics.end_date,
+                tube_length=float(row[2]) if row[2] else 0,
+                thickness=float(row[3]) if row[3] else 0,
+                tube_type=str(row[4]).strip() if row[4] else "without",
                 yield_strength=int(row[5]) if row[5] else 0,
                 tear_strength=int(row[6]) if row[6] else 0,
                 category=str(row[7]).strip() if row[7] else "II",
@@ -116,30 +165,24 @@ def import_tubes(filepath, pipe_ranges: dict):
                 to_reference_end=str(row[16]).strip() if row[16] else None,
                 comment=str(row[17]).strip() if row[17] else None,
             )
-            tubes_to_create.append(tube)
+            created_versions += 1
         except Exception as e:
             print(f"⚠️ Ошибка в строке {i}: {e}")
             continue
 
-    if tubes_to_create:
-        Tube.objects.bulk_create(tubes_to_create, ignore_conflicts=True)
-        print(f"✅ Импортировано труб: {len(tubes_to_create)}")
-    else:
-        print("⚠️ Данные для импорта не найдены")
+    print(f"\n✅ Импорт завершён:")
+    print(f"  • труб создано — {created_tubes}")
+    print(f"  • версий создано — {created_versions}")
+    print(f"  • диагностика ID={diagnostics.id}, диапазон {diagnostics_start}–{diagnostics_end}")
 
 
 if __name__ == "__main__":
-    # Пример словаря диапазонов: {pipe_id: "start - end"}
     pipe_ranges = {
         14: "2941а - 5195",
         15: "5195 - 7480",
         16: "7480 - 7600",
     }
-
-    # if len(sys.argv) < 2:
-    #     print("Использование: python import_tubes.py file.xlsx")
-    #     sys.exit(1)
-
-    # filepath = sys.argv[1]
-    filepath = r"C:\Dev\module_app\fixtures\data\nord_uc_2.xlsx"
-    import_tubes(filepath, pipe_ranges)
+    diagnostics_start = '04.04.2025'
+    diagnostics_end = '07.04.2025'
+    filepath = r"H:\WorkDocuments\Dev\module_app\fixtures\data\nord_uc_2.xlsx"
+    import_tubes(filepath, pipe_ranges, diagnostics_start, diagnostics_end)

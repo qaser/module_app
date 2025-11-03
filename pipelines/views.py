@@ -83,20 +83,23 @@ class DiagnosticsView(SingleTableMixin, FilterView):
         queryset = super().get_queryset()
         user = self.request.user
 
+        # Базовая оптимизация запросов
+        queryset = queryset.prefetch_related(
+            'pipes__pipeline',
+            'pipes__pipedepartment_set__department'
+        )
+
         if user.role == Role.ADMIN:
-            return queryset  # ADMIN видит все ремонты
+            return queryset
 
         else:
             if user.department:
                 root_department = user.department.get_root()
                 departments = root_department.get_descendants(include_self=True)
-                pipe_diagnostics = queryset.filter(
-                    pipe__pipedepartment__department__in=departments
+
+                return queryset.filter(
+                    pipes__pipedepartment__department__in=departments
                 ).distinct()
-                node_diagnostics = queryset.filter(
-                    node__equipment__departments__in=departments
-                ).distinct()
-                return (pipe_diagnostics | node_diagnostics).distinct()
             return queryset.none()
 
 
@@ -122,12 +125,13 @@ class TubesView(SingleTableMixin, FilterView):
         queryset = (
             Tube.objects.filter(pipe_id=pipe_id, active=True)
             .annotate(
-                last_version_date=Subquery(latest_version_subquery.values('date')[:1]),
                 last_length=Subquery(latest_version_subquery.values('tube_length')[:1]),
                 last_thickness=Subquery(latest_version_subquery.values('thickness')[:1]),
                 last_diameter=Subquery(latest_version_subquery.values('diameter')[:1]),
                 last_category=Subquery(latest_version_subquery.values('category')[:1]),
-                last_type=Subquery(latest_version_subquery.values('version_type')[:1]),
+                last_type=Subquery(latest_version_subquery.values('tube_type')[:1]),
+                last_steel_grade=Subquery(latest_version_subquery.values('steel_grade')[:1]),
+                last_version_id=Subquery(latest_version_subquery.values('id')[:1]),  # Добавлено для связи
             )
             .order_by('tube_num')
         )

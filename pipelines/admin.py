@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db.models import Count
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 
 from .models import (Anomaly, ComplexPlan, Diagnostics, Hole, HoleDocument,
                      Node, NodeState, Pipe, PipeDepartment, PipeDocument,
@@ -237,9 +237,24 @@ class RepairAdmin(admin.ModelAdmin):
 
 @admin.register(Diagnostics)
 class DiagnosticsAdmin(admin.ModelAdmin):
-    list_display = ('pipe', 'node', 'start_date', 'end_date', 'description')
-    list_filter = ('pipe__pipeline',)
-    search_fields = ('pipe__pipeline__title',)
+    list_display = ('start_date', 'end_date', 'pipes_list', 'description_short')
+    list_filter = ('pipes__pipeline', 'pipes')
+    search_fields = ('pipes__pipeline__title', 'pipes__start_point', 'pipes__end_point')
+    filter_horizontal = ('pipes',)
+
+    def pipes_list(self, obj):
+        pipes = obj.pipes.all()[:3]  # Показываем первые 3 участка
+        pipes_str = ", ".join([f"{pipe.start_point}-{pipe.end_point}км" for pipe in pipes])
+        if obj.pipes.count() > 3:
+            pipes_str += f" ... (+{obj.pipes.count() - 3})"
+        return pipes_str
+    pipes_list.short_description = 'Участки'
+
+    def description_short(self, obj):
+        if obj.description:
+            return obj.description[:50] + '...' if len(obj.description) > 50 else obj.description
+        return '-'
+    description_short.short_description = 'Описание'
 
 
 @admin.register(Hole)
