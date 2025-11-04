@@ -2,17 +2,19 @@ import django_tables2 as tables
 
 from users.models import Role
 
-from .models import Diagnostics, PipeDepartment, Repair, Tube, TubeVersion
+from .models import (Diagnostics, PipeDepartment, Repair, Tube, TubeUnit,
+                     TubeVersion)
 
 
 class TubeTable(tables.Table):
     pipe = tables.Column(verbose_name='Участок')
-    tube_num = tables.Column(verbose_name='Номер трубы')
+    tube_num = tables.Column(verbose_name='Номер элемента')
     last_diameter = tables.Column(verbose_name='Диаметр, мм')
     last_length = tables.Column(verbose_name='Длина, м')
     last_thickness = tables.Column(verbose_name='Толщина, мм')
-    last_type = tables.Column(verbose_name='Тип трубы')
+    last_type = tables.Column(verbose_name='Тип элемента')
     last_steel_grade = tables.Column(verbose_name='Марка стали')
+    unit_type = tables.Column(verbose_name='Элемент обустройства', accessor='pk')
     source = tables.Column(verbose_name='Источник информации', accessor='pk')
 
     class Meta:
@@ -25,6 +27,7 @@ class TubeTable(tables.Table):
             'last_thickness',
             'last_type',
             'last_steel_grade',
+            'unit_type',
             'source',
         ]
         attrs = {'class': 'table table_pipelines'}
@@ -40,23 +43,28 @@ class TubeTable(tables.Table):
             'diagnostics', 'repair'
         ).order_by('-date').first()
         if not latest_version:
-            return '—'
-
+            return '-'
         # Проверяем, связана ли версия с диагностикой
         if latest_version.diagnostics:
             diagnostic = latest_version.diagnostics
             start_date_str = diagnostic.start_date.strftime('%d.%m.%Y') if diagnostic.start_date else ''
             end_date_str = diagnostic.end_date.strftime('%d.%m.%Y') if diagnostic.end_date else ''
             return f'ВТД, {start_date_str} - {end_date_str}'
-
         # Проверяем, связана ли версия с ремонтом
         elif latest_version.repair:
             repair = latest_version.repair
             start_date_str = repair.start_date.strftime('%d.%m.%Y') if repair.start_date else ''
             end_date_str = repair.end_date.strftime('%d.%m.%Y') if repair.end_date else ''
             return f'Ремонт, {start_date_str} - {end_date_str}'
+        return '-'
 
-        return '—'
+    def render_unit_type(self, record):
+        if record.unit_type:
+            # Получаем human-readable значение
+            for choice in TubeUnit.UNIT_TYPE:
+                if choice[0] == record.unit_type:
+                    return choice[1]
+        return '-'
 
 
 class RepairTable(tables.Table):

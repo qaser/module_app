@@ -1,27 +1,23 @@
-import sys
 import os
 import re
+import sys
+from datetime import date, datetime
+
 import django
 from openpyxl import load_workbook
-from datetime import datetime, date
 
 # Настройка Django окружения
 sys.path.append(r"H:\WorkDocuments\Dev\module_app")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "module_app.settings")
 django.setup()
 
-from pipelines.models import Pipe, Tube, TubeVersion, Diagnostics
 
-Tube.objects.all().delete()
-TubeVersion.objects.all().delete()
-Diagnostics.objects.all().delete()
+from pipelines.models import Diagnostics, Pipe, Tube, TubeUnit, TubeVersion
 
-
-HEADER_KEYWORDS = ["Номер трубы", "Толщина", "Тип трубы"]
-
-
-from pipelines.models import Pipe, Tube, TubeVersion, Diagnostics
-
+# Tube.objects.all().delete()
+# TubeVersion.objects.all().delete()
+TubeUnit.objects.all().delete()
+# Diagnostics.objects.all().delete()
 
 HEADER_KEYWORDS = ["Номер трубы", "Толщина", "Тип трубы"]
 
@@ -176,6 +172,92 @@ def import_tubes(filepath, pipe_ranges: dict, diagnostics_start: str, diagnostic
     print(f"  • диагностика ID={diagnostics.id}, диапазон {diagnostics_start}–{diagnostics_end}")
 
 
+def import_tube_units(filepath):
+    """
+    Импорт элементов обустройства и привязка к TubeVersion последней диагностики.
+    """
+    print(f"📘 Импорт элементов обустройства из: {filepath}")
+
+    try:
+        diagnostics = Diagnostics.objects.latest('end_date')
+    except Diagnostics.DoesNotExist:
+        print("❌ Нет записей Diagnostics — невозможно выполнить импорт элементов.")
+        return
+
+    wb = load_workbook(filepath, read_only=True, data_only=True)
+    ws = wb.active
+
+    header_found = False
+    created_units = 0
+
+    for i, row in enumerate(ws.iter_rows(values_only=True), start=1):
+        # Пропуск мусора и шапок
+        if not any(row):
+            continue
+        row_str = " ".join([str(x) for x in row if x])
+        if any(keyword in row_str.lower() for keyword in ["тип", "одометр", "труба"]):
+            header_found = True
+            continue
+        if not header_found:
+            continue
+
+        try:
+            tube_num = str(row[1]).strip()  # предположим, в первом столбце — номер трубы
+            unit_type_raw = str(row[4]).strip().lower() if row[4] else None
+            odometr = float(row[0]) if row[0] else None
+            description = str(row[5]).strip() if row[5] else None
+            comment = str(row[7]).strip() if row[7] else None
+        except Exception as e:
+            print(f"⚠️ Ошибка парсинга строки {i}: {e}")
+            continue
+
+        # ищем трубу и последнюю версию
+        tube = Tube.objects.filter(tube_num=tube_num).first()
+        if not tube:
+            print(f"⚠️ Труба {tube_num} не найдена — пропуск строки {i}")
+            continue
+
+        version = TubeVersion.objects.filter(tube=tube, diagnostics=diagnostics).order_by('-date').first()
+        if not version:
+            print(f"⚠️ Версия для трубы {tube_num} и диагностики {diagnostics.id} не найдена")
+            continue
+
+        # определяем тип элемента
+        UNIT_TYPE_MAP = {
+            "кран": "valv",
+            "отвод": "offt",
+            "врезка": "offt",
+            "тройник": "tee",
+            "эхз": "cpco",
+            "окно": "wiwd",
+            "футляр-начало": "casb",
+            "футляр-конец": "case",
+            "маркер": "mark",
+            "пригруз": "anch",
+            "обустройство": "pfix",
+        }
+
+        unit_type = "pfix"  # по умолчанию
+        for k, v in UNIT_TYPE_MAP.items():
+            if v in unit_type_raw:
+                unit_type = v
+                break
+
+        # создаём элемент
+        TubeUnit.objects.create(
+            tube=version,
+            unit_type=unit_type,
+            odometr_data=odometr,
+            description=description,
+            comment=comment,
+        )
+        created_units += 1
+
+    print(f"\n✅ Импорт элементов завершён:")
+    print(f"  • создано элементов: {created_units}")
+    print(f"  • диагностика: {diagnostics.id} ({diagnostics.start_date} — {diagnostics.end_date})")
+
+
 if __name__ == "__main__":
     pipe_ranges = {
         14: "2941а - 5195",
@@ -185,4 +267,6 @@ if __name__ == "__main__":
     diagnostics_start = '04.04.2025'
     diagnostics_end = '07.04.2025'
     filepath = r"H:\WorkDocuments\Dev\module_app\fixtures\data\nord_uc_2.xlsx"
-    import_tubes(filepath, pipe_ranges, diagnostics_start, diagnostics_end)
+    filepath_units = r"H:\WorkDocuments\Dev\module_app\fixtures\data\tubeunits_nord_uc_2.xlsx"
+    # import_tubes(filepath, pipe_ranges, diagnostics_start, diagnostics_end)
+    import_tube_units(filepath_units)

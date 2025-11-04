@@ -5,7 +5,7 @@ from django.utils.html import format_html, format_html_join
 from .models import (Anomaly, ComplexPlan, Diagnostics, Hole, HoleDocument,
                      Node, NodeState, Pipe, PipeDepartment, PipeDocument,
                      PipeLimit, Pipeline, PipeState, PlannedWork, Repair,
-                     RepairDocument, RepairStage, Tube, TubeVersion)
+                     RepairDocument, RepairStage, Tube, TubeUnit, TubeVersion)
 
 
 class PipeDepartmentInline(admin.TabularInline):
@@ -395,6 +395,19 @@ class TubeAdmin(admin.ModelAdmin):
         version = self.latest_version(obj)
         return version.tube_length if version else None
     latest_version_length.short_description = "Длина (текущая)"
+
+
+@admin.register(TubeUnit)
+class TubeUnitAdmin(admin.ModelAdmin):
+    list_display = (
+        "tube",
+        "odometr_data",
+        "unit_type",
+        "description",
+        "comment",
+    )
+    list_filter = ("unit_type",)
+    search_fields = ("unit_type",)
 
 
 @admin.register(Anomaly)

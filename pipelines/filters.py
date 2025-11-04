@@ -3,8 +3,8 @@ from django import forms
 from django.db.models import Q
 
 from equipments.models import Department
-from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment, Pipeline,
-                              Repair, Tube, TubeVersion)
+from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment,
+                              Pipeline, Repair, Tube, TubeUnit, TubeVersion)
 
 
 class TubeFilter(df.FilterSet):
@@ -26,13 +26,27 @@ class TubeFilter(df.FilterSet):
         choices = [(val, val) for val in sorted(qs)]
         return choices
 
+    def get_unit_type_choices():
+        # Базовые опции
+        base_choices = [
+            ('all_units', 'Все элементы обустройства'),
+            ('no_units', 'Без элементов обустройства'),
+        ]
+
+        # Опции типов элементов обустройства
+        unit_choices = [
+            (val, label) for val, label in TubeUnit.UNIT_TYPE
+        ]
+
+        return base_choices + unit_choices
+
     tube_num = df.CharFilter(
-        label='Номер трубы',
+        label='Номер элемента',
         lookup_expr='icontains',
         widget=forms.TextInput(attrs={'class': 'form-control'})
     )
     last_length = df.ChoiceFilter(
-        label='Длина трубы (м)',
+        label='Длина элемента (м)',
         choices=lambda: [
             (val, f"{val} м") for val in sorted(
                 set(round(v, 2) for v in TubeVersion.objects.values_list('tube_length', flat=True).distinct() if v)
@@ -42,7 +56,7 @@ class TubeFilter(df.FilterSet):
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     last_thickness = df.ChoiceFilter(
-        label='Толщина (мм)',
+        label='Толщина стенки (мм)',
         choices=lambda: [
             (val, f"{val} мм") for val in sorted(
                 set(round(v, 1) for v in TubeVersion.objects.values_list('thickness', flat=True).distinct() if v)
@@ -52,7 +66,7 @@ class TubeFilter(df.FilterSet):
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     last_type = df.ChoiceFilter(
-        label='Тип трубы',
+        label='Тип',
         choices=get_tube_type_choices,
         field_name='last_type',
         widget=forms.Select(attrs={'class': 'form-control'}),
@@ -61,6 +75,12 @@ class TubeFilter(df.FilterSet):
         label='Марка стали',
         choices=get_steel_grade_choices,
         field_name='last_steel_grade',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    unit_type = df.ChoiceFilter(
+        label='Элементы обустройства',
+        choices=get_unit_type_choices,
+        method='filter_unit_type',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
 
@@ -72,7 +92,19 @@ class TubeFilter(df.FilterSet):
             'last_thickness',
             'last_type',
             'last_steel_grade',
+            'unit_type',
         ]
+
+    def filter_unit_type(self, queryset, name, value):
+        if value == 'all_units':
+            # Трубы с любыми элементами обустройства (unit_type не пустой)
+            return queryset.exclude(unit_type__isnull=True)
+        elif value == 'no_units':
+            # Трубы без элементов обустройства (unit_type пустой)
+            return queryset.filter(unit_type__isnull=True)
+        else:
+            # Трубы с конкретным типом элемента обустройства
+            return queryset.filter(unit_type=value)
 
 
 class RepairFilter(df.FilterSet):

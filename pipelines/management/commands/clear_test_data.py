@@ -1,6 +1,7 @@
-from django.core.management.base import BaseCommand
 from django.apps import apps
+from django.core.management.base import BaseCommand
 from django.db import transaction
+
 
 class Command(BaseCommand):
     help = "Полностью очищает данные во всех моделях из заданного списка приложений"

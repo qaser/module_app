@@ -336,288 +336,6 @@ class Diagnostics(models.Model):
         ]
 
 
-class PipeState(models.Model):
-    STATE_CHOICES = [
-        ('repair', 'В ремонте'),
-        ('operation', 'В работе'),
-        ('disabled', 'Отключен'),
-        # ('empty', 'Стравлен'),
-        ('depletion', 'На выработке'),
-        ('diagnostics', 'Проведение ВТД'),
-    ]
-    STATE_COLORS = {
-        'repair': '#FF0000',  # Красный
-        'operation': '#00FF00',  # Зеленый
-        'disabled': '#888888',  # Серый
-        # 'empty': '#FFFFFF',  # Белый
-        'depletion': '#FFA500',  # Оранжевый
-        'diagnostics': '#0000FF',  # Синий
-    }
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='states'
-    )
-    state_type = models.CharField(
-        max_length=25,
-        choices=STATE_CHOICES,
-        verbose_name='Тип состояния'
-    )
-    start_date = models.DateField(
-        verbose_name='Начало состояния',
-        blank=False,
-        null=False,
-    )
-    end_date = models.DateField(
-        verbose_name='Окончание состояния',
-        null=True,
-        blank=True
-    )
-    description = models.TextField(
-        verbose_name='Описание состояния',
-        max_length=500,
-        blank=True
-    )
-    created_by = models.ForeignKey(
-        ModuleUser,
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name='Кем создано'
-    )
-    current_pressure = models.FloatField(
-        verbose_name='Давление, кгс/см²',
-        null=True,
-        blank=True
-    )
-
-    class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Состояние участка'
-        verbose_name_plural = 'Состояния участков'
-        indexes = [
-            models.Index(fields=['pipe']),
-            models.Index(fields=['state_type']),
-            models.Index(fields=['start_date', 'end_date']),
-            models.Index(fields=['created_by']),
-        ]
-
-    def __str__(self):
-        return f'{self.get_state_type_display()} ({self.pipe})'
-
-    @property
-    def color(self):
-        return self.STATE_COLORS.get(self.state_type, '#CCCCCC')
-
-    # def clean(self):
-    #     if self.end_date and self.end_date < self.start_date:
-    #         raise ValidationError('Дата окончания не может быть раньше даты начала')
-
-    def save(self, *args, **kwargs):
-        PipeState.objects.filter(
-            pipe=self.pipe,
-            end_date__isnull=True
-        ).exclude(pk=self.pk).update(end_date=self.start_date)
-        super().save(*args, **kwargs)
-
-
-class PipeLimit(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='limits'
-    )
-    pressure_limit = models.FloatField(
-        verbose_name='Ограничение давления, кгс/см²',
-        null=True,
-        blank=True
-    )
-    limit_reason = models.CharField(
-        max_length=100,
-        verbose_name='Причина ограничения',
-        null=True,
-        blank=True
-    )
-    start_date = models.DateField(
-        verbose_name='Начало ограничения',
-        blank=False,
-        null=False,
-    )
-    end_date = models.DateField(
-        verbose_name='Окончание ограничения',
-        null=True,
-        blank=True,
-        help_text='Указывается когда ограничение фактически будет снято'
-    )
-
-    class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Ограничение давления'
-        verbose_name_plural = 'Ограничения давления'
-
-    def __str__(self):
-        return f'Ограничение {self.pressure_limit} кгс/см² ({self.pipe}) с {self.start_date}'
-
-    def save(self, *args, **kwargs):
-        # Закрываем предыдущие активные ограничения
-        if self.start_date and self.pipe:
-            PipeLimit.objects.filter(
-                pipe=self.pipe,
-                end_date__isnull=True
-            ).exclude(pk=self.pk).update(end_date=self.start_date)
-        self.full_clean()
-        super().save(*args, **kwargs)
-
-
-class NodeState(models.Model):
-    NODE_STATES = [
-        ('open', 'Открыто'),
-        ('closed', 'Закрыто'),
-    ]
-
-    node = models.ForeignKey(
-        Node,
-        on_delete=models.CASCADE,
-        related_name='states'
-    )
-    state_type = models.CharField(
-        max_length=25,
-        choices=NODE_STATES,
-        verbose_name='Состояние'
-    )
-    start_date = models.DateField(
-        auto_now_add=True,
-        verbose_name='Дата изменения'
-    )
-    end_date = models.DateField(
-        verbose_name='Окончание состояния',
-        null=True,
-        blank=True
-    )
-    changed_by = models.ForeignKey(
-        ModuleUser,
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name='Кем изменено'
-    )
-    description = models.TextField(
-        verbose_name='Комментарий',
-        max_length=500,
-        blank=True
-    )
-
-    class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Состояние кранового узла'
-        verbose_name_plural = 'Состояния крановых узлов'
-        indexes = [
-            models.Index(fields=['node']),
-            models.Index(fields=['state_type']),
-            models.Index(fields=['start_date']),
-            models.Index(fields=['changed_by']),
-        ]
-
-    def __str__(self):
-        return f"{self.node} - {self.get_state_type_display()}"
-
-    def save(self, *args, **kwargs):
-        NodeState.objects.filter(
-            node=self.node,
-            end_date__isnull=True
-        ).exclude(pk=self.pk).update(end_date=now().date())
-
-        super().save(*args, **kwargs)
-
-
-class ComplexPlan(models.Model):
-    department = models.ForeignKey(
-        Department,
-        on_delete=models.CASCADE,
-        related_name='pipelines_plans',
-        verbose_name='Филиал'
-    )
-    year = models.PositiveIntegerField(
-        verbose_name='Год планирования',
-        choices=[(y, y) for y in range(datetime.now().year, datetime.now().year + 4)]
-    )
-
-    class Meta:
-        unique_together = ('department', 'year')
-        verbose_name = 'КПГ'
-        verbose_name_plural = 'КПГ'
-        indexes = [
-            models.Index(fields=['department']),
-            models.Index(fields=['year']),
-            models.Index(fields=['department', 'year']),
-        ]
-
-    def __str__(self):
-        return f'КПГ {self.year}г. - {self.department.name}'
-
-
-class PlannedWork(models.Model):
-    WORK_TYPE_CHOICES = [
-        ('repair', 'Ремонт'),
-        ('replacement', 'Замена'),
-        ('diagnostics', 'ВТД'),
-    ]
-    complex_plan = models.ForeignKey(
-        ComplexPlan,
-        on_delete=models.CASCADE,
-        related_name='planned_works',
-        verbose_name='КПГ'
-    )
-    work_type = models.CharField(
-        max_length=50,
-        choices=WORK_TYPE_CHOICES,
-        verbose_name='Тип работы'
-    )
-    description = models.TextField(
-        verbose_name='Описание работы',
-        blank=True,
-    )
-    start_date = models.DateField(
-        verbose_name='Плановая дата начала'
-    )
-    end_date = models.DateField(
-        verbose_name='Плановая дата окончания'
-    )
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='planned_works',
-        verbose_name='Участок газопровода'
-    )
-    node = models.ForeignKey(
-        Node,
-        on_delete=models.CASCADE,
-        blank=True,
-        null=True,
-        related_name='planned_works',
-        verbose_name='Крановый узел'
-    )
-
-    class Meta:
-        verbose_name = 'Запланированная работа'
-        verbose_name_plural = 'Запланированные работы'
-        ordering = ['complex_plan']
-
-    def clean(self):
-        if not self.pipe and not self.node:
-            raise ValidationError('Необходимо указать либо участок МГ, либо КУ.')
-        if self.pipe and self.node:
-            raise ValidationError('Нельзя одновременно указывать и участок МГ, и КУ.')
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        target = self.pipe or self.node
-        return f"{self.get_work_type_display()} — {target} ({self.planned_date})"
-
-
 class Tube(models.Model):
     pipe = models.ForeignKey(
         Pipe,
@@ -654,6 +372,7 @@ class TubeVersion(models.Model):
     ]
     tube = models.ForeignKey(
         Tube,
+        verbose_name='Элемент',
         on_delete=models.CASCADE,
         related_name='versions'
     )
@@ -671,13 +390,18 @@ class TubeVersion(models.Model):
         null=True,
         blank=True
     )
-    date = models.DateField(null=True, blank=True)
+    date = models.DateField(
+        verbose_name='Дата изменения информации',
+        null=True,
+        blank=True
+    )
     version_type = models.CharField(
         max_length=20,
+        verbose_name='Источник информации',
         choices=[
             ("initial", "Первичное состояние"),
-            ("diagnostic", "После диагностики"),
-            ("repair", "После ремонта"),
+            ("diagnostic", "ВТД"),
+            ("repair", "Ремонт"),
         ],
     )
     odometr_data = models.FloatField(
@@ -686,12 +410,12 @@ class TubeVersion(models.Model):
         blank=True,
     )
     tube_length = models.FloatField(
-        'Длина трубы, м',
+        'Длина элемента, м',
         null=False,
         blank=False,
     )
     thickness = models.FloatField(
-        'Толщина трубы, мм',
+        'Толщина стенки элемента, мм',
         null=False,
         blank=False,
     )
@@ -699,12 +423,12 @@ class TubeVersion(models.Model):
         max_length=50,
         choices=TUBE_TYPE,
         default='2Ш',
-        verbose_name='Тип трубы',
+        verbose_name='Тип элемента',
         blank=False,
         null=False,
     )
     diameter = models.PositiveSmallIntegerField(
-        'Диаметр трубы, мм',
+        'Диаметр элемента, мм',
         default=1420,
         null=False,
         blank=False,
@@ -725,7 +449,7 @@ class TubeVersion(models.Model):
         max_length=10,
         choices=CATEGORY_CHOICES,
         default='II',
-        verbose_name='Категория трубы',
+        verbose_name='Категория',
         blank=False,
         null=False,
     )
@@ -788,16 +512,16 @@ class TubeVersion(models.Model):
         'Комментарий',
         null=True,
         blank=True,
-        help_text='Любой значимый комментарий для данной трубы'
+        help_text='Любой значимый комментарий для данного элемента'
     )
 
     class Meta:
-        verbose_name = 'Труба'
-        verbose_name_plural = 'Трубы'
-        # ordering = ['tube_num']
+        verbose_name = 'Элемент'
+        verbose_name_plural = 'Элементы'
+        ordering = ['tube']
 
-    # def __str__(self):
-    #     return f'Труба №{self.tube_num}, участок {self.pipe}'
+    def __str__(self):
+        return f'Элемент №{self.tube.tube_num}, участок {self.tube.pipe}'
 
 
 class TubeUnit(models.Model):
@@ -831,6 +555,12 @@ class TubeUnit(models.Model):
         related_name='tube_units',
         blank=True,
         null=True,
+    )
+    description = models.TextField(
+        'Описание',
+        null=True,
+        blank=True,
+        help_text='Описание элемента'
     )
     comment = models.TextField(
         'Комментарий',
@@ -1188,3 +918,285 @@ class RepairDocument(models.Model):
     class Meta:
         verbose_name = 'Документация по ремонту участка МГ'
         verbose_name_plural = 'Документация по ремонтам участков МГ'
+
+
+class PipeState(models.Model):
+    STATE_CHOICES = [
+        ('repair', 'В ремонте'),
+        ('operation', 'В работе'),
+        ('disabled', 'Отключен'),
+        # ('empty', 'Стравлен'),
+        ('depletion', 'На выработке'),
+        ('diagnostics', 'Проведение ВТД'),
+    ]
+    STATE_COLORS = {
+        'repair': '#FF0000',  # Красный
+        'operation': '#00FF00',  # Зеленый
+        'disabled': '#888888',  # Серый
+        # 'empty': '#FFFFFF',  # Белый
+        'depletion': '#FFA500',  # Оранжевый
+        'diagnostics': '#0000FF',  # Синий
+    }
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='states'
+    )
+    state_type = models.CharField(
+        max_length=25,
+        choices=STATE_CHOICES,
+        verbose_name='Тип состояния'
+    )
+    start_date = models.DateField(
+        verbose_name='Начало состояния',
+        blank=False,
+        null=False,
+    )
+    end_date = models.DateField(
+        verbose_name='Окончание состояния',
+        null=True,
+        blank=True
+    )
+    description = models.TextField(
+        verbose_name='Описание состояния',
+        max_length=500,
+        blank=True
+    )
+    created_by = models.ForeignKey(
+        ModuleUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Кем создано'
+    )
+    current_pressure = models.FloatField(
+        verbose_name='Давление, кгс/см²',
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        ordering = ['-start_date']
+        verbose_name = 'Состояние участка'
+        verbose_name_plural = 'Состояния участков'
+        indexes = [
+            models.Index(fields=['pipe']),
+            models.Index(fields=['state_type']),
+            models.Index(fields=['start_date', 'end_date']),
+            models.Index(fields=['created_by']),
+        ]
+
+    def __str__(self):
+        return f'{self.get_state_type_display()} ({self.pipe})'
+
+    @property
+    def color(self):
+        return self.STATE_COLORS.get(self.state_type, '#CCCCCC')
+
+    # def clean(self):
+    #     if self.end_date and self.end_date < self.start_date:
+    #         raise ValidationError('Дата окончания не может быть раньше даты начала')
+
+    def save(self, *args, **kwargs):
+        PipeState.objects.filter(
+            pipe=self.pipe,
+            end_date__isnull=True
+        ).exclude(pk=self.pk).update(end_date=self.start_date)
+        super().save(*args, **kwargs)
+
+
+class PipeLimit(models.Model):
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        related_name='limits'
+    )
+    pressure_limit = models.FloatField(
+        verbose_name='Ограничение давления, кгс/см²',
+        null=True,
+        blank=True
+    )
+    limit_reason = models.CharField(
+        max_length=100,
+        verbose_name='Причина ограничения',
+        null=True,
+        blank=True
+    )
+    start_date = models.DateField(
+        verbose_name='Начало ограничения',
+        blank=False,
+        null=False,
+    )
+    end_date = models.DateField(
+        verbose_name='Окончание ограничения',
+        null=True,
+        blank=True,
+        help_text='Указывается когда ограничение фактически будет снято'
+    )
+
+    class Meta:
+        ordering = ['-start_date']
+        verbose_name = 'Ограничение давления'
+        verbose_name_plural = 'Ограничения давления'
+
+    def __str__(self):
+        return f'Ограничение {self.pressure_limit} кгс/см² ({self.pipe}) с {self.start_date}'
+
+    def save(self, *args, **kwargs):
+        # Закрываем предыдущие активные ограничения
+        if self.start_date and self.pipe:
+            PipeLimit.objects.filter(
+                pipe=self.pipe,
+                end_date__isnull=True
+            ).exclude(pk=self.pk).update(end_date=self.start_date)
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
+class NodeState(models.Model):
+    NODE_STATES = [
+        ('open', 'Открыто'),
+        ('closed', 'Закрыто'),
+    ]
+
+    node = models.ForeignKey(
+        Node,
+        on_delete=models.CASCADE,
+        related_name='states'
+    )
+    state_type = models.CharField(
+        max_length=25,
+        choices=NODE_STATES,
+        verbose_name='Состояние'
+    )
+    start_date = models.DateField(
+        auto_now_add=True,
+        verbose_name='Дата изменения'
+    )
+    end_date = models.DateField(
+        verbose_name='Окончание состояния',
+        null=True,
+        blank=True
+    )
+    changed_by = models.ForeignKey(
+        ModuleUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Кем изменено'
+    )
+    description = models.TextField(
+        verbose_name='Комментарий',
+        max_length=500,
+        blank=True
+    )
+
+    class Meta:
+        ordering = ['-start_date']
+        verbose_name = 'Состояние кранового узла'
+        verbose_name_plural = 'Состояния крановых узлов'
+        indexes = [
+            models.Index(fields=['node']),
+            models.Index(fields=['state_type']),
+            models.Index(fields=['start_date']),
+            models.Index(fields=['changed_by']),
+        ]
+
+    def __str__(self):
+        return f"{self.node} - {self.get_state_type_display()}"
+
+    def save(self, *args, **kwargs):
+        NodeState.objects.filter(
+            node=self.node,
+            end_date__isnull=True
+        ).exclude(pk=self.pk).update(end_date=now().date())
+
+        super().save(*args, **kwargs)
+
+
+class ComplexPlan(models.Model):
+    department = models.ForeignKey(
+        Department,
+        on_delete=models.CASCADE,
+        related_name='pipelines_plans',
+        verbose_name='Филиал'
+    )
+    year = models.PositiveIntegerField(
+        verbose_name='Год планирования',
+        choices=[(y, y) for y in range(datetime.now().year, datetime.now().year + 4)]
+    )
+
+    class Meta:
+        unique_together = ('department', 'year')
+        verbose_name = 'КПГ'
+        verbose_name_plural = 'КПГ'
+        indexes = [
+            models.Index(fields=['department']),
+            models.Index(fields=['year']),
+            models.Index(fields=['department', 'year']),
+        ]
+
+    def __str__(self):
+        return f'КПГ {self.year}г. - {self.department.name}'
+
+
+class PlannedWork(models.Model):
+    WORK_TYPE_CHOICES = [
+        ('repair', 'Ремонт'),
+        ('replacement', 'Замена'),
+        ('diagnostics', 'ВТД'),
+    ]
+    complex_plan = models.ForeignKey(
+        ComplexPlan,
+        on_delete=models.CASCADE,
+        related_name='planned_works',
+        verbose_name='КПГ'
+    )
+    work_type = models.CharField(
+        max_length=50,
+        choices=WORK_TYPE_CHOICES,
+        verbose_name='Тип работы'
+    )
+    description = models.TextField(
+        verbose_name='Описание работы',
+        blank=True,
+    )
+    start_date = models.DateField(
+        verbose_name='Плановая дата начала'
+    )
+    end_date = models.DateField(
+        verbose_name='Плановая дата окончания'
+    )
+    pipe = models.ForeignKey(
+        Pipe,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='planned_works',
+        verbose_name='Участок газопровода'
+    )
+    node = models.ForeignKey(
+        Node,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name='planned_works',
+        verbose_name='Крановый узел'
+    )
+
+    class Meta:
+        verbose_name = 'Запланированная работа'
+        verbose_name_plural = 'Запланированные работы'
+        ordering = ['complex_plan']
+
+    def clean(self):
+        if not self.pipe and not self.node:
+            raise ValidationError('Необходимо указать либо участок МГ, либо КУ.')
+        if self.pipe and self.node:
+            raise ValidationError('Нельзя одновременно указывать и участок МГ, и КУ.')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        target = self.pipe or self.node
+        return f"{self.get_work_type_display()} — {target} ({self.planned_date})"

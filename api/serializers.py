@@ -7,8 +7,8 @@ from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
 from pipelines.models import (Anomaly, ComplexPlan, Diagnostics, Hole, Node,
                               NodeState, Pipe, PipeDepartment, PipeDocument,
-                              PipeLimit, TubeUnit, Pipeline, PipeState, PlannedWork,
-                              Repair, Tube, TubeVersion)
+                              PipeLimit, Pipeline, PipeState, PlannedWork,
+                              Repair, Tube, TubeUnit, TubeVersion)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
