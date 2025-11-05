@@ -13,5 +13,6 @@ urlpatterns = [
     path('plans/', views.scheme_pipelines, name='plans'),
     path('pipes/<int:pipe_id>/', views.single_pipe, name='single_pipe'),
     path('pipes/<int:pipe_id>/tubes/', login_required(views.TubesView.as_view()), name='pipe-tubes'),
+    path('pipes/<int:pipe_id>/tubes/<int:tube_id>/', views.single_tube, name='single_tube'),
     # path('rapairs/<int:repair_id>/', views.single_repair, name='single_repair'),
 ]

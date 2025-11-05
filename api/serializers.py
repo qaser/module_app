@@ -566,14 +566,34 @@ class PipeLimitSerializer(serializers.ModelSerializer):
         ]
 
 
+class TubeUnitSerializer(serializers.ModelSerializer):
+    unit_type_display = serializers.CharField(source="get_unit_type_display", read_only=True)
+
+    class Meta:
+        model = TubeUnit
+        fields = [
+            "id",
+            "odometr_data",
+            "unit_type",
+            "unit_type_display",
+            "description",
+            "comment",
+        ]
+        read_only_fields = ["id", "unit_type_display"]
+
+
 class TubeVersionSerializer(serializers.ModelSerializer):
+    version_id = serializers.IntegerField(source="id", read_only=True)
     version_type_display = serializers.CharField(source="get_version_type_display", read_only=True)
     tube_num = serializers.CharField(source="tube.tube_num", read_only=True)
+    has_tube_units = serializers.SerializerMethodField()
+    tube_units = TubeUnitSerializer(many=True, read_only=True)
 
     class Meta:
         model = TubeVersion
+        read_only_fields = ["version_id", "tube_num", "version_type_display"]
         fields = [
-            "id",
+            "version_id",
             "tube",
             "tube_num",
             "version_type",
@@ -598,18 +618,47 @@ class TubeVersionSerializer(serializers.ModelSerializer):
             "from_reference_start",
             "to_reference_end",
             "comment",
+            "has_tube_units",
+            "tube_units",
         ]
-        read_only_fields = ["id", "tube_num", "version_type_display"]
+
+
+    def get_has_tube_units(self, obj):
+        return obj.tube_units.exists()
 
 
 class TubeSerializer(serializers.ModelSerializer):
     pipe_name = serializers.CharField(source="pipe.name", read_only=True)
-    current_version = serializers.SerializerMethodField()
     versions = TubeVersionSerializer(many=True, read_only=True)
+    # Поля из TubeVersion (последняя версия)
+    diagnostics = serializers.PrimaryKeyRelatedField(read_only=True)
+    repair = serializers.PrimaryKeyRelatedField(read_only=True)
+    date = serializers.DateField(read_only=True)
+    version_type = serializers.CharField(read_only=True)
+    version_type_display = serializers.CharField(source="get_version_type_display", read_only=True)
+    odometr_data = serializers.FloatField(read_only=True)
+    tube_length = serializers.FloatField(read_only=True)
+    thickness = serializers.FloatField(read_only=True)
+    tube_type = serializers.CharField(read_only=True)
+    diameter = serializers.IntegerField(read_only=True)
+    yield_strength = serializers.IntegerField(read_only=True)
+    tear_strength = serializers.IntegerField(read_only=True)
+    category = serializers.CharField(read_only=True)
+    reliability_material = serializers.FloatField(read_only=True)
+    working_conditions = serializers.FloatField(read_only=True)
+    reliability_pressure = serializers.FloatField(read_only=True)
+    reliability_coef = serializers.FloatField(read_only=True)
+    impact_strength = serializers.FloatField(read_only=True)
+    steel_grade = serializers.CharField(read_only=True)
+    weld_position = serializers.CharField(read_only=True)
+    from_reference_start = serializers.CharField(read_only=True)
+    to_reference_end = serializers.CharField(read_only=True)
+    comment = serializers.CharField(read_only=True)
 
     class Meta:
         model = Tube
         fields = [
+            # Поля из Tube
             "id",
             "pipe",
             "pipe_name",
@@ -617,17 +666,60 @@ class TubeSerializer(serializers.ModelSerializer):
             "active",
             "installed_date",
             "removed_date",
-            "current_version",
+            # Поля из последней TubeVersion
+            "diagnostics",
+            "repair",
+            "date",
+            "version_type",
+            "version_type_display",
+            "odometr_data",
+            "tube_length",
+            "thickness",
+            "tube_type",
+            "diameter",
+            "yield_strength",
+            "tear_strength",
+            "category",
+            "reliability_material",
+            "working_conditions",
+            "reliability_pressure",
+            "reliability_coef",
+            "impact_strength",
+            "steel_grade",
+            "weld_position",
+            "from_reference_start",
+            "to_reference_end",
+            "comment",
+            # Все версии
             "versions",
         ]
-        read_only_fields = ["id", "pipe_name"]
+        read_only_fields = [
+            "id", "pipe_name", "diagnostics", "repair", "date", "version_type",
+            "version_type_display", "odometr_data", "tube_length", "thickness",
+            "tube_type", "diameter", "yield_strength", "tear_strength", "category",
+            "reliability_material", "working_conditions", "reliability_pressure",
+            "reliability_coef", "impact_strength", "steel_grade", "weld_position",
+            "from_reference_start", "to_reference_end", "comment"
+        ]
 
-    def get_current_version(self, obj):
-        """Возвращает последнюю версию трубы (актуальное состояние)."""
-        version = obj.versions.order_by("-date").first()
-        if not version:
-            return None
-        return TubeVersionSerializer(version).data
+    def to_representation(self, instance):
+        """Добавляем данные из последней версии TubeVersion"""
+        representation = super().to_representation(instance)
+
+        # Получаем последнюю версию
+        latest_version = instance.versions.order_by("-date").first()
+
+        if latest_version:
+            # Обновляем representation данными из последней версии
+            version_serializer = TubeVersionSerializer(latest_version)
+            version_data = version_serializer.data
+
+            # Копируем все поля из версии, кроме id и tube
+            for field in version_data:
+                if field not in ['tube', 'tube_num']:
+                    representation[field] = version_data[field]
+
+        return representation
 
 
 class PipeSerializer(serializers.ModelSerializer):

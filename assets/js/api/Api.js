@@ -434,6 +434,13 @@ export default class Api {
         })
         .then(response => response.json());
     }
+
+    getTubeItem(id) {
+        return fetch(`${this._baseUrl}/tubes/${id}/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
     // _checkResponse(res) {
     //     if (res.ok) {
     //         return res.json();

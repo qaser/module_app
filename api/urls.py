@@ -28,6 +28,7 @@ router.register('node-states', views.NodeStatesViewSet, basename='node-states')
 router.register('pipes', views.PipeViewSet, basename='pipes')
 router.register('pipe-docs', views.PipeDocumentViewSet, basename='pipe-docs')
 router.register(r'pipes/(?P<pipe_id>\d+)/tubes', views.TubesViewSet, basename='pipe_tubes')
+router.register('tubes', views.TubesViewSet, basename='tubes')
 
 
 urlpatterns = [

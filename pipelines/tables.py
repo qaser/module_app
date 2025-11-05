@@ -14,7 +14,7 @@ class TubeTable(tables.Table):
     last_thickness = tables.Column(verbose_name='Толщина, мм')
     last_type = tables.Column(verbose_name='Тип элемента')
     last_steel_grade = tables.Column(verbose_name='Марка стали')
-    unit_type = tables.Column(verbose_name='Элемент обустройства', accessor='pk')
+    unit_types = tables.Column(verbose_name='Элементы обустройства', accessor='pk')
     source = tables.Column(verbose_name='Источник информации', accessor='pk')
 
     class Meta:
@@ -27,7 +27,7 @@ class TubeTable(tables.Table):
             'last_thickness',
             'last_type',
             'last_steel_grade',
-            'unit_type',
+            'unit_types',
             'source',
         ]
         attrs = {'class': 'table table_pipelines'}
@@ -58,13 +58,28 @@ class TubeTable(tables.Table):
             return f'Ремонт, {start_date_str} - {end_date_str}'
         return '-'
 
-    def render_unit_type(self, record):
-        if record.unit_type:
-            # Получаем human-readable значение
-            for choice in TubeUnit.UNIT_TYPE:
-                if choice[0] == record.unit_type:
-                    return choice[1]
-        return '-'
+    def render_unit_types(self, record):
+        # Получаем последнюю версию
+        latest_version = TubeVersion.objects.filter(
+            tube=record
+        ).order_by('-date').first()
+
+        if not latest_version:
+            return '-'
+
+        # Получаем все элементы обустройства для последней версии
+        tube_units = latest_version.tube_units.all()
+
+        if not tube_units.exists():
+            return '-'
+
+        # Формируем список типов элементов с переносом строки
+        unit_types = []
+        for unit in tube_units:
+            display_name = dict(TubeUnit.UNIT_TYPE).get(unit.unit_type, unit.unit_type)
+            unit_types.append(display_name)
+
+        return ', '.join(unit_types)
 
 
 class RepairTable(tables.Table):

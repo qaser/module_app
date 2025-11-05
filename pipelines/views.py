@@ -27,11 +27,21 @@ def scheme_pipelines(request):
 
 @login_required
 def single_pipe(request, pipe_id):
-    pipe = Pipe.objects.filter(id=pipe_id)
+    # pipe = Pipe.objects.filter(id=pipe_id)
     return render(
         request,
         'pipelines/single_pipe.html',
-        {'pipe_id': pipe_id, 'valve': pipe.model._meta.fields}
+        {'pipe_id': pipe_id}
+    )
+
+
+@login_required
+def single_tube(request, tube_id, pipe_id):
+    # tube = Tube.objects.filter(id=tube_id)
+    return render(
+        request,
+        'pipelines/single_tube.html',
+        {'tube_id': tube_id}
     )
 
 

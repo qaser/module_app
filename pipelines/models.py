@@ -392,8 +392,8 @@ class TubeVersion(models.Model):
     )
     date = models.DateField(
         verbose_name='Дата изменения информации',
-        null=True,
-        blank=True
+        null=False,
+        blank=False
     )
     version_type = models.CharField(
         max_length=20,
