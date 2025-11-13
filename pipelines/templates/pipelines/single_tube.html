@@ -1,0 +1,190 @@
+{% extends "module_app/base.html" %}
+{% block title %}Обзор трубопроводного элемента{% endblock %}
+{% block app_name %}Магистральные газопроводы{% endblock %}
+
+{% load static %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/single-tube.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="{% url 'pipelines:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_objects"></div>
+        <h3 class="sidebar__text">Схема магистральных газопроводов</h3>
+    </a>
+    <a href="{% url 'pipelines:repairs' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_service"></div>
+        <h3 class="sidebar__text">Обзор ремонтов</h3>
+    </a>
+    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_edit"></div>
+        <h3 class="sidebar__text">Диагностика МГ</h3>
+    </a>
+    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Планирование</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    <main class="content">
+        <section class="main" id="main">
+            <h1 class="main__title">Труба №<span id="tube_num"></span></h1>
+            <div class="card card_inline" id="{{ tube_id }}">
+            <div class="card__container">
+                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Основная информация</h3>
+                </div>
+                <div class="card__field" id="tube_info">
+                    <div class="card__line">
+                        <p class="card__param">Номер трубы</p>
+                        <p class="card__value" id="tube_num"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Местоположение</p>
+                        <p class="card__value" id="pipe_name"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Источник данных</p>
+                        <p class="card__value" id="version_type_display"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Длина, м</p>
+                        <p class="card__value" id="tube_length"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Толщина стенки, мм</p>
+                        <p class="card__value" id="thickness"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Тип трубы</p>
+                        <p class="card__value" id="tube_type"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Диаметр, мм</p>
+                        <p class="card__value" id="diameter"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Предел текучести, МПа</p>
+                        <p class="card__value" id="yield_strength"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Сопротивление разрыву, МПа</p>
+                        <p class="card__value" id="tear_strength"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Категория</p>
+                        <p class="card__value" id="category"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Коэф. надёжности по материалу</p>
+                        <p class="card__value" id="reliability_material"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Коэф. условий работы</p>
+                        <p class="card__value" id="working_conditions"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Коэф. надёжности по давлению</p>
+                        <p class="card__value" id="reliability_pressure"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Коэф. надёжности трубопровода</p>
+                        <p class="card__value" id="reliability_coef"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Ударная вязкость, Дж/см²</p>
+                        <p class="card__value" id="impact_strength"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Марка стали</p>
+                        <p class="card__value" id="steel_grade"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Положение швов, час</p>
+                        <p class="card__value" id="weld_position"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">От репера, м</p>
+                        <p class="card__value" id="from_reference_start"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">До репера, м</p>
+                        <p class="card__value" id="to_reference_end"></p>
+                    </div>
+                    <div class="card__line">
+                        <p class="card__param">Комментарий</p>
+                        <p class="card__value" id="comment"></p>
+                    </div>
+                </div>
+
+                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Элементы обустройства</h3>
+                </div>
+                <div class="card__field" id="tube_units_info"></div>
+
+                <!-- <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">История версий</h3>
+                </div>
+                <div class="card__field" id="versions_info"></div> -->
+            </div>
+
+            <div class="card__container">
+                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}" id="card_files">
+                    <h3 class="card__title">Документация</h3>
+                    <button class="button card__button card__button_add hidden" data-tooltip="Добавить файл"></button>
+                </div>
+                <div class="card__line" id="empty_files">
+                    <p class="card__param">Файлы отсутствуют</p>
+                </div>
+                <div class="card__files"></div>
+            </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- всплывающее окно с формой добавления файла -->
+    <div class="popup" id="popup-file">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup form-popup_wide" name="new-file" id="form-newfile" enctype="multipart/form-data">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4"></input>
+                    <span class="form-popup__input-error" id="file-name-error"></span>
+                </label>
+                <label class="form-popup__file-field">
+                    <span class="form-popup__file-title">Файл:</span>
+                    <input class="form-popup__input module-color__button_pipelines" type="file" id="pipe-files" name="files" accept="image/*, application/pdf" required>
+                    <span class="form-popup__input-error" id="pipe-files-error"></span>
+                </label>
+                <progress id="progressBar" value="0" max="100"></progress>
+                <div class="form-popup__container">
+                    <span class="form-popup__status" id="uploadForm_Status"></span>
+                    <span id="uploadForm_Size"></span>
+                </div>
+                <button class="form-popup__button button module-color__button_{{ request.resolver_match.app_name }}" type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+
+    <template class="file-template">
+        <div class="card__line" id="">
+            <a class="card__value_ext  link" target="_blank" data-tooltip="Открыть файл"></a>
+            <button class="card__delete hidden" type="button" data-tooltip="Удалить файл">✖</button>
+        </div>
+    </template>
+
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/singleTube.js' %}"></script>
+{% endblock %}

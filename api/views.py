@@ -14,15 +14,15 @@ from rest_framework.views import APIView
 from equipments.models import Department, Equipment
 from leaks.models import Leak
 from notifications.models import Notification
-from pipelines.models import (Node, NodeState, Pipe, PipeDepartment,
-                              PipeDocument, Pipeline, PipeState, Tube, TubeVersion)
+from pipelines.models import (Diagnostics, Node, NodeState, Pipe, PipeDepartment,
+                              PipeDocument, Pipeline, PipeState, Tube, TubeDocument, TubeVersion)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
 
-from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
+from .serializers import (AnnualPlanSerializer, DepartmentSerializer, DiagnosticsSerializer,
                           EquipmentSerializer, FactorySerializer,
                           LeakSerializer, NodeStateSerializer,
                           NotificationSerializer, PipeDocumentSerializer,
@@ -30,7 +30,7 @@ from .serializers import (AnnualPlanSerializer, DepartmentSerializer,
                           PipeStateSerializer, ProposalDocumentSerializer,
                           ProposalSerializer, QuarterlyPlanSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
-                          StatusSerializer, TubeSerializer, TubeVersionSerializer, UserSerializer,
+                          StatusSerializer, TubeDocumentSerializer, TubeSerializer, TubeVersionSerializer, UserSerializer,
                           ValveDocumentSerializer, ValveImageSerializer,
                           ValveSerializer, WorkServiceSerializer)
 
@@ -58,6 +58,16 @@ class ValveDocumentViewSet(viewsets.ModelViewSet):
 class PipeDocumentViewSet(viewsets.ModelViewSet):
     queryset = PipeDocument.objects.all()
     serializer_class = PipeDocumentSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+
+class TubeDocumentViewSet(viewsets.ModelViewSet):
+    queryset = TubeDocument.objects.all()
+    serializer_class = TubeDocumentSerializer
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticated]
 
@@ -439,14 +449,9 @@ class TubesViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticated]
 
-    # def list(self, request, pipe_id=None):
-    #     try:
-    #         pipe = Pipe.objects.get(id=pipe_id)
-    #         tubes = Tube.objects.filter(pipe=pipe)
-    #         serializer = TubeSerializer(tubes, many=True)
-    #         return Response(serializer.data)
-    #     except Pipe.DoesNotExist:
-    #         return Response(
-    #             {"detail": f"Pipe с id={pipe_id} не найден"},
-    #             status=status.HTTP_404_NOT_FOUND
-    #         )
+
+class DiagnosticsViewSet(viewsets.ModelViewSet):
+    queryset = Diagnostics.objects.all()
+    serializer_class = DiagnosticsSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]

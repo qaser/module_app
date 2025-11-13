@@ -5,10 +5,10 @@ from rest_framework import serializers
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
-from pipelines.models import (Anomaly, ComplexPlan, Diagnostics, Hole, Node,
+from pipelines.models import (Anomaly, Bend, ComplexPlan, Diagnostics, Hole, Node,
                               NodeState, Pipe, PipeDepartment, PipeDocument,
                               PipeLimit, Pipeline, PipeState, PlannedWork,
-                              Repair, Tube, TubeUnit, TubeVersion)
+                              Repair, Tube, TubeDocument, TubeUnit, TubeVersion)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -94,6 +94,17 @@ class PipeDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PipeDocument
         fields = ('id', 'doc', 'name', 'pipe_id')
+
+
+class TubeDocumentSerializer(serializers.ModelSerializer):
+    tube_id = serializers.PrimaryKeyRelatedField(
+        queryset=TubeVersion.objects.all(),
+        source='tube'
+    )
+
+    class Meta:
+        model = TubeDocument
+        fields = ('id', 'doc', 'name', 'tube_id', 'uploaded_at')
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
@@ -588,6 +599,7 @@ class TubeVersionSerializer(serializers.ModelSerializer):
     tube_num = serializers.CharField(source="tube.tube_num", read_only=True)
     has_tube_units = serializers.SerializerMethodField()
     tube_units = TubeUnitSerializer(many=True, read_only=True)
+    files = TubeDocumentSerializer(many=True, read_only=True, source='tube_docs')  # Добавлено
 
     class Meta:
         model = TubeVersion
@@ -620,45 +632,21 @@ class TubeVersionSerializer(serializers.ModelSerializer):
             "comment",
             "has_tube_units",
             "tube_units",
+            "files",  # Добавлено
         ]
-
 
     def get_has_tube_units(self, obj):
         return obj.tube_units.exists()
 
 
 class TubeSerializer(serializers.ModelSerializer):
-    pipe_name = serializers.CharField(source="pipe.name", read_only=True)
+    pipe_name = serializers.CharField(source="pipe", read_only=True)
+    files = serializers.SerializerMethodField()
     versions = TubeVersionSerializer(many=True, read_only=True)
-    # Поля из TubeVersion (последняя версия)
-    diagnostics = serializers.PrimaryKeyRelatedField(read_only=True)
-    repair = serializers.PrimaryKeyRelatedField(read_only=True)
-    date = serializers.DateField(read_only=True)
-    version_type = serializers.CharField(read_only=True)
-    version_type_display = serializers.CharField(source="get_version_type_display", read_only=True)
-    odometr_data = serializers.FloatField(read_only=True)
-    tube_length = serializers.FloatField(read_only=True)
-    thickness = serializers.FloatField(read_only=True)
-    tube_type = serializers.CharField(read_only=True)
-    diameter = serializers.IntegerField(read_only=True)
-    yield_strength = serializers.IntegerField(read_only=True)
-    tear_strength = serializers.IntegerField(read_only=True)
-    category = serializers.CharField(read_only=True)
-    reliability_material = serializers.FloatField(read_only=True)
-    working_conditions = serializers.FloatField(read_only=True)
-    reliability_pressure = serializers.FloatField(read_only=True)
-    reliability_coef = serializers.FloatField(read_only=True)
-    impact_strength = serializers.FloatField(read_only=True)
-    steel_grade = serializers.CharField(read_only=True)
-    weld_position = serializers.CharField(read_only=True)
-    from_reference_start = serializers.CharField(read_only=True)
-    to_reference_end = serializers.CharField(read_only=True)
-    comment = serializers.CharField(read_only=True)
 
     class Meta:
         model = Tube
         fields = [
-            # Поля из Tube
             "id",
             "pipe",
             "pipe_name",
@@ -666,59 +654,34 @@ class TubeSerializer(serializers.ModelSerializer):
             "active",
             "installed_date",
             "removed_date",
-            # Поля из последней TubeVersion
-            "diagnostics",
-            "repair",
-            "date",
-            "version_type",
-            "version_type_display",
-            "odometr_data",
-            "tube_length",
-            "thickness",
-            "tube_type",
-            "diameter",
-            "yield_strength",
-            "tear_strength",
-            "category",
-            "reliability_material",
-            "working_conditions",
-            "reliability_pressure",
-            "reliability_coef",
-            "impact_strength",
-            "steel_grade",
-            "weld_position",
-            "from_reference_start",
-            "to_reference_end",
-            "comment",
-            # Все версии
+            "files",
             "versions",
         ]
-        read_only_fields = [
-            "id", "pipe_name", "diagnostics", "repair", "date", "version_type",
-            "version_type_display", "odometr_data", "tube_length", "thickness",
-            "tube_type", "diameter", "yield_strength", "tear_strength", "category",
-            "reliability_material", "working_conditions", "reliability_pressure",
-            "reliability_coef", "impact_strength", "steel_grade", "weld_position",
-            "from_reference_start", "to_reference_end", "comment"
-        ]
+        read_only_fields = ["id", "pipe_name"]
+
+    def get_files(self, obj):
+        """Возвращает файлы последней версии трубы"""
+        latest_version = obj.versions.order_by("-date").first()
+        if latest_version:
+            # Получаем все документы последней версии
+            tube_docs = latest_version.tube_docs.all()
+            return TubeDocumentSerializer(tube_docs, many=True).data
+        return []
 
     def to_representation(self, instance):
         """Добавляем данные из последней версии TubeVersion"""
         representation = super().to_representation(instance)
-
         # Получаем последнюю версию
         latest_version = instance.versions.order_by("-date").first()
-
         if latest_version:
             # Обновляем representation данными из последней версии
             version_serializer = TubeVersionSerializer(latest_version)
             version_data = version_serializer.data
-
-            # Копируем все поля из версии, кроме id и tube
+            # Копируем только нужные поля из версии, исключая files (у нас уже есть отдельное поле)
+            exclude_fields = ['id', 'tube', 'tube_num', 'files']
             for field in version_data:
-                if field not in ['tube', 'tube_num']:
+                if field not in exclude_fields:
                     representation[field] = version_data[field]
-
         return representation
 
 
@@ -810,6 +773,24 @@ class PipeSerializer(serializers.ModelSerializer):
         """Возвращает количество элементов, связанных с участком"""
         # Считаем элементы через связанные трубы
         return TubeUnit.objects.filter(tube__tube__pipe=obj).count()
+
+
+class DiagnosticsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Diagnostics
+        fields = '__all__'
+
+
+class BendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bend
+        fields = '__all__'
+
+
+class AnomalySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Anomaly
+        fields = '__all__'
 
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -939,12 +920,6 @@ class PlannedWorkSerializer(serializers.ModelSerializer):
 class RepairSerializer(serializers.ModelSerializer):
     class Meta:
         model = Repair
-        fields = '__all__'
-
-
-class DiagnosticsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Diagnostics
         fields = '__all__'
 
 

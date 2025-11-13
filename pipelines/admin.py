@@ -5,7 +5,7 @@ from django.utils.html import format_html, format_html_join
 from .models import (Anomaly, ComplexPlan, Diagnostics, Hole, HoleDocument,
                      Node, NodeState, Pipe, PipeDepartment, PipeDocument,
                      PipeLimit, Pipeline, PipeState, PlannedWork, Repair,
-                     RepairDocument, RepairStage, Tube, TubeUnit, TubeVersion)
+                     RepairDocument, RepairStage, Tube, TubeUnit, TubeVersion, Bend)
 
 
 class PipeDepartmentInline(admin.TabularInline):
@@ -416,20 +416,46 @@ class AnomalyAdmin(admin.ModelAdmin):
         'id',
         'anomaly_nature',
         'tube_display',
-        'diagnostics',
         'anomaly_length',
         'anomaly_width',
         'anomaly_depth',
     )
     list_filter = (
         'anomaly_nature',
-        'diagnostics',
     )
-    autocomplete_fields = ['diagnostics', 'tube']
+    autocomplete_fields = ['tube']
 
     def tube_display(self, obj):
         if obj.tube:
-            return f'№{obj.tube.tube_num} (Pipe ID {obj.tube.pipe_id})'
+            return f'№{obj.tube.tube.tube_num} (Pipe ID {obj.tube.tube.pipe_id})'
         return '—'
 
     tube_display.short_description = 'Труба'
+
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Bend
+
+@admin.register(Bend)
+class BendAdmin(admin.ModelAdmin):
+    list_display = [
+        'tube',
+        'bend_type',
+        'direction',
+        'radius',
+        # 'length',
+        # 'safety_status',
+    ]
+    list_filter = [
+        'bend_type',
+        'direction',
+        # 'safety_status',
+        'tube__tube__pipe__pipeline'  # фильтр по газопроводу
+    ]
+
+    # search_fields = [
+    #     'tube_number',
+    #     'tube__tube__tube_num',
+    #     'comment',
+    #     'safety_status'
+    # ]

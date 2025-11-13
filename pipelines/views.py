@@ -54,6 +54,16 @@ def single_node(request):
     )
 
 
+@login_required
+def single_diagnostic(request, diagnostic_id):
+    # pipe = Pipe.objects.filter(id=pipe_id)
+    return render(
+        request,
+        'pipelines/single_diagnostic.html',
+        {'diagnostic_id': diagnostic_id}
+    )
+
+
 class RepairsView(SingleTableMixin, FilterView):
     model = Repair
     table_class = RepairTable
@@ -129,9 +139,7 @@ class TubesView(SingleTableMixin, FilterView):
         ).order_by('-date')
 
         # Субзапрос для проверки наличия элементов обустройства
-        unit_exists_subquery = TubeUnit.objects.filter(
-            tube=OuterRef('last_version_id')
-        )
+        unit_exists_subquery = TubeUnit.objects.filter(tube=OuterRef('last_version_id'))
 
         # Субзапрос для типа элемента обустройства
         unit_type_subquery = TubeUnit.objects.filter(
@@ -148,7 +156,7 @@ class TubesView(SingleTableMixin, FilterView):
                 last_type=Subquery(latest_version_subquery.values('tube_type')[:1]),
                 last_steel_grade=Subquery(latest_version_subquery.values('steel_grade')[:1]),
                 last_version_id=Subquery(latest_version_subquery.values('id')[:1]),
-                unit_type=Subquery(unit_type_subquery),
+                has_units=Exists(unit_exists_subquery),
             )
             .order_by('tube_num')
         )

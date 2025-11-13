@@ -329,7 +329,7 @@ class Diagnostics(models.Model):
     class Meta:
         verbose_name = 'ВТД'
         verbose_name_plural = 'ВТД'
-        ordering = ['-start_date', '-end_date']  # Добавьте эту строку
+        ordering = ['-start_date', '-end_date']
         indexes = [
             models.Index(fields=['start_date']),
             models.Index(fields=['end_date']),
@@ -605,12 +605,6 @@ class Anomaly(models.Model):
         ('mid', 'MID'),
         ('n/a', 'N/A'),
     ]
-
-    diagnostics = models.ForeignKey(
-        Diagnostics,
-        on_delete=models.CASCADE,
-        related_name='diagnostics_anomalies'
-    )
     tube = models.ForeignKey(
         TubeVersion,
         on_delete=models.CASCADE,
@@ -713,8 +707,8 @@ class Anomaly(models.Model):
     anomaly_length = models.PositiveSmallIntegerField(
         verbose_name='Длина аномалии, мм',
         default=0,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
     )
     anomaly_width = models.PositiveSmallIntegerField(
         verbose_name='Ширина аномалии, мм',
@@ -722,16 +716,21 @@ class Anomaly(models.Model):
         blank=False,
         null=False,
     )
-    anomaly_depth = models.PositiveSmallIntegerField(
+    anomaly_depth = models.FloatField(
         verbose_name='Глубина аномалии, %',
         default=0,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
     )
     location = models.CharField(
         max_length=10,
         choices=LOCATION,
         verbose_name='Расположение',
+        blank=True,
+        null=True,
+    )
+    safe_pressure_coefficient = models.FloatField(
+        verbose_name='Коэффициент безопасного давления',
         blank=True,
         null=True,
     )
@@ -744,6 +743,7 @@ class Anomaly(models.Model):
     # Комментарии
     comment = models.TextField(
         verbose_name='Комментарий',
+        max_length=500,
         blank=True,
         null=True,
     )
@@ -752,14 +752,238 @@ class Anomaly(models.Model):
         verbose_name = 'Аномалия'
         verbose_name_plural = 'Аномалии'
         indexes = [
-            models.Index(fields=['diagnostics']),
             models.Index(fields=['tube']),
             models.Index(fields=['anomaly_nature']),
         ]
         # ordering = ['tube__tube_num',]
 
     def __str__(self):
-        return f'Аномалия на трубе №{self.tube.tube_num if self.tube else "N/A"}'
+        return f'Аномалия на трубе №{self.tube.tube.tube_num if self.tube else "N/A"}'
+
+
+class Bend(models.Model):
+    BEND_TYPE_CHOICES = [
+        ('elastic_plastic', 'Упруго-пластический изгиб'),
+        ('cold_bend', 'Отвод холодного гнутья'),
+        ('segment_bend', 'Отвод сегментный'),
+    ]
+
+    DIRECTION_CHOICES = [
+        ('vertical', 'Вертикальная'),
+        ('horizontal', 'Горизонтальная'),
+    ]
+
+    # Связь с трубой
+    tube = models.ForeignKey(
+        TubeVersion,
+        on_delete=models.CASCADE,
+        related_name='bends',
+        verbose_name='Труба',
+        blank=False,
+        null=False,
+    )
+
+    # Геометрические параметры отвода
+    start_point = models.FloatField(
+        verbose_name='Начало отвода, м',
+        blank=False,
+        null=False,
+    )
+    end_point = models.FloatField(
+        verbose_name='Конец отвода, м',
+        blank=False,
+        null=False,
+    )
+    tube_number = models.CharField(
+        verbose_name='Номер трубы',
+        max_length=20,
+        blank=True,
+        null=True,
+    )
+
+    # Параметры изгиба
+    segment_count = models.PositiveSmallIntegerField(
+        verbose_name='Число сегментов',
+        blank=True,
+        null=True,
+    )
+    radius = models.FloatField(
+        verbose_name='Радиус, м',
+        blank=True,
+        null=True,
+    )
+    radius_in_diameters = models.FloatField(
+        verbose_name='Радиус в диаметрах (D)',
+        blank=True,
+        null=True,
+    )
+    bend_angle = models.FloatField(
+        verbose_name='Угол изгиба, град.',
+        blank=True,
+        null=True,
+    )
+    projection_angle = models.CharField(
+        verbose_name='Угол в проекции, град.',
+        max_length=20,
+        blank=True,
+        null=True,
+    )
+    # Характеристики отвода
+    bend_type = models.CharField(
+        max_length=20,
+        choices=BEND_TYPE_CHOICES,
+        verbose_name='Тип отвода',
+        blank=False,
+        null=False,
+    )
+    direction = models.CharField(
+        max_length=15,
+        choices=DIRECTION_CHOICES,
+        verbose_name='Направление',
+        blank=False,
+        null=False,
+    )
+    # Координаты и параметры напряжений
+    max_stress_coordinate = models.FloatField(
+        verbose_name='Координата максимального растяжения, м',
+        blank=True,
+        null=True,
+    )
+    max_stress_orientation = models.CharField(
+        verbose_name='Ориентация максимального растяжения, час',
+        max_length=10,
+        blank=True,
+        null=True,
+        help_text='Например: 6.2 час'
+    )
+    deflection = models.FloatField(
+        verbose_name='Прогиб, мм',
+        blank=True,
+        null=True,
+    )
+    # Статус безопасности
+    safety_status = models.CharField(
+        max_length=100,
+        verbose_name='Опасность',
+        blank=True,
+        null=True,
+    )
+    # Географические координаты
+    latitude = models.FloatField(
+        verbose_name='Широта, °',
+        blank=True,
+        null=True,
+    )
+    longitude = models.FloatField(
+        verbose_name='Долгота, °',
+        blank=True,
+        null=True,
+    )
+    altitude = models.FloatField(
+        verbose_name='Высота, м',
+        blank=True,
+        null=True,
+    )
+    # Комментарии
+    comment = models.TextField(
+        verbose_name='Комментарий',
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        verbose_name = 'Отвод'
+        verbose_name_plural = 'Отводы'
+        indexes = [
+            models.Index(fields=['tube']),
+            models.Index(fields=['start_point', 'end_point']),
+            models.Index(fields=['bend_type']),
+            models.Index(fields=['safety_status']),
+        ]
+        ordering = ['tube__tube__tube_num', 'start_point']
+
+    def __str__(self):
+        return f'Отвод трубы №{self.tube_number or self.tube.tube.tube_num} ({self.start_point}-{self.end_point} м)'
+
+    def save(self, *args, **kwargs):
+        # Автоматическое вычисление радиуса в диаметрах
+        if self.radius and self.tube and self.tube.diameter:
+            self.radius_in_diameters = self.radius / (self.tube.diameter / 1000)  # переводим мм в метры
+
+        # Парсинг комментария для извлечения дополнительных данных
+        if self.comment:
+            self._parse_comment()
+
+        super().save(*args, **kwargs)
+
+    def _parse_comment(self):
+        """Парсинг комментария для автоматического извлечения данных"""
+        comment = self.comment.lower()
+
+        # Извлечение радиуса в диаметрах
+        if 'радиус изгиба=' in comment and 'd' in comment:
+            try:
+                start = comment.find('радиус изгиба=') + len('радиус изгиба=')
+                end = comment.find('d', start)
+                radius_d = comment[start:end].strip()
+                if radius_d.replace('.', '').isdigit():
+                    self.radius_in_diameters = float(radius_d)
+            except (ValueError, IndexError):
+                pass
+
+        # Извлечение координаты максимального растяжения
+        if 'координата=' in comment:
+            try:
+                start = comment.find('координата=') + len('координата=')
+                end = comment.find(',', start)
+                coord = comment[start:end].strip()
+                if coord.replace('.', '').isdigit():
+                    self.max_stress_coordinate = float(coord)
+            except (ValueError, IndexError):
+                pass
+
+        # Извлечение ориентации максимального растяжения
+        if 'растяжение на' in comment and 'час' in comment:
+            try:
+                start = comment.find('растяжение на') + len('растяжение на')
+                end = comment.find('час', start)
+                orientation = comment[start:end].strip()
+                if orientation.replace('.', '').isdigit():
+                    self.max_stress_orientation = orientation
+            except (ValueError, IndexError):
+                pass
+
+        # Извлечение прогиба
+        if 'прогиб' in comment and 'мм' in comment:
+            try:
+                start = comment.find('прогиб') + len('прогиб')
+                end = comment.find('мм', start)
+                deflection_str = comment[start:end].strip().split()[-1]
+                if deflection_str.replace('.', '').isdigit():
+                    self.deflection = float(deflection_str)
+            except (ValueError, IndexError):
+                pass
+
+        # Определение направления выпуклости
+        if 'выпуклый вправо' in comment:
+            self.convex_direction = 'вправо'
+        elif 'выпуклый влево' in comment:
+            self.convex_direction = 'влево'
+
+    # @property
+    # def length(self):
+    #     """Длина отвода в метрах"""
+    #     if self.start_point and self.end_point:
+    #         return self.end_point - self.start_point
+    #     return None
+
+    def clean(self):
+        """Валидация данных"""
+        if self.end_point and self.start_point and self.end_point <= self.start_point:
+            raise ValidationError('Конечная точка отвода должна быть больше начальной точки')
+
+        if self.radius and self.radius <= 0:
+            raise ValidationError('Радиус должен быть положительным числом')
 
 
 class Defect(models.Model):
@@ -878,6 +1102,26 @@ class PipeDocument(models.Model):
     class Meta:
         verbose_name = 'Документация участка МГ'
         verbose_name_plural = 'Документация участков МГ'
+
+
+class TubeDocument(models.Model):
+    tube = models.ForeignKey(
+        TubeVersion,
+        on_delete=models.CASCADE,
+        related_name='tube_docs'
+    )
+    doc = models.FileField(upload_to='pipelines/docs/tubes/')
+    name = models.CharField(
+        'Наименование документа',
+        max_length=100,
+        blank=False,
+        null=False,
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Документация элемента'
+        verbose_name_plural = 'Документация элементов'
 
 
 class NodeDocument(models.Model):

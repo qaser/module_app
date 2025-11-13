@@ -1,6 +1,6 @@
 import django_filters as df
 from django import forms
-from django.db.models import Q
+from django.db.models import Q, Subquery, Exists, OuterRef
 
 from equipments.models import Department
 from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment,
@@ -8,38 +8,6 @@ from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment,
 
 
 class TubeFilter(df.FilterSet):
-    def get_tube_type_choices():
-        qs = (TubeVersion.objects
-            .exclude(tube_type__isnull=True)
-            .exclude(tube_type__exact='')
-            .values_list('tube_type', flat=True)
-            .distinct())
-        choices = [(val, dict(TubeVersion.TUBE_TYPE).get(val, val)) for val in sorted(qs)]
-        return choices
-
-    def get_steel_grade_choices():
-        qs = (TubeVersion.objects
-            .exclude(steel_grade__isnull=True)
-            .exclude(steel_grade__exact='')
-            .values_list('steel_grade', flat=True)
-            .distinct())
-        choices = [(val, val) for val in sorted(qs)]
-        return choices
-
-    def get_unit_type_choices():
-        # Базовые опции
-        base_choices = [
-            ('all_units', 'Все элементы обустройства'),
-            ('no_units', 'Без элементов обустройства'),
-        ]
-
-        # Опции типов элементов обустройства
-        unit_choices = [
-            (val, label) for val, label in TubeUnit.UNIT_TYPE
-        ]
-
-        return base_choices + unit_choices
-
     tube_num = df.CharFilter(
         label='Номер элемента',
         lookup_expr='icontains',
@@ -67,19 +35,42 @@ class TubeFilter(df.FilterSet):
     )
     last_type = df.ChoiceFilter(
         label='Тип',
-        choices=get_tube_type_choices,
+        choices=lambda: [
+            (val, dict(TubeVersion.TUBE_TYPE).get(val, val)) for val in sorted(
+                set(TubeVersion.objects
+                    .exclude(tube_type__isnull=True)
+                    .exclude(tube_type__exact='')
+                    .values_list('tube_type', flat=True)
+                    .distinct()
+                )
+            )
+        ],
         field_name='last_type',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     last_steel_grade = df.ChoiceFilter(
         label='Марка стали',
-        choices=get_steel_grade_choices,
+        choices=lambda: [
+            (val, val) for val in sorted(
+                set(TubeVersion.objects
+                    .exclude(steel_grade__isnull=True)
+                    .exclude(steel_grade__exact='')
+                    .values_list('steel_grade', flat=True)
+                    .distinct()
+                )
+            )
+        ],
         field_name='last_steel_grade',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     unit_type = df.ChoiceFilter(
         label='Элементы обустройства',
-        choices=get_unit_type_choices,
+        choices=lambda: [
+            ('all_units', 'Все элементы обустройства'),
+            ('no_units', 'Без элементов обустройства'),
+        ] + [
+            (val, label) for val, label in TubeUnit.UNIT_TYPE
+        ],
         method='filter_unit_type',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
@@ -97,14 +88,16 @@ class TubeFilter(df.FilterSet):
 
     def filter_unit_type(self, queryset, name, value):
         if value == 'all_units':
-            # Трубы с любыми элементами обустройства (unit_type не пустой)
-            return queryset.exclude(unit_type__isnull=True)
+            # Трубы, у которых есть хотя бы один TubeUnit
+            return queryset.filter(has_units=True)
         elif value == 'no_units':
-            # Трубы без элементов обустройства (unit_type пустой)
-            return queryset.filter(unit_type__isnull=True)
+            # Трубы без элементов обустройства
+            return queryset.filter(has_units=False)
         else:
-            # Трубы с конкретным типом элемента обустройства
-            return queryset.filter(unit_type=value)
+            # Фильтрация по конкретному типу TubeUnit через подзапрос
+            return queryset.filter(
+                versions__tube_units__unit_type=value
+            ).distinct()
 
 
 class RepairFilter(df.FilterSet):

@@ -407,7 +407,6 @@ export default class Api {
         .then(this._checkResponse);
     }
 
-
     // добавление новой файла pipe
     addPipeFile(form) {
         // delete this._headers['Content-Type']
@@ -428,6 +427,26 @@ export default class Api {
         // .then(this._checkResponse);
     }
 
+    // добавление новой файла tube
+    addTubeFile(form) {
+        // delete this._headers['Content-Type']
+        return fetch(`${this._baseUrl}/tube-docs/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: form
+        })
+        .then(response => response.json());
+    }
+
+    // удаление файла tube
+    deleteTubeFile(id) {
+        return fetch(`${this._baseUrl}/tube-docs/${id}/`, {
+            method: 'DELETE',
+            headers: this._headers,
+        })
+        // .then(this._checkResponse);
+    }
+
     getTubes(pipe_id) {
         return fetch(`${this._baseUrl}/pipes/${pipe_id}/tubes/`, {
             headers: this._headers,
@@ -437,6 +456,20 @@ export default class Api {
 
     getTubeItem(id) {
         return fetch(`${this._baseUrl}/tubes/${id}/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    getDiagnostics() {
+        return fetch(`${this._baseUrl}/diagnostics/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    getDiagnosticItem(id) {
+        return fetch(`${this._baseUrl}/diagnostics/${id}/`, {
             headers: this._headers,
         })
         .then(response => response.json());

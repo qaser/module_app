@@ -2,7 +2,7 @@ import * as config from '../js/config/config.js';
 import * as constant from '../js/utils/constants.js';
 import Api from '../js/api/Api.js';
 import UserInfo from '../js/components/UserInfo.js';
-import PipeItem from './components/PipeItem.js';
+import TubeItem from './components/TubeItem.js';
 import Section from '../js/components/Section.js';
 import PopupWithForm from './components/PopupWithForm.js';
 import Tooltip from '../js/components/Tooltip.js';
@@ -13,7 +13,8 @@ import AppMenu from '../js/components/AppMenu.js';
 import PollingClient from './api/PollingClient.js';
 
 
-const pipeId = document.querySelector('.card').id;
+const tubeId = document.querySelector('.card').id;
+let tubeVersionId = 0
 let haveFiles = 0;
 const filesContainer = document.querySelector('.card__files'); // контейнер с файлами
 const formValidators = {};
@@ -41,7 +42,6 @@ const api = new Api({
 const btnFileAdd = new HiddenElement('.card__button_add')
 const emptyFilesBanner = new HiddenElement('#empty_files')
 
-
 // экземпляр карточки c файлами
 const fileInstance = new Section({
     renderer: (item) => {
@@ -59,8 +59,8 @@ const newUserInfo = new UserInfo({
 });
 
 
-// создание объекта с данными о ТПА
-const pipeInstance = new PipeItem({
+// создание объекта с данными о tube
+const tubeInstance = new TubeItem({
     card: '.main'
 })
 
@@ -83,7 +83,7 @@ const pollingClient = new PollingClient({
 function submitFormNewFile(data) {
     let formData = new FormData();
     formData.append('name', data.name);
-    formData.append('pipe_id', pipeId);
+    formData.append('tube_id', tubeVersionId);
     // собираем объект из файлов
     if (data.files.length > 0) {
         Object.entries(data.files).map((file) => {
@@ -91,7 +91,7 @@ function submitFormNewFile(data) {
         });
     }
     popupWithFormNewFile.renderLoading(true);
-    api.addPipeFile(formData)
+    api.addTubeFile(formData)
         .then((file) => {
             fileInstance.renderItems([file]);
             const fileCard = document.querySelector(`#file-${file.id}`);
@@ -122,7 +122,7 @@ function filesCard(item) {
 function handleFileDeleteClick(evt, fileId) {
     const id = fileId.replace(/\D/g, '')
     renderLoading()
-    api.deletePipeFile(id)
+    api.deleteTubeFile(id)
         .then((res) => {
             if (res.status == 204) {
                 elementDelete(fileId, filesContainer);
@@ -173,14 +173,15 @@ popupWithFormNewFile.setEventListeners();
 new Tooltip();
 new AppMenu();
 
-Promise.all([api.getMyProfile(), api.getPipeItem(pipeId)])
-    .then(([userData, pipe]) => {
+Promise.all([api.getMyProfile(), api.getTubeItem(tubeId)])
+    .then(([userData, tube]) => {
         pollingClient.start();
         newUserInfo.setUserInfo(userData);
-        pipeInstance.renderItem(pipe);
-        if (pipe.files.length > 0) {
-            haveFiles = pipe.files.length;
-            fileInstance.renderItems(pipe.files);
+        tubeInstance.renderItem(tube);
+        tubeVersionId = tube.version_id
+        if (tube.files.length > 0) {
+            haveFiles = tube.files.length;
+            fileInstance.renderItems(tube.files);
             emptyFilesBanner.hide();
         }
         if (userData.role == 'admin' || userData.role == 'manager') {
