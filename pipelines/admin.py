@@ -432,9 +432,6 @@ class AnomalyAdmin(admin.ModelAdmin):
 
     tube_display.short_description = 'Труба'
 
-from django.contrib import admin
-from django.utils.html import format_html
-from .models import Bend
 
 @admin.register(Bend)
 class BendAdmin(admin.ModelAdmin):

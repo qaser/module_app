@@ -5,10 +5,10 @@ from rest_framework import serializers
 from equipments.models import Department, Equipment
 from leaks.models import Leak, LeakDocument, LeakImage
 from notifications.models import Notification
-from pipelines.models import (Anomaly, Bend, ComplexPlan, Diagnostics, Hole, Node,
+from pipelines.models import (Anomaly, Bend, ComplexPlan, Defect, DiagnosticDocument, Diagnostics, Hole, Node,
                               NodeState, Pipe, PipeDepartment, PipeDocument,
                               PipeLimit, Pipeline, PipeState, PlannedWork,
-                              Repair, Tube, TubeDocument, TubeUnit, TubeVersion)
+                              Repair, Tube, TubeVersionDocument, TubeUnit, TubeVersion)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
@@ -96,15 +96,26 @@ class PipeDocumentSerializer(serializers.ModelSerializer):
         fields = ('id', 'doc', 'name', 'pipe_id')
 
 
-class TubeDocumentSerializer(serializers.ModelSerializer):
+class TubeVersionDocumentSerializer(serializers.ModelSerializer):
     tube_id = serializers.PrimaryKeyRelatedField(
         queryset=TubeVersion.objects.all(),
         source='tube'
     )
 
     class Meta:
-        model = TubeDocument
+        model = TubeVersionDocument
         fields = ('id', 'doc', 'name', 'tube_id', 'uploaded_at')
+
+
+class DiagnosticDocumentSerializer(serializers.ModelSerializer):
+    diagnostic_id = serializers.PrimaryKeyRelatedField(
+        queryset=Diagnostics.objects.all(),
+        source='diagnostic'
+    )
+
+    class Meta:
+        model = DiagnosticDocument
+        fields = ('id', 'doc', 'name', 'diagnostic_id', 'uploaded_at')
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
@@ -524,6 +535,14 @@ class AnnualPlanSerializer(serializers.ModelSerializer):
         return AnnualPlanSerializer(children_plans, many=True).data
 
 
+class PipeSerializer(serializers.ModelSerializer):
+    title = DepartmentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Pipe
+        fields = ['id', 'pipeline', 'start_point', 'end_point', 'diameter', 'departments']
+
+
 class PipeDepartmentSerializer(serializers.ModelSerializer):
     department_name = serializers.CharField(
         source='department.name',
@@ -573,7 +592,7 @@ class PipeLimitSerializer(serializers.ModelSerializer):
             'pressure_limit',
             'limit_reason',
             'start_date',
-            # 'end_date'
+            'end_date'
         ]
 
 
@@ -599,7 +618,7 @@ class TubeVersionSerializer(serializers.ModelSerializer):
     tube_num = serializers.CharField(source="tube.tube_num", read_only=True)
     has_tube_units = serializers.SerializerMethodField()
     tube_units = TubeUnitSerializer(many=True, read_only=True)
-    files = TubeDocumentSerializer(many=True, read_only=True, source='tube_docs')  # Добавлено
+    files = TubeVersionDocumentSerializer(many=True, read_only=True, source='tube_docs')
 
     class Meta:
         model = TubeVersion
@@ -632,7 +651,7 @@ class TubeVersionSerializer(serializers.ModelSerializer):
             "comment",
             "has_tube_units",
             "tube_units",
-            "files",  # Добавлено
+            "files",
         ]
 
     def get_has_tube_units(self, obj):
@@ -660,12 +679,13 @@ class TubeSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "pipe_name"]
 
     def get_files(self, obj):
+        print(obj)
         """Возвращает файлы последней версии трубы"""
         latest_version = obj.versions.order_by("-date").first()
         if latest_version:
             # Получаем все документы последней версии
             tube_docs = latest_version.tube_docs.all()
-            return TubeDocumentSerializer(tube_docs, many=True).data
+            return TubeVersionDocumentSerializer(tube_docs, many=True).data
         return []
 
     def to_representation(self, instance):
@@ -776,9 +796,65 @@ class PipeSerializer(serializers.ModelSerializer):
 
 
 class DiagnosticsSerializer(serializers.ModelSerializer):
+    pipeline = serializers.SerializerMethodField()
+    files = serializers.SerializerMethodField()
+    length = serializers.SerializerMethodField()
+    tube_count = serializers.SerializerMethodField()
+    unit_count = serializers.SerializerMethodField()
+    bend_count = serializers.SerializerMethodField()
+    anomaly_count = serializers.SerializerMethodField()
+    defects_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Diagnostics
-        fields = '__all__'
+        fields = [
+            'id',
+            'pipeline',
+            'length',
+            'pipes',
+            'start_date',
+            'end_date',
+            'description',
+            'files',
+            'tube_count',
+            'unit_count',
+            'bend_count',
+            'anomaly_count',
+            'defects_count',
+        ]
+
+    def get_pipeline(self, obj):
+        first_pipe = obj.pipes.first()
+        if first_pipe:
+            return first_pipe.pipeline.title
+        return None
+
+    def get_files(self, obj):
+        selected_files = DiagnosticDocument.objects.filter(diagnostic=obj)
+        return DiagnosticDocumentSerializer(selected_files, many=True, required=False).data
+
+    def get_tube_count(self, obj):
+        return TubeVersion.objects.filter(diagnostics=obj).count()
+
+    def get_unit_count(self, obj):
+        return TubeUnit.objects.filter(tube__diagnostics=obj).count()
+
+    def get_bend_count(self, obj):
+        return Bend.objects.filter(tube__diagnostics=obj).count()
+
+    def get_anomaly_count(self, obj):
+        return Anomaly.objects.filter(tube__diagnostics=obj).count()
+
+    def get_defects_count(self, obj):
+        return Defect.objects.filter(tube__diagnostics=obj).count()
+
+    def get_length(self, obj):
+        pipes = obj.pipes.all()
+        if not pipes:
+            return 0
+        start = min(pipe.start_point for pipe in pipes)
+        end = max(pipe.end_point for pipe in pipes)
+        return f'от {start} до {end} км'
 
 
 class BendSerializer(serializers.ModelSerializer):
@@ -795,6 +871,7 @@ class AnomalySerializer(serializers.ModelSerializer):
 
 class NodeSerializer(serializers.ModelSerializer):
     department = serializers.SerializerMethodField()
+    # equipment = EquipmentSerializer()
     # valves = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
     node_type_display = serializers.CharField(
@@ -811,13 +888,9 @@ class NodeSerializer(serializers.ModelSerializer):
             'location_point',
             'pipeline',
             'department',
-            # 'valves',
+            'equipment',
             'state',
         ]
-
-    def get_valves(self, obj):
-        valves = Valve.objects.filter(equipment=obj.equipment)
-        return ValveSerializer(valves, many=True).data
 
     def get_state(self, obj):
         latest_state = obj.current_states[0] if hasattr(obj, 'current_states') and obj.current_states else None

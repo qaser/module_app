@@ -10,6 +10,19 @@ urlpatterns = [
     path('repairs/', login_required(views.RepairsView.as_view()), name='repairs'),
     path('diagnostics/', login_required(views.DiagnosticsView.as_view()), name='diagnostics'),
     path('diagnostics/<int:diagnostic_id>/', views.single_diagnostic, name='single_diagnostic'),
+    path(
+        'diagnostics/<int:diagnostic_id>/tubes/',
+        login_required(views.DiagnosticTubesView.as_view()),
+        name='diagnostic_tubes'
+    ),
+    # path(
+    #     'diagnostics/<int:diagnostic_id>/tube-units/',
+    #     login_required(views.DiagnosticTubeUnitsView.as_view()),
+    #     name='diagnostic_tube_units'
+    # ),
+    # path('diagnostics/<int:diagnostic_id>/bends/', views.diagnostic_bends, name='diagnostic_bends'),
+    # path('diagnostics/<int:diagnostic_id>/anomalies/', views.diagnostic_anomalies, name='diagnostic_anomalies'),
+    # path('diagnostics/<int:diagnostic_id>/defects/', views.diagnostic_defects, name='diagnostic_defects'),
     # path('plans/', login_required(views.PlansView.as_view()), name='plans'),
     path('plans/', views.scheme_pipelines, name='plans'),
     path('pipes/<int:pipe_id>/', views.single_pipe, name='single_pipe'),

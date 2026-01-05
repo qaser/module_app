@@ -63,6 +63,42 @@
     </div>
 </div>
 
+<div class="popup" id="popup-pipe-limit">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="limit" id="form-pipe-limit">
+            <h2 class="form-popup__header"></h2>
+            <label class="form-popup__field">
+                <input class="form-popup__input" id="pressure_limit" name="pressure_limit" type="number" step="any">
+                <span class="form-popup__input-error" id="pressure_limit-error"></span>
+            </label>
+            <label class="form-popup__field">
+                <input class="form-popup__input" id="start_date" type="date" required name="start_date">
+                <span class="form-popup__input-error" id="start_date-error"></span>
+            </label>
+            <label class="form-popup__field">
+                <textarea class="form-popup__input" id="limit_reason" name="limit_reason" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="100" minlength="7"></textarea>
+                <span class="form-popup__input-error" id="limit_reason-error"></span>
+            </label>
+            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<div class="popup" id="popup-pipe-limit-end">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="limit-end" id="form-pipe-limit-end">
+            <h2 class="form-popup__header"></h2>
+            <label class="form-popup__field">
+                <input class="form-popup__input" id="end_date" type="date" required name="end_date">
+                <span class="form-popup__input-error" id="end_date-error"></span>
+            </label>
+            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+
 <div class="popup" id="popup-node-statechange">
     <div class="popup__container">
         <button class="popup__button-close" type="button"></button>

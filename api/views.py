@@ -14,23 +14,23 @@ from rest_framework.views import APIView
 from equipments.models import Department, Equipment
 from leaks.models import Leak
 from notifications.models import Notification
-from pipelines.models import (Diagnostics, Node, NodeState, Pipe, PipeDepartment,
-                              PipeDocument, Pipeline, PipeState, Tube, TubeDocument, TubeVersion)
+from pipelines.models import (DiagnosticDocument, Diagnostics, Node, NodeState, Pipe, PipeDepartment,
+                              PipeDocument, PipeLimit, Pipeline, PipeState, Tube, TubeVersionDocument, TubeVersion)
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 from tpa.models import (Factory, Service, ServiceType, Valve, ValveDocument,
                         ValveImage, Work, WorkService)
 from users.models import ModuleUser, Role
 
-from .serializers import (AnnualPlanSerializer, DepartmentSerializer, DiagnosticsSerializer,
+from .serializers import (AnnualPlanSerializer, DepartmentSerializer, DiagnosticDocumentSerializer, DiagnosticsSerializer,
                           EquipmentSerializer, FactorySerializer,
                           LeakSerializer, NodeStateSerializer,
-                          NotificationSerializer, PipeDocumentSerializer,
+                          NotificationSerializer, PipeDocumentSerializer, PipeLimitSerializer,
                           PipelineSerializer, PipeSerializer,
                           PipeStateSerializer, ProposalDocumentSerializer,
                           ProposalSerializer, QuarterlyPlanSerializer,
                           ServiceSerializer, ServiceTypeSerializer,
-                          StatusSerializer, TubeDocumentSerializer, TubeSerializer, TubeVersionSerializer, UserSerializer,
+                          StatusSerializer, TubeVersionDocumentSerializer, TubeSerializer, TubeVersionSerializer, UserSerializer,
                           ValveDocumentSerializer, ValveImageSerializer,
                           ValveSerializer, WorkServiceSerializer)
 
@@ -65,9 +65,19 @@ class PipeDocumentViewSet(viewsets.ModelViewSet):
         serializer.save()
 
 
-class TubeDocumentViewSet(viewsets.ModelViewSet):
-    queryset = TubeDocument.objects.all()
-    serializer_class = TubeDocumentSerializer
+class TubeVersionDocumentViewSet(viewsets.ModelViewSet):
+    queryset = TubeVersionDocument.objects.all()
+    serializer_class = TubeVersionDocumentSerializer
+    parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+
+class DiagnosticDocumentViewSet(viewsets.ModelViewSet):
+    queryset = DiagnosticDocument.objects.all()
+    serializer_class = DiagnosticDocumentSerializer
     parser_classes = (MultiPartParser, FormParser)
     permission_classes = [IsAuthenticated]
 
@@ -410,6 +420,54 @@ class PipeStatesViewSet(viewsets.ModelViewSet):
         )
         serializer = self.get_serializer(new_state)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class PipeLimitViewSet(viewsets.ModelViewSet):
+    queryset = PipeLimit.objects.all()
+    serializer_class = PipeLimitSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        data = request.data.get('limitData') or request.data  # поддержка обоих форматов
+        pipe_id = data.get('id')
+        if not pipe_id:
+            return Response({'error': 'Pipe ID не указан'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            pipe = Pipe.objects.get(pk=pipe_id)
+        except Pipe.DoesNotExist:
+            return Response({'error': 'Pipe не найден'}, status=status.HTTP_404_NOT_FOUND)
+        new_state = PipeLimit.objects.create(
+            pipe=pipe,
+            pressure_limit=data.get('pressure_limit'),
+            start_date=data.get('start_date'),
+            end_date=data.get('end_date'),
+            limit_reason=data.get('limit_reason'),
+        )
+        serializer = self.get_serializer(new_state)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, *args, **kwargs):
+        data = request.data.get('limitData') or request.data
+        pipe_id = data.get('id')
+        if not pipe_id:
+            return Response({'error': 'Pipe ID не указан'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            pipe = Pipe.objects.get(pk=pipe_id)
+        except Pipe.DoesNotExist:
+            return Response({'error': 'Pipe не найден'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Получаем последнее ограничение для данной трубы
+        last_limit = PipeLimit.objects.filter(pipe=pipe).order_by('-id').first()
+        if not last_limit:
+            return Response({'error': 'Ограничение не найдено'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Обновляем end_date последнего ограничения
+        last_limit.end_date = data.get('end_date')
+        last_limit.save()
+
+        serializer = self.get_serializer(last_limit)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class NodeStatesViewSet(viewsets.ModelViewSet):

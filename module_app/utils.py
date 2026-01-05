@@ -30,6 +30,6 @@ def compress_image(source_image):
                 round(width / max_size * _MAX_SIZE),
                 round(height / max_size * _MAX_SIZE)
             ),
-            Image.ANTIALIAS
+            # Image.ANTIALIAS
         )
         image.save(filepath)

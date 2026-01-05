@@ -10,12 +10,12 @@ from .models import Valve
 
 
 class ValveFilter(df.FilterSet):
-    department = df.ModelChoiceFilter(
-        queryset=Department.objects.none(),
-        method='filter_by_department',
-        label='Структурное подразделение',
-        required=False
-    )
+    # department = df.ModelChoiceFilter(
+    #     queryset=Department.objects.none(),
+    #     method='filter_by_department',
+    #     label='Структурное подразделение',
+    #     required=False
+    # )
     equipment = df.ModelChoiceFilter(
         queryset=Equipment.objects.none(),
         method='filter_by_equipment',
@@ -46,12 +46,12 @@ class ValveFilter(df.FilterSet):
     def __init__(self, *args, **kwargs):
         user = kwargs['request'].user
         super(ValveFilter, self).__init__(*args, **kwargs)
-        if user.role != Role.ADMIN:
-            self.filters.pop('department', None)
-        else:
-            # Для ADMIN настраиваем отображение иерархии подразделений
-            self.filters['department'].field.queryset = Department.objects.all()
-            self.filters['department'].field.label_from_instance = lambda obj: f"{'..' * obj.level} {obj.name}"
+        # if user.role != Role.ADMIN:
+        #     self.filters.pop('department', None)
+        # else:
+        #     # Для ADMIN настраиваем отображение иерархии подразделений
+        #     self.filters['department'].field.queryset = Department.objects.all()
+        #     self.filters['department'].field.label_from_instance = lambda obj: f"{'..' * obj.level} {obj.name}"
 
         self.base_queryset = Equipment.objects.none()
 
@@ -96,7 +96,7 @@ class ValveFilter(df.FilterSet):
     class Meta:
         model = Valve
         fields = [
-            'department',
+            # 'department',
             'equipment',
             'title',
             'diameter',

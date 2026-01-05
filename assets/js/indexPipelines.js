@@ -65,6 +65,24 @@ const popupWithFormPipeChangeState = new PopupWithForm(
     },
 );
 
+const popupWithFormPipeLimit = new PopupWithForm(
+    '#popup-pipe-limit',
+    '#form-pipe-limit',
+    'Установить давление ограничения на участке МГ',
+    (data) => {
+        submitFormLimit(data);
+    },
+);
+
+const popupWithFormPipeLimitEnd = new PopupWithForm(
+    '#popup-pipe-limit-end',
+    '#form-pipe-limit-end',
+    'Снять ограничение на участке МГ',
+    (data) => {
+        submitFormLimitEnd(data);
+    },
+);
+
 const popupWithFormNodeChangeState = new PopupWithForm(
     '#popup-node-statechange',
     '#form-node-statechange',
@@ -79,6 +97,8 @@ const pipelineScheme = new PipelineVisualizer(
     contextMenu,
     popupWithFormPipeChangeState,
     popupWithFormNodeChangeState,
+    popupWithFormPipeLimit,
+    popupWithFormPipeLimitEnd,
     {}
 );
 
@@ -87,6 +107,58 @@ function renderLoading(isLoading) {
   if (isLoading) {
       constant.loadingScreen.classList.add('loader_disactive');
   }
+}
+
+
+function submitFormLimit(data) {
+    const selected = pipelineScheme.getSelectedElement();
+    if (!selected) {
+        console.warn('Не выбран элемент для изменения лимита');
+        return;
+    }
+    const newLimit = {
+        id: selected.id,
+        pressure_limit: data.pressure_limit,
+        start_date: data.start_date,
+        limit_reason: data.limit_reason,
+    };
+    api.editPipeLimit(newLimit)
+        .then(() => {
+            api.getPipelines()
+                .then(pipelines => pipelineScheme.render(pipelines))
+                .catch(error => console.error('Error refreshing pipeline:', error));
+            popupWithFormPipeLimit.close();
+        })
+        .catch((err) => {
+            console.error(`Ошибка: ${err}`);
+        })
+        .finally(() => popupWithFormPipeLimit.renderLoading(false));
+    popupWithFormPipeLimit.renderLoading(true);
+}
+
+
+function submitFormLimitEnd(data) {
+    const selected = pipelineScheme.getSelectedElement();
+    if (!selected) {
+        console.warn('Не выбран элемент для изменения лимита');
+        return;
+    }
+    const endLimit = {
+        id: selected.id,
+        end_date: data.end_date,
+    };
+    api.endPipeLimit(endLimit)
+        .then(() => {
+            api.getPipelines()
+                .then(pipelines => pipelineScheme.render(pipelines))
+                .catch(error => console.error('Error refreshing pipeline:', error));
+            popupWithFormPipeLimitEnd.close();
+        })
+        .catch((err) => {
+            console.error(`Ошибка: ${err}`);
+        })
+        .finally(() => popupWithFormPipeLimitEnd.renderLoading(false));
+    popupWithFormPipeLimitEnd.renderLoading(true);
 }
 
 
@@ -142,6 +214,8 @@ enableValidation(formConfig);
 
 popupWithFormPipeChangeState.setEventListeners();
 popupWithFormNodeChangeState.setEventListeners();
+popupWithFormPipeLimit.setEventListeners();
+popupWithFormPipeLimitEnd.setEventListeners();
 
 
 Promise.all([api.getMyProfile(), api.getPipelines()])

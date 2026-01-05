@@ -1,5 +1,5 @@
 export default class PipelineVisualizer {
-    constructor(containerId, contextMenu, popupPipeChange, popupNodeChange, options = {}) {
+    constructor(containerId, contextMenu, popupPipeChange, popupNodeChange, popupPipeLimit, popupPipeLimitEnd, options = {}) {
         this.container = document.getElementById(containerId);
         this.options = {
             pipelinePadding: 40,
@@ -21,6 +21,8 @@ export default class PipelineVisualizer {
         };
         this.popupPipeChange = popupPipeChange;
         this.popupNodeChange = popupNodeChange;
+        this.popupPipeLimit = popupPipeLimit;
+        this.popupPipeLimitEnd = popupPipeLimitEnd;
         this.scale = 1.0;
         this.offsetX = 0;
         this.offsetY = 0;
@@ -110,6 +112,7 @@ export default class PipelineVisualizer {
             e.stopPropagation();
             const isPipe = target.classList.contains('pipe-element');
             const id = target.getAttribute(isPipe ? 'pipe-id' : 'node-id');
+            const equipmentId = target.getAttribute(isPipe ? 'pipe-id' : 'node-eq-id');
             const type = isPipe ? 'pipe' : 'node';
             this.selectedElement = {
                 type,
@@ -119,7 +122,6 @@ export default class PipelineVisualizer {
             if (this.tooltip) {
                 this.hideTooltip();
             }
-
             const menuItems = [
                 {
                     text: 'Сменить состояние',
@@ -133,9 +135,25 @@ export default class PipelineVisualizer {
                 },
                 {
                     text: 'Подробный обзор',
-                    action: () => this.openDetailsPopup(type, id)
+                    action: () => this.openDetailsPopup(type, id, equipmentId)
                 }
             ];
+
+            // Добавляем опцию "Установить ограничение" только для труб
+            if (type === 'pipe') {
+                menuItems.splice(2, 0, {
+                    text: 'Установить ограничение',
+                    action: () => {
+                        this.popupPipeLimit.open();
+                    }
+                });
+                menuItems.splice(3, 0, {
+                    text: 'Снять ограничение',
+                    action: () => {
+                        this.popupPipeLimitEnd.open();
+                    }
+                });
+            }
             this.contextMenu.open(e, menuItems);
         });
     }
@@ -144,8 +162,15 @@ export default class PipelineVisualizer {
         return this.selectedElement || null;
     }
 
-    openDetailsPopup(type, id) {
-        window.location.href = type + 's/' + id + '/'
+    openDetailsPopup(type, id, equipmentId) {
+        if (type === 'pipe') {
+            window.location.href = type + 's/' + id + '/'
+        } else {
+            let currentUrl = window.location.href;
+            let newUrl = currentUrl.replace('/pipelines/', '/tpa/');
+            newUrl = newUrl + '?equipment=' + equipmentId;
+            window.location.href = newUrl;
+        }
     }
 
     calculatePipelineLength(pipeline) {
@@ -251,18 +276,18 @@ export default class PipelineVisualizer {
     }
 
     createPipeElement(pipeline_title, pipe, yPos, index, pipeWidth) {
-    const svgNS = "http://www.w3.org/2000/svg";
+        const svgNS = "http://www.w3.org/2000/svg";
 
-    // Главный контейнер для всех элементов
-    const mainGroup = document.createElementNS(svgNS, "g");
-    mainGroup.classList.add('main-pipe-group');
+        // Главный контейнер для всех элементов
+        const mainGroup = document.createElementNS(svgNS, "g");
+        mainGroup.classList.add('main-pipe-group');
 
-    // Создаем группу для pipe (как у вас было)
-    const group = document.createElementNS(svgNS, "g");
-    group.classList.add('pipe-group');
+        // Создаем группу для pipe (как у вас было)
+        const group = document.createElementNS(svgNS, "g");
+        group.classList.add('pipe-group');
 
-    const x = this.container.clientWidth - this.options.pipelinePadding - (index + 2) * pipeWidth;
-    const rect = document.createElementNS(svgNS, "rect");
+        const x = this.container.clientWidth - this.options.pipelinePadding - (index + 2) * pipeWidth;
+        const rect = document.createElementNS(svgNS, "rect");
         rect.setAttribute('x', x);
         rect.setAttribute('y', yPos);
         rect.setAttribute('width', pipeWidth);
@@ -387,6 +412,7 @@ export default class PipelineVisualizer {
                 return null;
         }
         element.setAttribute('node-id', node.id);
+        element.setAttribute('node-eq-id', node.equipment);
         element.classList.add('node-element');
         element.setAttribute('data-tooltip',
             `Филиал: ${node.department.name}\n` +

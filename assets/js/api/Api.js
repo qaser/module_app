@@ -366,6 +366,24 @@ export default class Api {
         .then(this._checkResponse);
     }
 
+    editPipeLimit(limitData) {
+        return fetch(`${this._baseUrl}/pipe-limits/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: JSON.stringify({limitData})
+        })
+        .then(this._checkResponse);
+    }
+
+    endPipeLimit(limitData) {
+        return fetch(`${this._baseUrl}/pipe-limits/${limitData.id}/`, {
+            method: 'PATCH',
+            headers: this._headers,
+            body: JSON.stringify({limitData})
+        })
+        .then(this._checkResponse);
+    }
+
     changeNodeState(stateData) {
         return fetch(`${this._baseUrl}/node-states/`, {
             method: 'POST',
@@ -473,6 +491,26 @@ export default class Api {
             headers: this._headers,
         })
         .then(response => response.json());
+    }
+
+    // добавление новой файла tube
+    addDiagnosticFile(form) {
+        // delete this._headers['Content-Type']
+        return fetch(`${this._baseUrl}/diagnostic-docs/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: form
+        })
+        .then(response => response.json());
+    }
+
+    // удаление файла diagnostic
+    deleteDiagnosticFile(id) {
+        return fetch(`${this._baseUrl}/diagnostic-docs/${id}/`, {
+            method: 'DELETE',
+            headers: this._headers,
+        })
+        // .then(this._checkResponse);
     }
     // _checkResponse(res) {
     //     if (res.ok) {

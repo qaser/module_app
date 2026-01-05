@@ -58,7 +58,7 @@ const newUserInfo = new UserInfo({
 });
 
 
-// создание объекта с данными о tube
+// создание объекта с данными о diagnostic
 const diagnosticInstance = new DiagnosticItem({
     card: '.main'
 })
@@ -82,7 +82,7 @@ const pollingClient = new PollingClient({
 function submitFormNewFile(data) {
     let formData = new FormData();
     formData.append('name', data.name);
-    formData.append('tube_id', tubeVersionId);
+    formData.append('diagnostic_id', diagnosticId);
     // собираем объект из файлов
     if (data.files.length > 0) {
         Object.entries(data.files).map((file) => {
@@ -90,7 +90,7 @@ function submitFormNewFile(data) {
         });
     }
     popupWithFormNewFile.renderLoading(true);
-    api.addTubeFile(formData)
+    api.addDiagnosticFile(formData)
         .then((file) => {
             fileInstance.renderItems([file]);
             const fileCard = document.querySelector(`#file-${file.id}`);
@@ -121,7 +121,7 @@ function filesCard(item) {
 function handleFileDeleteClick(evt, fileId) {
     const id = fileId.replace(/\D/g, '')
     renderLoading()
-    api.deleteTubeFile(id)
+    api.deleteDiagnosticFile(id)
         .then((res) => {
             if (res.status == 204) {
                 elementDelete(fileId, filesContainer);
@@ -168,7 +168,7 @@ function renderLoading() {
 
 
 enableValidation(formFileConfig);
-// popupWithFormNewFile.setEventListeners();
+popupWithFormNewFile.setEventListeners();
 new Tooltip();
 new AppMenu();
 
@@ -177,18 +177,18 @@ Promise.all([api.getMyProfile(), api.getDiagnosticItem(diagnosticId)])
         pollingClient.start();
         newUserInfo.setUserInfo(userData);
         diagnosticInstance.renderItem(diagnostic);
-        // if (tube.files.length > 0) {
-        //     haveFiles = tube.files.length;
-        //     fileInstance.renderItems(tube.files);
-        //     emptyFilesBanner.hide();
-        // }
-        // if (userData.role == 'admin' || userData.role == 'manager') {
-        //     btnFileAdd.show();
-        //     filesClassDeleteVisible();
-        //     btnFileAdd.rawElem().addEventListener('click', () => {
-        //         popupWithFormNewFile.open();
-        //     })
-        // }
+        if (diagnostic.files.length > 0) {
+            haveFiles = diagnostic.files.length;
+            fileInstance.renderItems(diagnostic.files);
+            emptyFilesBanner.hide();
+        }
+        if (userData.role == 'admin' || userData.role == 'manager') {
+            btnFileAdd.show();
+            filesClassDeleteVisible();
+            btnFileAdd.rawElem().addEventListener('click', () => {
+                popupWithFormNewFile.open();
+            })
+        }
     })
     .catch(err => {
         console.log(err);

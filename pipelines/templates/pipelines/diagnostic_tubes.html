@@ -1,0 +1,62 @@
+{% extends "module_app/base.html" %}
+{% block title %}Трубный журнал ВТД{% endblock %}
+{% block app_name %}Магистральные газопроводы{% endblock %}
+
+{% load static %}
+
+{% load render_table from django_tables2 %}
+{% load pipelines_filters %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/pipe-tubes.css' %}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="{% url 'pipelines:index' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_objects"></div>
+        <h3 class="sidebar__text">Схема магистральных газопроводов</h3>
+    </a>
+    <a href="{% url 'pipelines:repairs' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_service"></div>
+        <h3 class="sidebar__text">Обзор ремонтов</h3>
+    </a>
+    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_edit"></div>
+        <h3 class="sidebar__text">Диагностика МГ</h3>
+    </a>
+    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Планирование</h3>
+    </a>
+    <a href="" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_help"></div>
+        <h3 class="sidebar__text">Справочная информация</h3>
+    </a>
+    <form id="filter_submit" class="sidebar__form">
+        {% for field in filter.form %}
+            <div class="sidebar__form-field">
+                <label class="sidebar__form-label">{{ field.label }}</label>
+                {{ field|addclass:'sidebar__form-input' }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="sidebar__button button module-color__button_pipelines">Применить</button>
+    </form>
+    <a class="link_simple" href="{% url 'pipelines:diagnostic_tubes' diagnostic_id=diagnostic_id %}">
+        <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
+    </a>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<main class="content">
+  <section class="main" id="main">
+    <h1 class="main__title" id="{{ diagnostic_id }}">Трубный журнал ВТД</h1>
+    <!-- <div class="scheme" id="scheme"></div> -->
+    {% render_table table %}
+  </section>
+</main>
+{% endblock %}
+
+{% block script %}
+    <script type="module" src="{% static 'js/singleDiagnosticTubes.js' %}"></script>
+{% endblock %}

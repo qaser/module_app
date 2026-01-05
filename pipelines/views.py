@@ -7,8 +7,8 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from equipments.models import Equipment
-from pipelines.filters import DiagnosticsFilter, RepairFilter, TubeFilter
-from pipelines.tables import DiagnosticsTable, RepairTable, TubeTable
+from pipelines.filters import DiagnosticsFilter, RepairFilter, TubeFilter, TubeVersionFilter
+from pipelines.tables import DiagnosticsTable, RepairTable, TubeTable, TubeVersionTable
 from users.models import ModuleUser, Role
 
 from .models import (ComplexPlan, Diagnostics, Pipe, PipeDepartment, Pipeline,
@@ -102,6 +102,7 @@ class DiagnosticsView(SingleTableMixin, FilterView):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
+        # diagnostic_id = self.kwargs['diagnostic_id']
 
         # Базовая оптимизация запросов
         queryset = queryset.prefetch_related(
@@ -121,6 +122,50 @@ class DiagnosticsView(SingleTableMixin, FilterView):
                     pipes__pipedepartment__department__in=departments
                 ).distinct()
             return queryset.none()
+
+    # def get_context_data(self, **kwargs):
+    #     """
+    #     Добавляем ID объекта диагностики в контекст.
+    #     """
+    #     context = super().get_context_data(**kwargs)
+    #     context['diagnostic_id'] = self.kwargs['diagnostic_id']
+    #     return context
+
+
+class DiagnosticTubesView(SingleTableMixin, FilterView):
+    model = TubeVersion
+    table_class = TubeVersionTable
+    template_name = 'pipelines/diagnostic_tubes.html'
+    filterset_class = TubeVersionFilter
+    paginate_by = 50
+
+    def get_queryset(self):
+        diagnostic_id = self.kwargs['diagnostic_id']
+        queryset = TubeVersion.objects.filter(diagnostics__id=diagnostic_id)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['diagnostic_id'] = self.kwargs['diagnostic_id']
+        return context
+
+
+# class DiagnosticTubeUnitsView(SingleTableMixin, FilterView):
+#     model = TubeUnit
+#     table_class = TubeUnitTable
+#     template_name = 'pipelines/diagnostic_tubeunits.html'
+#     filterset_class = TubeUnitFilter
+#     paginate_by = 50
+
+#     def get_queryset(self):
+#         diagnostic_id = self.kwargs['diagnostic_id']
+#         queryset = TubeUnit.objects.filter(tube__diagnostics_id=diagnostic_id)
+#         return queryset
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['diagnostic_id'] = self.kwargs['diagnostic_id']
+#         return context
 
 
 class TubesView(SingleTableMixin, FilterView):
@@ -177,32 +222,3 @@ class TubesView(SingleTableMixin, FilterView):
         context = super().get_context_data(**kwargs)
         context['pipe_id'] = self.kwargs['pipe_id']
         return context
-
-
-
-# class PlansView(SingleTableMixin, FilterView):
-#     model = ComplexPlan
-#     table_class = ComplexPlanTable
-#     paginate_by = 39
-#     template_name = 'pipelines/pipelines_plans.html'
-#     filterset_class = ComplexPlanFilter
-
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         user = self.request.user
-
-#         if user.role == Role.ADMIN:
-#             return queryset  # ADMIN видит все ремонты
-
-#         else:
-#             if user.department:
-#                 root_department = user.department.get_root()
-#                 departments = root_department.get_descendants(include_self=True)
-#                 pipe_diagnostics = queryset.filter(
-#                     pipe__pipedepartment__department__in=departments
-#                 ).distinct()
-#                 node_diagnostics = queryset.filter(
-#                     node__equipment__departments__in=departments
-#                 ).distinct()
-#                 return (pipe_diagnostics | node_diagnostics).distinct()
-#             return queryset.none()

@@ -7,6 +7,66 @@ from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment,
                               Pipeline, Repair, Tube, TubeUnit, TubeVersion)
 
 
+class TubeVersionFilter(df.FilterSet):
+    tube_num = df.CharFilter(
+        label='Номер элемента',
+        lookup_expr='icontains',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    tube_length = df.NumberFilter(
+        lookup_expr='exact',
+        label='Длина элемента, м'
+    )
+    thickness = df.ChoiceFilter(
+        label='Толщина стенки (мм)',
+        choices=lambda: [
+            (val, f"{val} мм") for val in sorted(
+                set(round(v, 1) for v in TubeVersion.objects.values_list('thickness', flat=True).distinct() if v)
+            )
+        ],
+        field_name='thickness',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    tube_type = df.ChoiceFilter(
+        choices=TubeVersion._meta.get_field('tube_type').choices,
+        label='Тип элемента'
+    )
+    category = df.ChoiceFilter(
+        choices=TubeVersion._meta.get_field('category').choices,
+        label='Категория'
+    )
+    steel_grade = df.ChoiceFilter(
+        label='Марка стали',
+        choices=lambda: [
+            (val, val) for val in sorted(
+                set(TubeVersion.objects
+                    .exclude(steel_grade__isnull=True)
+                    .exclude(steel_grade__exact='')
+                    .values_list('steel_grade', flat=True)
+                    .distinct()
+                )
+            )
+        ],
+        field_name='steel_grade',
+        widget=forms.Select(attrs={'class': 'form-control'}),
+    )
+    yield_strength = df.CharFilter(lookup_expr='icontains', label='Предел текучести стали, МПа')
+    tear_strength = df.CharFilter(lookup_expr='icontains', label='Сопротивление разрыву стали, МПа')
+
+    class Meta:
+        model = TubeVersion
+        fields = [
+            'tube_num',
+            'tube_length',
+            'thickness',
+            'tube_type',
+            'category',
+            'steel_grade',
+            'yield_strength',
+            'tear_strength',
+        ]
+
+
 class TubeFilter(df.FilterSet):
     tube_num = df.CharFilter(
         label='Номер элемента',

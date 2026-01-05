@@ -42,98 +42,80 @@
                 <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
                     <h3 class="card__title">Основная информация</h3>
                 </div>
+
                 <div class="card__field" id="diagnostic_info">
                     <div class="card__line">
-                        <p class="card__param">Номер трубы</p>
-                        <p class="card__value" id="tube_num"></p>
+                        <p class="card__param">Магистральный газопровод</p>
+                        <p class="card__value" id="pipeline"></p>
                     </div>
                     <div class="card__line">
-                        <p class="card__param">Местоположение</p>
-                        <p class="card__value" id="pipe_name"></p>
+                        <p class="card__param">Участок МГ</p>
+                        <p class="card__value" id="length"></p>
                     </div>
                     <div class="card__line">
-                        <p class="card__param">Источник данных</p>
-                        <p class="card__value" id="version_type_display"></p>
+                        <p class="card__param">Дата начала ВТД</p>
+                        <p class="card__value" id="start_date"></p>
                     </div>
                     <div class="card__line">
-                        <p class="card__param">Длина, м</p>
-                        <p class="card__value" id="tube_length"></p>
+                        <p class="card__param">Дата окончания ВТД</p>
+                        <p class="card__value" id="end_date"></p>
                     </div>
+                </div>
+
+                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Трубный журнал</h3>
+                    <button class="button card__button card__button_link" data-tooltip="Перейти к трубному журналу" id="tubes_link_btn"></button>
+                </div>
+                <div class="card__field" id="tubes_info">
                     <div class="card__line">
-                        <p class="card__param">Толщина стенки, мм</p>
-                        <p class="card__value" id="thickness"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Тип трубы</p>
-                        <p class="card__value" id="tube_type"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Диаметр, мм</p>
-                        <p class="card__value" id="diameter"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Предел текучести, МПа</p>
-                        <p class="card__value" id="yield_strength"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Сопротивление разрыву, МПа</p>
-                        <p class="card__value" id="tear_strength"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Категория</p>
-                        <p class="card__value" id="category"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Коэф. надёжности по материалу</p>
-                        <p class="card__value" id="reliability_material"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Коэф. условий работы</p>
-                        <p class="card__value" id="working_conditions"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Коэф. надёжности по давлению</p>
-                        <p class="card__value" id="reliability_pressure"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Коэф. надёжности трубопровода</p>
-                        <p class="card__value" id="reliability_coef"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Ударная вязкость, Дж/см²</p>
-                        <p class="card__value" id="impact_strength"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Марка стали</p>
-                        <p class="card__value" id="steel_grade"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Положение швов, час</p>
-                        <p class="card__value" id="weld_position"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">От репера, м</p>
-                        <p class="card__value" id="from_reference_start"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">До репера, м</p>
-                        <p class="card__value" id="to_reference_end"></p>
-                    </div>
-                    <div class="card__line">
-                        <p class="card__param">Комментарий</p>
-                        <p class="card__value" id="comment"></p>
+                        <p class="card__param">Количество элементов</p>
+                        <p class="card__value_unique" id="tube_count"></p>
                     </div>
                 </div>
 
                 <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
                     <h3 class="card__title">Элементы обустройства</h3>
+                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу элементов обустройства" id="tube_units_link_btn"></button>
                 </div>
-                <div class="card__field" id="tube_units_info"></div>
+                <div class="card__field" id="tube_units_info">
+                    <div class="card__line">
+                        <p class="card__param">Количество элементов обустройства</p>
+                        <p class="card__value_unique" id="unit_count"></p>
+                    </div>
+                </div>
 
-                <!-- <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">История версий</h3>
+                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Отводы</h3>
+                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу отводов" id="bends_link_btn"></button>
                 </div>
-                <div class="card__field" id="versions_info"></div> -->
+                <div class="card__field" id="bends_info">
+                    <div class="card__line">
+                        <p class="card__param">Количество отводов</p>
+                        <p class="card__value_unique" id="bend_count"></p>
+                    </div>
+                </div>
+
+                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Аномалии</h3>
+                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу аномалий" id="anomaly_link_btn"></button>
+                </div>
+                <div class="card__field" id="anomaly_info">
+                    <div class="card__line">
+                        <p class="card__param">Количество аномалий</p>
+                        <p class="card__value_unique" id="anomaly_count"></p>
+                    </div>
+                </div>
+
+                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
+                    <h3 class="card__title">Дефекты</h3>
+                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу дефектов" id="defects_link_btn"></button>
+                </div>
+                <div class="card__field" id="defects_info">
+                    <div class="card__line">
+                        <p class="card__param">Количество дефектов</p>
+                        <p class="card__value_unique" id="defects_count"></p>
+                    </div>
+                </div>
             </div>
 
             <div class="card__container">

@@ -372,9 +372,15 @@ class TubeVersion(models.Model):
     ]
     tube = models.ForeignKey(
         Tube,
-        verbose_name='Элемент',
+        verbose_name='Труба',
         on_delete=models.CASCADE,
         related_name='versions'
+    )
+    tube_num = models.CharField(
+        "Номер трубы",
+        max_length=20,
+        null=True,
+        blank=True
     )
     diagnostics = models.ForeignKey(
         "Diagnostics",
@@ -433,57 +439,58 @@ class TubeVersion(models.Model):
         null=False,
         blank=False,
     )
-    yield_strength = models.PositiveSmallIntegerField(
+    yield_strength = models.CharField(
         'Предел текучести стали, МПа',
-        default=0,
-        null=False,
-        blank=False,
+        default='-',
+        null=True,
+        blank=True,
     )
-    tear_strength = models.PositiveSmallIntegerField(
+    tear_strength = models.CharField(
         'Сопротивление разрыву стали, МПа',
-        default=0,
-        null=False,
-        blank=False,
+        default='-',
+        null=True,
+        blank=True,
     )
     category = models.CharField(
         max_length=10,
         choices=CATEGORY_CHOICES,
-        default='II',
+        default='-',
         verbose_name='Категория',
-        blank=False,
-        null=False,
+        null=True,
+        blank=True,
     )
-    reliability_material = models.FloatField(
+    reliability_material = models.CharField(
         'Коэффициент надёжности по материалу',
         null=True,
         blank=True,
         help_text='Согласно СНиП 2.05.06-85'
     )
-    working_conditions = models.FloatField(
+    working_conditions = models.CharField(
         'Коэффициент условий работы трубопровода',
         null=True,
         blank=True,
         help_text='Согласно СНиП 2.05.06-85'
     )
-    reliability_pressure = models.FloatField(
+    reliability_pressure = models.CharField(
         'Коэффициент надёжности по внутреннему рабочему давлению',
         null=True,
         blank=True,
         help_text='Согласно СНиП 2.05.06-85'
     )
-    reliability_coef = models.FloatField(
+    reliability_coef = models.CharField(
         'Коэффициент надёжности трубопровода',
         null=True,
         blank=True,
         help_text='Согласно СНиП 2.05.06-85'
     )
-    impact_strength = models.FloatField(
+    impact_strength = models.CharField(
         'Ударная вязкость стали, Дж/см²',
         null=True,
         blank=True
     )
     steel_grade = models.CharField(
         'Марка стали',
+        default='-',
         max_length=50,
         null=True,
         blank=True
@@ -516,12 +523,12 @@ class TubeVersion(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Элемент'
-        verbose_name_plural = 'Элементы'
+        verbose_name = 'Труба (элемент ВТД)'
+        verbose_name_plural = 'Трубы (элементы ВТД)'
         ordering = ['tube']
 
     def __str__(self):
-        return f'Элемент №{self.tube.tube_num}, участок {self.tube.pipe}'
+        return f'Элемент ВТД №{self.tube.tube_num}, участок {self.tube.pipe}'
 
 
 class TubeUnit(models.Model):
@@ -580,6 +587,7 @@ class TubeUnit(models.Model):
 class Anomaly(models.Model):
     ANOMALY_NATURE = [
         ('gwan', 'Аномалия кольцевого шва'),
+        ('swan', 'Аномалия спирального шва'),
         ('lwan', 'Аномалия продольного шва'),
         ('goug', 'Механическое повреждение'),
         ('corr', 'Коррозия'),
@@ -589,6 +597,7 @@ class Anomaly(models.Model):
         ('mian', 'Заводской дефект'),
         ('scc', 'Зона продольных трещин'),
         ('lwcr', 'Трещина на продольном шве'),
+        ('oval', 'Эллипсность'),
     ]
     SIZE_CLASS = [
         ('', 'Не указан'),
@@ -612,7 +621,7 @@ class Anomaly(models.Model):
         blank=False,
         null=False,
     )
-    distance = models.FloatField(
+    odometr_data = models.FloatField(
         verbose_name='Расстояние, м',
         blank=True,
         null=True,
@@ -639,27 +648,27 @@ class Anomaly(models.Model):
         null=True,
     )
     # Ориентационные параметры
-    from_long_weld_to_start = models.IntegerField(
+    from_long_weld_to_start = models.FloatField(
         verbose_name='От продольного шва до точки начала дефекта, мм',
         blank=True,
         null=True,
     )
-    from_long_weld_to_max = models.IntegerField(
+    from_long_weld_to_max = models.FloatField(
         verbose_name='От продольного шва до точки максимума, мм',
         blank=True,
         null=True,
     )
-    from_long_weld_to_center = models.IntegerField(
+    from_long_weld_to_center = models.FloatField(
         verbose_name='От продольного шва до центра, мм',
         blank=True,
         null=True,
     )
-    min_distance_to_long_weld = models.IntegerField(
+    min_distance_to_long_weld = models.FloatField(
         verbose_name='Минимальное расстояние до продольного шва, мм',
         blank=True,
         null=True,
     )
-    min_distance_to_circ_weld = models.IntegerField(
+    min_distance_to_circ_weld = models.FloatField(
         verbose_name='Минимальное расстояние до кольцевого шва, мм',
         blank=True,
         null=True,
@@ -713,8 +722,8 @@ class Anomaly(models.Model):
     anomaly_width = models.PositiveSmallIntegerField(
         verbose_name='Ширина аномалии, мм',
         default=0,
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
     )
     anomaly_depth = models.FloatField(
         verbose_name='Глубина аномалии, %',
@@ -740,7 +749,6 @@ class Anomaly(models.Model):
         blank=True,
         null=True,
     )
-    # Комментарии
     comment = models.TextField(
         verbose_name='Комментарий',
         max_length=500,
@@ -767,12 +775,10 @@ class Bend(models.Model):
         ('cold_bend', 'Отвод холодного гнутья'),
         ('segment_bend', 'Отвод сегментный'),
     ]
-
     DIRECTION_CHOICES = [
         ('vertical', 'Вертикальная'),
         ('horizontal', 'Горизонтальная'),
     ]
-
     # Связь с трубой
     tube = models.ForeignKey(
         TubeVersion,
@@ -782,7 +788,6 @@ class Bend(models.Model):
         blank=False,
         null=False,
     )
-
     # Геометрические параметры отвода
     start_point = models.FloatField(
         verbose_name='Начало отвода, м',
@@ -794,13 +799,12 @@ class Bend(models.Model):
         blank=False,
         null=False,
     )
-    tube_number = models.CharField(
+    tube_num = models.CharField(
         verbose_name='Номер трубы',
         max_length=20,
         blank=True,
         null=True,
     )
-
     # Параметры изгиба
     segment_count = models.PositiveSmallIntegerField(
         verbose_name='Число сегментов',
@@ -903,7 +907,7 @@ class Bend(models.Model):
         ordering = ['tube__tube__tube_num', 'start_point']
 
     def __str__(self):
-        return f'Отвод трубы №{self.tube_number or self.tube.tube.tube_num} ({self.start_point}-{self.end_point} м)'
+        return f'Отвод трубы №{self.tube_num or self.tube.tube.tube_num} ({self.start_point}-{self.end_point} м)'
 
     def save(self, *args, **kwargs):
         # Автоматическое вычисление радиуса в диаметрах
@@ -1006,10 +1010,20 @@ class Defect(models.Model):
         ('slag', 'Шлаковые включения'),
         ('fistula', 'Свищ в сварном шве'),
     ]
+    tube = models.ForeignKey(
+        TubeVersion,
+        on_delete=models.CASCADE,
+        related_name='defects',
+        verbose_name='Труба',
+        blank=True,
+        null=True,
+    )
     anomaly = models.OneToOneField(
         Anomaly,
         on_delete=models.CASCADE,
-        related_name='defects'
+        related_name='rel_defects',
+        blank=True,
+        null=True,
     )
     defect_num = models.PositiveSmallIntegerField(
         verbose_name='Номер дефекта',
@@ -1104,7 +1118,7 @@ class PipeDocument(models.Model):
         verbose_name_plural = 'Документация участков МГ'
 
 
-class TubeDocument(models.Model):
+class TubeVersionDocument(models.Model):
     tube = models.ForeignKey(
         TubeVersion,
         on_delete=models.CASCADE,
@@ -1142,6 +1156,26 @@ class NodeDocument(models.Model):
     class Meta:
         verbose_name = 'Документация КУ МГ'
         verbose_name_plural = 'Документация КУ МГ'
+
+
+class DiagnosticDocument(models.Model):
+    diagnostic = models.ForeignKey(
+        Diagnostics,
+        on_delete=models.CASCADE,
+        related_name='diagnostic_docs'
+    )
+    doc = models.FileField(upload_to='pipelines/docs/dianostics/')
+    name = models.CharField(
+        'Наименование документа',
+        max_length=100,
+        blank=False,
+        null=False,
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Документация по диагностике участка МГ'
+        verbose_name_plural = 'Документация по диагностике участков МГ'
 
 
 class RepairDocument(models.Model):

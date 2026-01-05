@@ -31,11 +31,13 @@ router.register('pipelines', views.PipelineViewSet, basename='pipelines')
 router.register('pipe-states', views.PipeStatesViewSet, basename='pipe-states')
 router.register('node-states', views.NodeStatesViewSet, basename='node-states')
 router.register('pipes', views.PipeViewSet, basename='pipes')
+router.register('pipe-limits', views.PipeLimitViewSet, basename='pipe-limits')
 router.register('pipe-docs', views.PipeDocumentViewSet, basename='pipe-docs')
 router.register(r'pipes/(?P<pipe_id>\d+)/tubes', views.TubesViewSet, basename='pipe_tubes')
 router.register('tubes', views.TubesViewSet, basename='tubes')
-router.register('tube-docs', views.TubeDocumentViewSet, basename='tube-docs')
+router.register('tube-docs', views.TubeVersionDocumentViewSet, basename='tube-docs')
 router.register('diagnostics', views.DiagnosticsViewSet, basename='diagnostics')
+router.register('diagnostic-docs', views.DiagnosticDocumentViewSet, basename='diagnostic-docs')
 
 
 urlpatterns = [

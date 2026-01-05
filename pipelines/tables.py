@@ -6,6 +6,36 @@ from .models import (Diagnostics, PipeDepartment, Repair, Tube, TubeUnit,
                      TubeVersion)
 
 
+class TubeVersionTable(tables.Table):
+    tube_num = tables.Column(verbose_name='Номер элемента')
+    tube_length = tables.Column(verbose_name='Длина, м')
+    thickness = tables.Column(verbose_name='Толщина стенки, мм')
+    tube_type = tables.Column(verbose_name='Тип')
+    diameter = tables.Column(verbose_name='Диаметр, мм')
+    category = tables.Column(verbose_name='Категория')
+    steel_grade = tables.Column(verbose_name='Марка стали')
+    yield_strength = tables.Column(verbose_name='Предел текучести стали, МПа')
+    tear_strength = tables.Column(verbose_name='Сопротивление разрыву стали, МПа')
+
+    class Meta:
+        model = TubeVersion
+        fields = (
+            'tube_num',
+            'tube_length',
+            'thickness',
+            'tube_type',
+            'diameter',
+            'category',
+            'steel_grade',
+            'yield_strength',
+            'tear_strength',
+        )
+        attrs = {'class': 'table table_pipelines'}
+        row_attrs = {'id': lambda record: record.id}
+        orderable = False
+        template_name = 'module_app/table/new_table.html'
+
+
 class TubeTable(tables.Table):
     pipe = tables.Column(verbose_name='Участок')
     tube_num = tables.Column(verbose_name='Номер элемента')
@@ -34,6 +64,7 @@ class TubeTable(tables.Table):
         row_attrs = {'id': lambda record: record.id}
         orderable = False
         template_name = 'module_app/table/new_table.html'
+        # order_by = '-tube_num'
 
     def render_source(self, record):
         # Получаем последнюю версию трубы с предзагрузкой диагностики и ремонта
