@@ -1,13 +1,13 @@
-import * as config from './config/config.js';
-import * as constant from './utils/constants.js';
-import Api from './api/Api.js';
-import UserInfo from './components/UserInfo.js';
-import FormValidator from '../js/components/FormValidator.js';
-import AppMenu from '../js/components/AppMenu.js';
-import PipelineVisualizer from '../js/components/PipelineVisualizer.js';
-import PipelineContextMenu from '../js/components/PipelineContextMenu.js';
-import PopupWithForm from './components/PopupWithForm.js';
-import PollingClient from './api/PollingClient.js';
+import * as config from '../../config/config.js';
+import * as constant from '../../utils/constants.js';
+import Api from '../../api/Api.js';
+import UserInfo from '../../components/UserInfo.js';
+import FormValidator from '../../components/FormValidator.js';
+import AppMenu from '../../components/AppMenu.js';
+import PipelineVisualizer from '../../components/PipelineVisualizer.js';
+import PipelineContextMenu from '../../components/PipelineContextMenu.js';
+import PopupWithForm from '../../components/PopupWithForm.js';
+import PollingClient from '../../api/PollingClient.js';
 
 
 const formValidators = {};

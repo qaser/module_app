@@ -7,20 +7,24 @@ from pathlib import Path
 import django
 from openpyxl import load_workbook
 
+BASE_URL = r"H:\WorkDocuments\Dev\module_app"
+# BASE_URL = r"D:\Development\module_a5pp"
+
 # Настройка Django окружения
-sys.path.append(r"D:\Development\module_app")
+sys.path.append(BASE_URL)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "module_app.settings")
 django.setup()
 
 
-from pipelines.models import Bend, Diagnostics, Pipe, Tube, TubeUnit, TubeVersion, Anomaly
+from pipelines.models import (
+    Anomaly, Bend, Diagnostics, Pipe, Tube, TubeUnit, TubeVersion)
 
-# Bend.objects.all().delete()
-# Tube.objects.all().delete()
-# TubeVersion.objects.all().delete()
-# TubeUnit.objects.all().delete()
-# Anomaly.objects.all().delete()
-# Diagnostics.objects.all().delete()
+Bend.objects.all().delete()
+Tube.objects.all().delete()
+TubeVersion.objects.all().delete()
+TubeUnit.objects.all().delete()
+Anomaly.objects.all().delete()
+Diagnostics.objects.all().delete()
 
 ''' импорт труб
 0 tube_num
@@ -92,6 +96,21 @@ from pipelines.models import Bend, Diagnostics, Pipe, Tube, TubeUnit, TubeVersio
 HEADER_KEYWORDS = ["Номер трубы", "Толщина", "Тип трубы", 'Расстояние, м']
 DATA = [
     {
+        'name': 'nord_uu',
+        'report_type': 'new',
+        'pipe_ranges': {
+            2: "2932 - 5108",  # номер участка и диапазон труб
+            3: "5110 - 7351",
+            4: "7353 - 7466",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_uu\tubes_nord_uu.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_uu\tubeunits_nord_uu.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_uu\anomalies_nord_uu.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_uu\bends_nord_uu.xlsx",
+        'diagnostics_start': '04.08.2025',
+        'diagnostics_end': '07.08.2025',
+    },
+    {
         'name': 'south_uu',
         'report_type': 'new',
         'pipe_ranges': {
@@ -99,12 +118,57 @@ DATA = [
             6: "133а - 2732",
             7: "2734 - 5452",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_uu\tubes_south_uu.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_uu\tubeunits_south_uu.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_uu\anomalies_south_uu.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_uu\bends_south_uu.xlsx",
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_uu\tubes_south_uu.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_uu\tubeunits_south_uu.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_uu\anomalies_south_uu.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_uu\bends_south_uu.xlsx",
         'diagnostics_start': '24.06.2023',
         'diagnostics_end': '29.06.2023',
+    },
+    {
+        'name': 'nord_c1',
+        'report_type': 'new',
+        'pipe_ranges': {
+            8: "2987 - 5157",  # номер участка и диапазон труб
+            9: "5159 - 7421",
+            10: "7423 - 7498б",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_c1\tubes_nord_c1.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_c1\tubeunits_nord_c1.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_c1\anomalies_nord_c1.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_c1\bends_nord_c1.xlsx",
+        'diagnostics_start': '06.03.2024',
+        'diagnostics_end': '24.03.2024',
+    },
+    {
+        'name': 'south_uc1',
+        'report_type': 'new',
+        'pipe_ranges': {
+            17: "2 - 117а",  # номер участка и диапазон труб
+            18: "118б - 2803",
+            19: "2805 - 5600",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_uc1\tubes_south_uc1.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_uc1\tubeunits_south_uc1.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_uc1\anomalies_south_uc1.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_uc1\bends_south_uc1.xlsx",
+        'diagnostics_start': '11.08.2025',
+        'diagnostics_end': '15.08.2025',
+    },
+    {
+        'name': 'nord_c2',
+        'report_type': 'new',
+        'pipe_ranges': {
+            14: "2942а - 5194а",  # номер участка и диапазон труб
+            15: "5196 - 7479",
+            16: "7481 - 7538а",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_c2\tubes_nord_c2.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_c2\tubeunits_nord_c2.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_c2\anomalies_nord_c2.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_c2\bends_nord_c2.xlsx",
+        'diagnostics_start': '04.04.2025',
+        'diagnostics_end': '07.04.2025',
     },
     {
         'name': 'south_c2',
@@ -114,10 +178,10 @@ DATA = [
             15: "133а - 2828а",
             16: "2830 - 5596",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_c2\tubes_south_c2.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_c2\tubeunits_south_c2.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_c2\anomalies_south_c2.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_c2\bends_south_c2.xlsx",
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_c2\tubes_south_c2.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_c2\tubeunits_south_c2.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_c2\anomalies_south_c2.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_c2\bends_south_c2.xlsx",
         'diagnostics_start': '19.08.2024',
         'diagnostics_end': '23.08.2024',
     },
@@ -129,132 +193,12 @@ DATA = [
             21: "5174 - 7432",
             22: "7434 - 7534",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_e1\tubes_nord_e1.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_e1\tubeunits_nord_e1.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_e1\anomalies_nord_e1.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_e1\bends_nord_e1.xlsx",
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_e1\tubes_nord_e1.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_e1\tubeunits_nord_e1.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_e1\anomalies_nord_e1.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_e1\bends_nord_e1.xlsx",
         'diagnostics_start': '13.02.2024',
         'diagnostics_end': '17.02.2024',
-    },
-    {
-        'name': 'nord_t1',
-        'report_type': 'new',
-        'pipe_ranges': {
-            38: "2947 - 5257",  # номер участка и диапазон труб
-            39: "5259 - 7430",
-            40: "7432 - 7535",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_t1\tubes_nord_t1.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_t1\tubeunits_nord_t1.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_t1\anomalies_nord_t1.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_t1\bends_nord_t1.xlsx",
-        'diagnostics_start': '23.08.2023',
-        'diagnostics_end': '28.08.2023',
-    },
-    {
-        'name': 'south_e2',
-        'report_type': 'new',
-        'pipe_ranges': {
-            29: "2 - 54",  # номер участка и диапазон труб
-            30: "56 - 2795",
-            31: "2797 - 5581",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_e2\tubes_south_e2.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_e2\tubeunits_south_e2.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_e2\anomalies_south_e2.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_e2\bends_south_e2.xlsx",
-        'diagnostics_start': '17.01.2023',
-        'diagnostics_end': '21.01.2023',
-    },
-    {
-        'name': 'south_pov',
-        'report_type': 'new',
-        'pipe_ranges': {
-            53: "4 - 135",  # номер участка и диапазон труб
-            54: "137а - 2873а",
-            55: "2875а - 5742",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_pov\tubes_south_pov.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_pov\tubeunits_south_pov.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_pov\anomalies_south_pov.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_pov\bends_south_pov.xlsx",
-        'diagnostics_start': '20.02.2024',
-        'diagnostics_end': '26.02.2024',
-    },
-    {
-        'name': 'nord_pov',
-        'report_type': 'new',
-        'pipe_ranges': {
-            50: "3346 - 5511",  # номер участка и диапазон труб
-            51: "5513 - 7791",
-            52: "7793 - 7943",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_pov\tubes_nord_pov.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_pov\tubeunits_nord_pov.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_pov\anomalies_nord_pov.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_pov\bends_nord_pov.xlsx",
-        'diagnostics_start': '01.07.2023',
-        'diagnostics_end': '05.07.2023',
-    },
-    {
-        'name': 'nord_c1',
-        'report_type': 'new',
-        'pipe_ranges': {
-            8: "2987 - 5157",  # номер участка и диапазон труб
-            9: "5159 - 7421",
-            10: "7423 - 7498б",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_c1\tubes_nord_c1.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_c1\tubeunits_nord_c1.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_c1\anomalies_nord_c1.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_c1\bends_nord_c1.xlsx",
-        'diagnostics_start': '06.03.2024',
-        'diagnostics_end': '24.03.2024',
-    },
-    {
-        'name': 'nord_uu',
-        'report_type': 'new',
-        'pipe_ranges': {
-            2: "2932 - 5108",  # номер участка и диапазон труб
-            3: "5110 - 7351",
-            4: "7353 - 7466",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_uu\tubes_nord_uu.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_uu\tubeunits_nord_uu.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_uu\anomalies_nord_uu.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_uu\bends_nord_uu.xlsx",
-        'diagnostics_start': '04.08.2025',
-        'diagnostics_end': '07.08.2025',
-    },
-    {
-        'name': 'south_zg',
-        'report_type': 'new',
-        'pipe_ranges': {
-            35: "2 - 32",  # номер участка и диапазон труб
-            36: "34 - 2753",
-            37: "2755 - 5545",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_zg\tubes_south_zg.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_zg\tubeunits_south_zg.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_zg\anomalies_south_zg.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_zg\bends_south_zg.xlsx",
-        'diagnostics_start': '05.10.2023',
-        'diagnostics_end': '09.10.2023',
-    },
-    {
-        'name': 'nord_c2',
-        'report_type': 'new',
-        'pipe_ranges': {
-            14: "2942а - 5194а",  # номер участка и диапазон труб
-            15: "5196 - 7479",
-            16: "7481 - 7538а",
-        },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_c2\tubes_nord_c2.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_c2\tubeunits_nord_c2.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_c2\anomalies_nord_c2.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_c2\bends_nord_c2.xlsx",
-        'diagnostics_start': '04.04.2025',
-        'diagnostics_end': '07.04.2025',
     },
     {
         'name': 'south_e1',
@@ -264,10 +208,10 @@ DATA = [
             24: "104 - 2809",
             25: "2811 - 5575",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_e1\tubes_south_e1.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_e1\tubeunits_south_e1.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_e1\anomalies_south_e1.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_e1\bends_south_e1.xlsx",
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_e1\tubes_south_e1.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_e1\tubeunits_south_e1.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_e1\anomalies_south_e1.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_e1\bends_south_e1.xlsx",
         'diagnostics_start': '04.12.2024',
         'diagnostics_end': '10.12.2024',
     },
@@ -279,13 +223,28 @@ DATA = [
     #         27: "5242а - 7496",
     #         28: "7498 - 7651",
     #     },
-    #     'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_e2\tubes_nord_e2.xlsx",
-    #     'filepath_units': r"D:\Development\module_app\fixtures\data\nord_e2\tubeunits_nord_e2.xlsx",
-    #     'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_e2\anomalies_nord_e2.xlsx",
-    #     'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_e2\bends_nord_e2.xlsx",
+    #     'filepath_tubes': BASE_URL + r"\fixtures\data\nord_e2\tubes_nord_e2.xlsx",
+    #     'filepath_units': BASE_URL + r"\fixtures\data\nord_e2\tubeunits_nord_e2.xlsx",
+    #     'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_e2\anomalies_nord_e2.xlsx",
+    #     'filepath_bends': BASE_URL + r"\fixtures\data\nord_e2\bends_nord_e2.xlsx",
     #     'diagnostics_start': '13.08.2024',
     #     'diagnostics_end': '17.08.2024',
     # },
+    {
+        'name': 'south_e2',
+        'report_type': 'new',
+        'pipe_ranges': {
+            29: "2 - 54",  # номер участка и диапазон труб
+            30: "56 - 2795",
+            31: "2797 - 5581",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_e2\tubes_south_e2.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_e2\tubeunits_south_e2.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_e2\anomalies_south_e2.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_e2\bends_south_e2.xlsx",
+        'diagnostics_start': '17.01.2023',
+        'diagnostics_end': '21.01.2023',
+    },
     {
         'name': 'nord_zg',
         'report_type': 'new',
@@ -294,42 +253,42 @@ DATA = [
             33: "5242а - 7496",
             34: "7498 - 7651",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_zg\tubes_nord_zg.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_zg\tubeunits_nord_zg.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_zg\anomalies_nord_zg.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_zg\bends_nord_zg.xlsx",
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_zg\tubes_nord_zg.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_zg\tubeunits_nord_zg.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_zg\anomalies_nord_zg.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_zg\bends_nord_zg.xlsx",
         'diagnostics_start': '14.12.2023',
         'diagnostics_end': '18.12.2023',
     },
     {
-        'name': 'south_yat2',
+        'name': 'south_zg',
         'report_type': 'new',
         'pipe_ranges': {
-            47: "2аб - 172",  # номер участка и диапазон труб
-            48: "174 - 2910",
-            49: "2912 - 5756",
+            35: "2 - 32",  # номер участка и диапазон труб
+            36: "34 - 2753",
+            37: "2755 - 5545",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_yat2\tubes_south_yat2.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_yat2\tubeunits_south_yat2.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_yat2\anomalies_south_yat2.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_yat2\bends_south_yat2.xlsx",
-        'diagnostics_start': '16.10.2025',
-        'diagnostics_end': '18.10.2025',
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_zg\tubes_south_zg.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_zg\tubeunits_south_zg.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_zg\anomalies_south_zg.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_zg\bends_south_zg.xlsx",
+        'diagnostics_start': '05.10.2023',
+        'diagnostics_end': '09.10.2023',
     },
     {
-        'name': 'nord_yat2',
+        'name': 'nord_t1',
         'report_type': 'new',
         'pipe_ranges': {
-            44: "2909 - 5217",  # номер участка и диапазон труб
-            45: "5219 - 7417",
-            46: "7419 - 7503",
+            38: "2947 - 5257",  # номер участка и диапазон труб
+            39: "5259 - 7430",
+            40: "7432 - 7535",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_yat2\tubes_nord_yat2.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_yat2\tubeunits_nord_yat2.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_yat2\anomalies_nord_yat2.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_yat2\bends_nord_yat2.xlsx",
-        'diagnostics_start': '04.02.2025',
-        'diagnostics_end': '07.02.2025',
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_t1\tubes_nord_t1.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_t1\tubeunits_nord_t1.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_t1\anomalies_nord_t1.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_t1\bends_nord_t1.xlsx",
+        'diagnostics_start': '23.08.2023',
+        'diagnostics_end': '28.08.2023',
     },
     {
         'name': 'south_yat1',
@@ -339,27 +298,72 @@ DATA = [
             42: "140 - 2924",
             43: "2926 - 5718",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_yat1\tubes_south_yat1.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_yat1\tubeunits_south_yat1.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_yat1\anomalies_south_yat1.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_yat1\bends_south_yat1.xlsx",
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_yat1\tubes_south_yat1.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_yat1\tubeunits_south_yat1.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_yat1\anomalies_south_yat1.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_yat1\bends_south_yat1.xlsx",
         'diagnostics_start': '11.10.2024',
         'diagnostics_end': '15.10.2024',
     },
     {
-        'name': 'south_srtou',
+        'name': 'nord_yat2',
         'report_type': 'new',
         'pipe_ranges': {
-            59: "2 - 130",  # номер участка и диапазон труб
-            60: "132 - 2874",
-            61: "2876 - 5662",
+            44: "2909 - 5217",  # номер участка и диапазон труб
+            45: "5219 - 7417",
+            46: "7419 - 7503",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_srtou\tubes_south_srtou.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_srtou\tubeunits_south_srtou.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_srtou\anomalies_south_srtou.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_srtou\bends_south_srtou.xlsx",
-        'diagnostics_start': '09.02.2025',
-        'diagnostics_end': '12.02.2025',
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_yat2\tubes_nord_yat2.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_yat2\tubeunits_nord_yat2.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_yat2\anomalies_nord_yat2.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_yat2\bends_nord_yat2.xlsx",
+        'diagnostics_start': '04.02.2025',
+        'diagnostics_end': '07.02.2025',
+    },
+    {
+        'name': 'south_yat2',
+        'report_type': 'new',
+        'pipe_ranges': {
+            47: "2аб - 172",  # номер участка и диапазон труб
+            48: "174 - 2910",
+            49: "2912 - 5756",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_yat2\tubes_south_yat2.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_yat2\tubeunits_south_yat2.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_yat2\anomalies_south_yat2.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_yat2\bends_south_yat2.xlsx",
+        'diagnostics_start': '16.10.2025',
+        'diagnostics_end': '18.10.2025',
+    },
+    {
+        'name': 'nord_pov',
+        'report_type': 'new',
+        'pipe_ranges': {
+            50: "3346 - 5511",  # номер участка и диапазон труб
+            51: "5513 - 7791",
+            52: "7793 - 7943",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_pov\tubes_nord_pov.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_pov\tubeunits_nord_pov.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_pov\anomalies_nord_pov.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_pov\bends_nord_pov.xlsx",
+        'diagnostics_start': '01.07.2023',
+        'diagnostics_end': '05.07.2023',
+    },
+    {
+        'name': 'south_pov',
+        'report_type': 'new',
+        'pipe_ranges': {
+            53: "4 - 135",  # номер участка и диапазон труб
+            54: "137а - 2873а",
+            55: "2875а - 5742",
+        },
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_pov\tubes_south_pov.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_pov\tubeunits_south_pov.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_pov\anomalies_south_pov.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_pov\bends_south_pov.xlsx",
+        'diagnostics_start': '20.02.2024',
+        'diagnostics_end': '26.02.2024',
     },
     {
         'name': 'nord_srtou',
@@ -369,27 +373,27 @@ DATA = [
             57: "5528 - 7825",
             58: "7827 - 7988",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\nord_srtou\tubes_nord_srtou.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\nord_srtou\tubeunits_nord_srtou.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\nord_srtou\anomalies_nord_srtou.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\nord_srtou\bends_nord_srtou.xlsx",
+        'filepath_tubes': BASE_URL + r"\fixtures\data\nord_srtou\tubes_nord_srtou.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\nord_srtou\tubeunits_nord_srtou.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\nord_srtou\anomalies_nord_srtou.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\nord_srtou\bends_nord_srtou.xlsx",
         'diagnostics_start': '07.02.2023',
         'diagnostics_end': '11.02.2023',
     },
     {
-        'name': 'south_uc1',
+        'name': 'south_srtou',
         'report_type': 'new',
         'pipe_ranges': {
-            17: "2 - 117а",  # номер участка и диапазон труб
-            18: "118б - 2803",
-            19: "2805 - 5600",
+            59: "2 - 130",  # номер участка и диапазон труб
+            60: "132 - 2874",
+            61: "2876 - 5662",
         },
-        'filepath_tubes': r"D:\Development\module_app\fixtures\data\south_uc1\tubes_south_uc1.xlsx",
-        'filepath_units': r"D:\Development\module_app\fixtures\data\south_uc1\tubeunits_south_uc1.xlsx",
-        'filepath_anomalies': r"D:\Development\module_app\fixtures\data\south_uc1\anomalies_south_uc1.xlsx",
-        'filepath_bends': r"D:\Development\module_app\fixtures\data\south_uc1\bends_south_uc1.xlsx",
-        'diagnostics_start': '11.08.2025',
-        'diagnostics_end': '15.08.2025',
+        'filepath_tubes': BASE_URL + r"\fixtures\data\south_srtou\tubes_south_srtou.xlsx",
+        'filepath_units': BASE_URL + r"\fixtures\data\south_srtou\tubeunits_south_srtou.xlsx",
+        'filepath_anomalies': BASE_URL + r"\fixtures\data\south_srtou\anomalies_south_srtou.xlsx",
+        'filepath_bends': BASE_URL + r"\fixtures\data\south_srtou\bends_south_srtou.xlsx",
+        'diagnostics_start': '09.02.2025',
+        'diagnostics_end': '12.02.2025',
     },
 ]
 
@@ -441,8 +445,8 @@ def find_pipe_for_tube(tube_num, pipe_ranges):
         return None
     for pipe_id, range_str in pipe_ranges.items():
         start, end = parse_range(range_str)
-        # диапазон открытый (не включаем края)
-        if start < num < end:
+        # диапазон закрытый (включаем края)
+        if start <= num <= end:
             try:
                 return Pipe.objects.get(id=pipe_id)
             except Pipe.DoesNotExist:
@@ -496,13 +500,17 @@ def import_tubes(
         diagnostics_start: str,
         diagnostics_end: str
     ):
+    TUBE_TYPE_MAP = {
+        '1Ш': 'one',
+        '2Ш': 'two',
+        'СШ': 'spiral',
+        'БШ': 'without',
+    }
     print(f"📘 Импорт из файла: {filepath}")
     wb = load_workbook(filepath, read_only=True, data_only=True)
     ws = wb.active
-
     # создаём/находим диагностику, связанную со всеми участками
     diagnostics = get_or_create_diagnostics_for_pipes(pipe_ranges.keys(), diagnostics_start, diagnostics_end)
-
     header_found = False
     created_versions = 0
     created_tubes = 0
@@ -533,6 +541,10 @@ def import_tubes(
             created_tubes += 1
 
         # --- TubeVersion ---
+        raw_type = str(row[3]).strip() if row[3] else None
+        tube_type = TUBE_TYPE_MAP.get(raw_type, 'without')
+        if tube_type is None:
+            raise ValueError(f'Неизвестный тип трубы: {raw_type}')
         try:
             TubeVersion.objects.create(
                 tube=tube,
@@ -542,7 +554,7 @@ def import_tubes(
                 tube_num=tube_num,
                 odometr_data = float(row[1]) if row[1] else 0,
                 tube_length=float(row[2]) if row[2] else 0,
-                tube_type=str(row[3]).strip() if row[3] else "without",
+                tube_type=tube_type,
                 thickness=float(row[4]) if row[4] else 0,
                 weld_position=str(row[5]).strip() if row[5] else None,
                 yield_strength=float(row[6]) if row[6] else 0,
@@ -620,13 +632,11 @@ def import_tube_units(filepath, diagnostics):
             "пригруз": "anch",
             "обустройство": "pfix",
         }
-
         unit_type = "pfix"  # по умолчанию
         for k, v in UNIT_TYPE_MAP.items():
             if v in unit_type_raw:
                 unit_type = v
                 break
-
         # создаём элемент
         TubeUnit.objects.create(
             tube=tube_version,
@@ -645,6 +655,7 @@ def import_tube_units(filepath, diagnostics):
 def import_anomalies(filepath, diagnostics):
     ANOMALY_NATURE_MAP = {
         'Аномалия кольцевого шва': 'gwan',
+        'Аномалия спирального шва': 'swan',
         'Аномалия продольного шва': 'lwan',
         'Механическое повреждение': 'goug',
         'Коррозия': 'corr',
@@ -654,6 +665,7 @@ def import_anomalies(filepath, diagnostics):
         'Заводской дефект': 'mian',
         'Зона продольных трещин': 'scc',
         'Трещина на продольном шве': 'lwcr',
+        'Эллипсность': 'oval',
     }
     SIZE_CLASS_MAP = {
         'Не указан': '',
@@ -869,7 +881,6 @@ def import_bends(filepath, diagnostics):
 
 if __name__ == "__main__":
     for diagnostic_data in DATA:
-        # diagnostic_data = DATA.get('nord_srtou')
         pipe_ranges = diagnostic_data.get('pipe_ranges')
         diagnostics_start = diagnostic_data.get('diagnostics_start')
         diagnostics_end = diagnostic_data.get('diagnostics_end')

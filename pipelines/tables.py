@@ -2,7 +2,7 @@ import django_tables2 as tables
 
 from users.models import Role
 
-from .models import (Diagnostics, PipeDepartment, Repair, Tube, TubeUnit,
+from .models import (Anomaly, Bend, Diagnostics, PipeDepartment, Repair, Tube, TubeUnit,
                      TubeVersion)
 
 
@@ -20,6 +20,7 @@ class TubeVersionTable(tables.Table):
     class Meta:
         model = TubeVersion
         fields = (
+            'odometr_data',
             'tube_num',
             'tube_length',
             'thickness',
@@ -27,8 +28,73 @@ class TubeVersionTable(tables.Table):
             'diameter',
             'category',
             'steel_grade',
+            'weld_position',
             'yield_strength',
             'tear_strength',
+        )
+        attrs = {'class': 'table table_pipelines'}
+        row_attrs = {'id': lambda record: record.id}
+        orderable = False
+        template_name = 'module_app/table/new_table.html'
+        # order_by = 'odometr_data'
+
+
+class TubeUnitTable(tables.Table):
+    tube_info = tables.Column(
+        verbose_name='Труба',
+        accessor='tube.tube_num',
+    )
+    thickness = tables.Column(
+        verbose_name='Толщина стенки трубы, мм',
+        accessor='tube.thickness',
+    )
+    tube_type = tables.Column(
+        verbose_name='Тип трубы',
+        accessor='tube.tube_type',
+    )
+
+    def render_tube_info(self, value):
+        """Форматируем отображение связанной трубы"""
+        return str(value) if value else "-"
+
+    class Meta:
+        model = TubeUnit
+        attrs = {'class': 'table table_pipelines'}
+        fields = (
+            'unit_type',
+            'odometr_data',
+            'tube_info',
+            'tube_type',
+            'thickness',
+            'comment',
+        )
+        orderable = False
+        template_name = 'module_app/table/new_table.html'
+        empty_text = "Элементы обустройства не найдены"
+
+
+class BendTable(tables.Table):
+    tube_num = tables.Column(verbose_name='Номер элемента')
+
+    class Meta:
+        model = Bend
+        fields = (
+            'odometr_data',
+            'tube_num',
+        )
+        attrs = {'class': 'table table_pipelines'}
+        row_attrs = {'id': lambda record: record.id}
+        orderable = False
+        template_name = 'module_app/table/new_table.html'
+
+
+class AnomalyTable(tables.Table):
+    odometr_data = tables.Column(verbose_name='Номер элемента')
+
+    class Meta:
+        model = Anomaly
+        fields = (
+            'odometr_data',
         )
         attrs = {'class': 'table table_pipelines'}
         row_attrs = {'id': lambda record: record.id}
@@ -66,6 +132,9 @@ class TubeTable(tables.Table):
         template_name = 'module_app/table/new_table.html'
         # order_by = '-tube_num'
 
+    def render_last_type(self, value):
+        return dict(TubeVersion.TUBE_TYPE).get(value, value)
+
     def render_source(self, record):
         # Получаем последнюю версию трубы с предзагрузкой диагностики и ремонта
         latest_version = TubeVersion.objects.filter(
@@ -91,25 +160,18 @@ class TubeTable(tables.Table):
 
     def render_unit_types(self, record):
         # Получаем последнюю версию
-        latest_version = TubeVersion.objects.filter(
-            tube=record
-        ).order_by('-date').first()
-
+        latest_version = TubeVersion.objects.filter(tube=record).order_by('-date').first()
         if not latest_version:
             return '-'
-
         # Получаем все элементы обустройства для последней версии
         tube_units = latest_version.tube_units.all()
-
         if not tube_units.exists():
             return '-'
-
         # Формируем список типов элементов с переносом строки
         unit_types = []
         for unit in tube_units:
             display_name = dict(TubeUnit.UNIT_TYPE).get(unit.unit_type, unit.unit_type)
             unit_types.append(display_name)
-
         return ', '.join(unit_types)
 
 
@@ -143,34 +205,34 @@ class RepairTable(tables.Table):
             if record.node.node_type == 'bridge' and record.node.sub_pipeline:
                 return f'{record.node.pipeline.title}  /  {record.node.sub_pipeline.title}'
             return record.node.pipeline.title
-        return '—'
+        return '-'
 
     def render_department_root(self, record):
         if record.pipe:
             pd_list = PipeDepartment.objects.filter(pipe=record.pipe).select_related('department')
             roots = [pd.department.get_root().name for pd in pd_list if pd.department]
-            return ' / '.join(sorted(set(roots))) if roots else '—'
+            return ' / '.join(sorted(set(roots))) if roots else '-'
 
         if record.node:
             departments = record.node.equipment.departments.all()
             if departments.exists():
                 roots = [d.get_root().name for d in departments]
                 return ' / '.join(sorted(set(roots)))
-        return '—'
+        return '-'
 
     def render_object_type(self, record):
         if record.pipe:
             return 'Участок газопровода'
         if record.node:
             return record.node.get_node_type_display()
-        return '—'
+        return '-'
 
     def render_object_name(self, record):
         if record.pipe:
             return str(record.pipe)
         if record.node:
             return str(record.node)
-        return '—'
+        return '-'
 
 
 class DiagnosticsTable(tables.Table):
@@ -205,7 +267,7 @@ class DiagnosticsTable(tables.Table):
                 return list(pipelines)[0]
             else:
                 return f"Несколько ({len(pipelines)})"
-        return '—'
+        return '-'
 
     def render_department_root(self, record):
         all_roots = set()
@@ -217,7 +279,7 @@ class DiagnosticsTable(tables.Table):
 
         if all_roots:
             return ' / '.join(sorted(all_roots))
-        return '—'
+        return '-'
 
     def render_pipes_distance(self, record):
         pipes = list(record.pipes.all())
@@ -230,4 +292,4 @@ class DiagnosticsTable(tables.Table):
                 min_start = min(start_points)
                 max_end = max(end_points)
                 return f"от {min_start} до {max_end} км"
-        return '—'
+        return '-'

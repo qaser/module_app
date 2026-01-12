@@ -1,5 +1,5 @@
 {% extends "module_app/base.html" %}
-{% block title %}Журнал трубных элементов ВТД{% endblock %}
+{% block title %}Журнал отводов ВТД{% endblock %}
 {% block app_name %}Магистральные газопроводы{% endblock %}
 
 {% load static %}
@@ -50,7 +50,7 @@
 {% csrf_token %}
 <main class="content">
   <section class="main" id="main">
-    <h1 class="main__title" id="{{ diagnostic_id }}">Журнал трубных элементов ВТД</h1>
+    <h1 class="main__title" id="{{ diagnostic_id }}">Журнал отводов ВТД</h1>
     <!-- <div class="scheme" id="scheme"></div> -->
     {% render_table table %}
   </section>
@@ -58,5 +58,5 @@
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/apps/pipelines/singleDiagnosticTubeUnits.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/pipelines/singleDiagnosticBends.js' %}"></script>
 {% endblock %}

@@ -1,17 +1,19 @@
 from multiprocessing import Pipe
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import OuterRef, Q, QuerySet, Subquery, Exists
+from django.db.models import CharField, Exists, FloatField, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from equipments.models import Equipment
-from pipelines.filters import DiagnosticsFilter, RepairFilter, TubeFilter, TubeVersionFilter
-from pipelines.tables import DiagnosticsTable, RepairTable, TubeTable, TubeVersionTable
+from pipelines.filters import (AnomalyFilter, BendFilter, DiagnosticsFilter, RepairFilter, TubeFilter, TubeUnitFilter,
+                               TubeVersionFilter)
+from pipelines.tables import (AnomalyTable, BendTable, DiagnosticsTable, RepairTable, TubeTable, TubeUnitTable,
+                              TubeVersionTable)
 from users.models import ModuleUser, Role
 
-from .models import (ComplexPlan, Diagnostics, Pipe, PipeDepartment, Pipeline,
+from .models import (Anomaly, Bend, ComplexPlan, Diagnostics, Pipe, PipeDepartment, Pipeline,
                      PipeState, Repair, Tube, TubeUnit, TubeVersion)
 
 
@@ -140,8 +142,29 @@ class DiagnosticTubesView(SingleTableMixin, FilterView):
     paginate_by = 50
 
     def get_queryset(self):
+        return (
+            TubeVersion.objects
+            .filter(diagnostics_id=self.kwargs['diagnostic_id'])
+            .order_by('odometr_data')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['diagnostic_id'] = self.kwargs['diagnostic_id']
+        return context
+
+
+class DiagnosticTubeUnitsView(SingleTableMixin, FilterView):
+    model = TubeUnit
+    table_class = TubeUnitTable
+    template_name = 'pipelines/diagnostic_tubeunits.html'
+    filterset_class = TubeUnitFilter
+    paginate_by = 50
+
+    def get_queryset(self):
         diagnostic_id = self.kwargs['diagnostic_id']
-        queryset = TubeVersion.objects.filter(diagnostics__id=diagnostic_id)
+        queryset = TubeUnit.objects.filter(tube__diagnostics_id=diagnostic_id)
+        # return queryset.select_related('tube')
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -150,22 +173,40 @@ class DiagnosticTubesView(SingleTableMixin, FilterView):
         return context
 
 
-# class DiagnosticTubeUnitsView(SingleTableMixin, FilterView):
-#     model = TubeUnit
-#     table_class = TubeUnitTable
-#     template_name = 'pipelines/diagnostic_tubeunits.html'
-#     filterset_class = TubeUnitFilter
-#     paginate_by = 50
+class DiagnosticBendsView(SingleTableMixin, FilterView):
+    model = Bend
+    table_class = BendTable
+    template_name = 'pipelines/diagnostic_bends.html'
+    filterset_class = BendFilter
+    paginate_by = 50
 
-#     def get_queryset(self):
-#         diagnostic_id = self.kwargs['diagnostic_id']
-#         queryset = TubeUnit.objects.filter(tube__diagnostics_id=diagnostic_id)
-#         return queryset
+    def get_queryset(self):
+        diagnostic_id = self.kwargs['diagnostic_id']
+        queryset = Bend.objects.filter(tube__diagnostics_id=diagnostic_id)
+        return queryset
 
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['diagnostic_id'] = self.kwargs['diagnostic_id']
-#         return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['diagnostic_id'] = self.kwargs['diagnostic_id']
+        return context
+
+
+class DiagnosticAnomaliesView(SingleTableMixin, FilterView):
+    model = Anomaly
+    table_class = AnomalyTable
+    template_name = 'pipelines/diagnostic_anomalies.html'
+    filterset_class = AnomalyFilter
+    paginate_by = 50
+
+    def get_queryset(self):
+        diagnostic_id = self.kwargs['diagnostic_id']
+        queryset = Bend.objects.filter(tube__diagnostics_id=diagnostic_id)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['diagnostic_id'] = self.kwargs['diagnostic_id']
+        return context
 
 
 class TubesView(SingleTableMixin, FilterView):
@@ -177,33 +218,59 @@ class TubesView(SingleTableMixin, FilterView):
 
     def get_queryset(self):
         pipe_id = self.kwargs['pipe_id']
-
-        # Субзапрос для последней версии
-        latest_version_subquery = TubeVersion.objects.filter(
-            tube=OuterRef('pk')
-        ).order_by('-date')
-
-        # Субзапрос для проверки наличия элементов обустройства
-        unit_exists_subquery = TubeUnit.objects.filter(tube=OuterRef('last_version_id'))
-
-        # Субзапрос для типа элемента обустройства
-        unit_type_subquery = TubeUnit.objects.filter(
-            tube=OuterRef('last_version_id')
-        ).order_by('id').values('unit_type')[:1]
-
+        # Базовый подзапрос последней версии
+        last_version_qs = (
+            TubeVersion.objects
+            .filter(tube=OuterRef('pk'))
+            .order_by('-date')
+        )
+        # Последняя версия с НЕ пустой маркой стали
+        last_steel_qs = (
+            TubeVersion.objects
+            .filter(tube=OuterRef('pk'))
+            .exclude(steel_grade__isnull=True)
+            .exclude(steel_grade='')
+            .order_by('-date')
+        )
+        # Проверка наличия элементов обустройства у последней версии
+        unit_exists_qs = TubeUnit.objects.filter(
+            tube=Subquery(last_version_qs.values('id')[:1])
+        )
         queryset = (
-            Tube.objects.filter(pipe_id=pipe_id, active=True)
+            Tube.objects
+            .filter(pipe_id=pipe_id, active=True)
             .annotate(
-                last_length=Subquery(latest_version_subquery.values('tube_length')[:1]),
-                last_thickness=Subquery(latest_version_subquery.values('thickness')[:1]),
-                last_diameter=Subquery(latest_version_subquery.values('diameter')[:1]),
-                last_category=Subquery(latest_version_subquery.values('category')[:1]),
-                last_type=Subquery(latest_version_subquery.values('tube_type')[:1]),
-                last_steel_grade=Subquery(latest_version_subquery.values('steel_grade')[:1]),
-                last_version_id=Subquery(latest_version_subquery.values('id')[:1]),
-                has_units=Exists(unit_exists_subquery),
+                last_version_id=Subquery(
+                    last_version_qs.values('id')[:1]
+                ),
+                last_length=Subquery(
+                    last_version_qs.values('tube_length')[:1],
+                    output_field=FloatField()
+                ),
+                last_thickness=Subquery(
+                    last_version_qs.values('thickness')[:1],
+                    output_field=FloatField()
+                ),
+                last_diameter=Subquery(
+                    last_version_qs.values('diameter')[:1]
+                ),
+                last_category=Subquery(
+                    last_version_qs.values('category')[:1]
+                ),
+                last_type=Subquery(
+                    last_version_qs.values('tube_type')[:1]
+                ),
+                last_odometr=Subquery(
+                    last_version_qs.values('odometr_data')[:1],
+                    output_field=FloatField()
+                ),
+                last_steel_grade=Subquery(
+                    last_steel_qs.values('steel_grade')[:1],
+                    output_field=CharField()
+                ),
+                has_units=Exists(unit_exists_qs),
             )
-            .order_by('tube_num')
+            .order_by('last_odometr', 'tube_num')
         )
         return queryset
 

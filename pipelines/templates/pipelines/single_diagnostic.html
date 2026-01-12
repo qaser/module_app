@@ -26,10 +26,10 @@
         <div class="sidebar__icon sidebar__icon_index"></div>
         <h3 class="sidebar__text">Планирование</h3>
     </a>
-    <a href="" class="sidebar__item">
+    <!-- <a href="" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_help"></div>
         <h3 class="sidebar__text">Справочная информация</h3>
-    </a>
+    </a> -->
 {% endblock %}
 
 {% block content %}
@@ -60,59 +60,24 @@
                         <p class="card__param">Дата окончания ВТД</p>
                         <p class="card__value" id="end_date"></p>
                     </div>
-                </div>
-
-                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">Трубный журнал</h3>
-                    <button class="button card__button card__button_link" data-tooltip="Перейти к трубному журналу" id="tubes_link_btn"></button>
-                </div>
-                <div class="card__field" id="tubes_info">
                     <div class="card__line">
-                        <p class="card__param">Количество элементов</p>
+                        <p style="cursor: pointer;" class="card__param link" id="tubes_link_btn">Количество трубных элементов 🔗</p>
                         <p class="card__value_unique" id="tube_count"></p>
                     </div>
-                </div>
-
-                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">Элементы обустройства</h3>
-                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу элементов обустройства" id="tube_units_link_btn"></button>
-                </div>
-                <div class="card__field" id="tube_units_info">
                     <div class="card__line">
-                        <p class="card__param">Количество элементов обустройства</p>
+                        <p style="cursor: pointer;" class="card__param link" id="tube_units_link_btn">Количество элементов обустройства 🔗</p>
                         <p class="card__value_unique" id="unit_count"></p>
                     </div>
-                </div>
-
-                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">Отводы</h3>
-                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу отводов" id="bends_link_btn"></button>
-                </div>
-                <div class="card__field" id="bends_info">
                     <div class="card__line">
-                        <p class="card__param">Количество отводов</p>
+                        <p style="cursor: pointer;" class="card__param link" id="bends_link_btn">Количество отводов 🔗</p>
                         <p class="card__value_unique" id="bend_count"></p>
                     </div>
-                </div>
-
-                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">Аномалии</h3>
-                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу аномалий" id="anomaly_link_btn"></button>
-                </div>
-                <div class="card__field" id="anomaly_info">
                     <div class="card__line">
-                        <p class="card__param">Количество аномалий</p>
+                        <p style="cursor: pointer;" class="card__param link" id="anomaly_link_btn">Количество аномалий 🔗</p>
                         <p class="card__value_unique" id="anomaly_count"></p>
                     </div>
-                </div>
-
-                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">Дефекты</h3>
-                    <button class="button card__button card__button_link" data-tooltip="Перейти к журналу дефектов" id="defects_link_btn"></button>
-                </div>
-                <div class="card__field" id="defects_info">
                     <div class="card__line">
-                        <p class="card__param">Количество дефектов</p>
+                        <p style="cursor: pointer;" class="card__param link" id="defects_link_btn">Количество дефектов 🔗</p>
                         <p class="card__value_unique" id="defects_count"></p>
                     </div>
                 </div>
@@ -168,5 +133,5 @@
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/singleDiagnostic.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/pipelines/singleDiagnostic.js' %}"></script>
 {% endblock %}

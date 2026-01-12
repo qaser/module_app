@@ -2,10 +2,11 @@ from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html, format_html_join
 
-from .models import (Anomaly, ComplexPlan, Diagnostics, Hole, HoleDocument,
-                     Node, NodeState, Pipe, PipeDepartment, PipeDocument,
-                     PipeLimit, Pipeline, PipeState, PlannedWork, Repair,
-                     RepairDocument, RepairStage, Tube, TubeUnit, TubeVersion, Bend)
+from .models import (
+    Anomaly, Bend, ComplexPlan, Diagnostics, Hole, HoleDocument, Node,
+    NodeState, Pipe, PipeDepartment, PipeDocument, PipeLimit, Pipeline,
+    PipeState, PlannedWork, Repair, RepairDocument, RepairStage, Tube,
+    TubeUnit, TubeVersion)
 
 
 class PipeDepartmentInline(admin.TabularInline):
@@ -428,7 +429,7 @@ class AnomalyAdmin(admin.ModelAdmin):
     def tube_display(self, obj):
         if obj.tube:
             return f'№{obj.tube.tube.tube_num} (Pipe ID {obj.tube.tube.pipe_id})'
-        return '—'
+        return '-'
 
     tube_display.short_description = 'Труба'
 

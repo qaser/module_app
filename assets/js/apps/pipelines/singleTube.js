@@ -1,16 +1,16 @@
-import * as config from '../js/config/config.js';
-import * as constant from '../js/utils/constants.js';
-import Api from '../js/api/Api.js';
-import UserInfo from '../js/components/UserInfo.js';
-import TubeItem from './components/TubeItem.js';
-import Section from '../js/components/Section.js';
-import PopupWithForm from './components/PopupWithForm.js';
-import Tooltip from '../js/components/Tooltip.js';
-import FormValidator from '../js/components/FormValidator.js';
-import FileManager from './components/FileManager.js';
-import HiddenElement from './components/HiddenElement.js';
-import AppMenu from '../js/components/AppMenu.js';
-import PollingClient from './api/PollingClient.js';
+import * as config from '../../config/config.js';
+import * as constant from '../../utils/constants.js';
+import Api from '../../api/Api.js';
+import UserInfo from '../../components/UserInfo.js';
+import TubeItem from '../../components/TubeItem.js';
+import Section from '../../components/Section.js';
+import PopupWithForm from '../../components/PopupWithForm.js';
+import Tooltip from '../../components/Tooltip.js';
+import FormValidator from '../../components/FormValidator.js';
+import FileManager from '../../components/FileManager.js';
+import HiddenElement from '../../components/HiddenElement.js';
+import AppMenu from '../../components/AppMenu.js';
+import PollingClient from '../../api/PollingClient.js';
 
 
 const tubeId = document.querySelector('.card').id;

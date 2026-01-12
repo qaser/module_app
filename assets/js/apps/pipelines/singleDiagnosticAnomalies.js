@@ -1,12 +1,12 @@
-import * as config from './config/config.js';
-import * as constant from './utils/constants.js';
-import Api from './api/Api.js';
-import UserInfo from './components/UserInfo.js';
-import Table from './components/Table.js';
-import FormFilter from './components/FormFilter.js';
-import Tooltip from '../js/components/Tooltip.js';
-import AppMenu from '../js/components/AppMenu.js';
-import PollingClient from './api/PollingClient.js';
+import * as config from '../../config/config.js';
+import * as constant from '../../utils/constants.js';
+import Api from '../../api/Api.js';
+import UserInfo from '../../components/UserInfo.js';
+import Table from '../../components/Table.js';
+import FormFilter from '../../components/FormFilter.js';
+import Tooltip from '../../components/Tooltip.js';
+import AppMenu from '../../components/AppMenu.js';
+import PollingClient from '../../api/PollingClient.js';
 // import SinglePipeVisualizer from '../js/components/SinglePipeVisualizer.js'
 
 

@@ -1,10 +1,17 @@
 import django_filters as df
 from django import forms
-from django.db.models import Q, Subquery, Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q, Subquery
 
 from equipments.models import Department
-from pipelines.models import (Diagnostics, Node, Pipe, PipeDepartment,
+from pipelines.models import (Anomaly, Bend, Diagnostics, Node, Pipe, PipeDepartment,
                               Pipeline, Repair, Tube, TubeUnit, TubeVersion)
+
+
+def unit_exists(unit_type=None):
+    qs = TubeUnit.objects.filter(tube=OuterRef('last_version_id'))
+    if unit_type:
+        qs = qs.filter(unit_type=unit_type)
+    return Exists(qs)
 
 
 class TubeVersionFilter(df.FilterSet):
@@ -19,11 +26,6 @@ class TubeVersionFilter(df.FilterSet):
     )
     thickness = df.ChoiceFilter(
         label='Толщина стенки (мм)',
-        choices=lambda: [
-            (val, f"{val} мм") for val in sorted(
-                set(round(v, 1) for v in TubeVersion.objects.values_list('thickness', flat=True).distinct() if v)
-            )
-        ],
         field_name='thickness',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
@@ -37,21 +39,17 @@ class TubeVersionFilter(df.FilterSet):
     )
     steel_grade = df.ChoiceFilter(
         label='Марка стали',
-        choices=lambda: [
-            (val, val) for val in sorted(
-                set(TubeVersion.objects
-                    .exclude(steel_grade__isnull=True)
-                    .exclude(steel_grade__exact='')
-                    .values_list('steel_grade', flat=True)
-                    .distinct()
-                )
-            )
-        ],
         field_name='steel_grade',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
-    yield_strength = df.CharFilter(lookup_expr='icontains', label='Предел текучести стали, МПа')
-    tear_strength = df.CharFilter(lookup_expr='icontains', label='Сопротивление разрыву стали, МПа')
+    yield_strength = df.CharFilter(
+        lookup_expr='icontains',
+        label='Предел текучести стали, МПа'
+    )
+    tear_strength = df.CharFilter(
+        lookup_expr='icontains',
+        label='Сопротивление разрыву стали, МПа'
+    )
 
     class Meta:
         model = TubeVersion
@@ -66,6 +64,59 @@ class TubeVersionFilter(df.FilterSet):
             'tear_strength',
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        qs = self.queryset
+        thickness_values = (
+            qs.exclude(thickness__isnull=True)
+              .values_list('thickness', flat=True)
+              .distinct()
+              .order_by('thickness')
+        )
+        self.filters['thickness'].extra['choices'] = [
+            (v, f'{v} мм') for v in thickness_values
+        ]
+        steel_grades = (
+            qs.exclude(steel_grade__isnull=True)
+              .exclude(steel_grade='')
+              .values_list('steel_grade', flat=True)
+              .distinct()
+              .order_by('steel_grade')
+        )
+        self.filters['steel_grade'].extra['choices'] = [
+            (v, v) for v in steel_grades
+        ]
+
+
+class TubeUnitFilter(df.FilterSet):
+    unit_type = df.ChoiceFilter(
+        choices=TubeUnit.UNIT_TYPE,
+        method='filter_unit_type',
+        label='Тип элемента'
+    )
+
+    class Meta:
+        model = TubeUnit
+        fields = [
+            'unit_type',
+        ]
+
+
+class BendFilter(df.FilterSet):
+    class Meta:
+        model = Bend
+        fields = [
+            'tube_num',
+        ]
+
+
+class AnomalyFilter(df.FilterSet):
+    class Meta:
+        model = Anomaly
+        fields = [
+            'odometr_data',
+        ]
+
 
 class TubeFilter(df.FilterSet):
     tube_num = df.CharFilter(
@@ -75,51 +126,21 @@ class TubeFilter(df.FilterSet):
     )
     last_length = df.ChoiceFilter(
         label='Длина элемента (м)',
-        choices=lambda: [
-            (val, f"{val} м") for val in sorted(
-                set(round(v, 2) for v in TubeVersion.objects.values_list('tube_length', flat=True).distinct() if v)
-            )
-        ],
         field_name='last_length',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     last_thickness = df.ChoiceFilter(
         label='Толщина стенки (мм)',
-        choices=lambda: [
-            (val, f"{val} мм") for val in sorted(
-                set(round(v, 1) for v in TubeVersion.objects.values_list('thickness', flat=True).distinct() if v)
-            )
-        ],
         field_name='last_thickness',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     last_type = df.ChoiceFilter(
         label='Тип',
-        choices=lambda: [
-            (val, dict(TubeVersion.TUBE_TYPE).get(val, val)) for val in sorted(
-                set(TubeVersion.objects
-                    .exclude(tube_type__isnull=True)
-                    .exclude(tube_type__exact='')
-                    .values_list('tube_type', flat=True)
-                    .distinct()
-                )
-            )
-        ],
         field_name='last_type',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
     last_steel_grade = df.ChoiceFilter(
         label='Марка стали',
-        choices=lambda: [
-            (val, val) for val in sorted(
-                set(TubeVersion.objects
-                    .exclude(steel_grade__isnull=True)
-                    .exclude(steel_grade__exact='')
-                    .values_list('steel_grade', flat=True)
-                    .distinct()
-                )
-            )
-        ],
         field_name='last_steel_grade',
         widget=forms.Select(attrs={'class': 'form-control'}),
     )
@@ -146,18 +167,63 @@ class TubeFilter(df.FilterSet):
             'unit_type',
         ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        qs = self.queryset
+        steel_grades = (
+            qs
+            .exclude(last_steel_grade__isnull=True)
+            .exclude(last_steel_grade='')
+            .values_list('last_steel_grade', flat=True)
+            .order_by()
+            .distinct()
+            .order_by('last_steel_grade')
+        )
+        self.filters['last_steel_grade'].extra['choices'] = [
+            (val, val) for val in steel_grades
+        ]
+        lengths = (
+            qs.exclude(last_length__isnull=True)
+            .values_list('last_length', flat=True)
+            .order_by()
+            .distinct()
+            .order_by('last_length')
+        )
+        self.filters['last_length'].extra['choices'] = [
+            (v, f'{v} м') for v in lengths
+        ]
+        thicknesses = (
+            qs.exclude(last_thickness__isnull=True)
+            .values_list('last_thickness', flat=True)
+            .order_by()
+            .distinct()
+            .order_by('last_thickness')
+        )
+        self.filters['last_thickness'].extra['choices'] = [
+            (v, f'{v} мм') for v in thicknesses
+        ]
+        types = (
+            qs
+            .exclude(last_type__isnull=True)
+            .exclude(last_type='')
+            .order_by()  # <-- КЛЮЧЕВОЕ
+            .values_list('last_type', flat=True)
+            .distinct()
+        )
+        self.filters['last_type'].extra['choices'] = [
+            (v, dict(TubeVersion.TUBE_TYPE).get(v, v)) for v in types
+        ]
+
+
     def filter_unit_type(self, queryset, name, value):
         if value == 'all_units':
-            # Трубы, у которых есть хотя бы один TubeUnit
-            return queryset.filter(has_units=True)
+            return queryset.filter(unit_exists())
+
         elif value == 'no_units':
-            # Трубы без элементов обустройства
-            return queryset.filter(has_units=False)
+            return queryset.exclude(unit_exists())
+
         else:
-            # Фильтрация по конкретному типу TubeUnit через подзапрос
-            return queryset.filter(
-                versions__tube_units__unit_type=value
-            ).distinct()
+            return queryset.filter(unit_exists(value))
 
 
 class RepairFilter(df.FilterSet):

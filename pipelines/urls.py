@@ -15,13 +15,21 @@ urlpatterns = [
         login_required(views.DiagnosticTubesView.as_view()),
         name='diagnostic_tubes'
     ),
-    # path(
-    #     'diagnostics/<int:diagnostic_id>/tube-units/',
-    #     login_required(views.DiagnosticTubeUnitsView.as_view()),
-    #     name='diagnostic_tube_units'
-    # ),
-    # path('diagnostics/<int:diagnostic_id>/bends/', views.diagnostic_bends, name='diagnostic_bends'),
-    # path('diagnostics/<int:diagnostic_id>/anomalies/', views.diagnostic_anomalies, name='diagnostic_anomalies'),
+    path(
+        'diagnostics/<int:diagnostic_id>/tube-units/',
+        login_required(views.DiagnosticTubeUnitsView.as_view()),
+        name='diagnostic_tube_units'
+    ),
+    path(
+        'diagnostics/<int:diagnostic_id>/bends/',
+        views.DiagnosticBendsView.as_view(),
+        name='diagnostic_bends'
+    ),
+    path(
+        'diagnostics/<int:diagnostic_id>/anomalies/',
+        views.DiagnosticAnomaliesView.as_view(),
+        name='diagnostic_anomalies'
+    ),
     # path('diagnostics/<int:diagnostic_id>/defects/', views.diagnostic_defects, name='diagnostic_defects'),
     # path('plans/', login_required(views.PlansView.as_view()), name='plans'),
     path('plans/', views.scheme_pipelines, name='plans'),

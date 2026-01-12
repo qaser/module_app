@@ -115,7 +115,7 @@ class PipeDepartment(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.pipe} — {self.department}'
+        return f'{self.pipe} - {self.department}'
 
 
 class Node(models.Model):
@@ -206,7 +206,7 @@ class Node(models.Model):
         root_department = None
         if departments.exists():
             root_department = departments.order_by('tree_id', 'level').first().get_root()
-        department_name = root_department.name if root_department else '—'
+        department_name = root_department.name if root_department else '-'
         if self.node_type == 'bridge':
             return f'Перемычка {self.location_point} км между "{self.pipeline}" и "{self.sub_pipeline}"'
         else:
@@ -428,7 +428,7 @@ class TubeVersion(models.Model):
     tube_type = models.CharField(
         max_length=50,
         choices=TUBE_TYPE,
-        default='2Ш',
+        default='two',
         verbose_name='Тип элемента',
         blank=False,
         null=False,
@@ -500,6 +500,7 @@ class TubeVersion(models.Model):
         max_length=100,
         null=True,
         blank=True,
+        default='-',
         help_text='Формат: "2.3 = 8.3" для двухшовных, "2.3 // 11.5" для спиральных, "-" для бесшовных'
     )
     # Реперные точки
@@ -1042,6 +1043,10 @@ class Defect(models.Model):
         max_length=500,
         blank=True
     )
+    is_done = models.BooleanField(
+        verbose_name='Устранено',
+        default=False,
+    )
 
     class Meta:
         verbose_name = 'Дефект'
@@ -1477,4 +1482,4 @@ class PlannedWork(models.Model):
 
     def __str__(self):
         target = self.pipe or self.node
-        return f"{self.get_work_type_display()} — {target} ({self.planned_date})"
+        return f"{self.get_work_type_display()} - {target} ({self.planned_date})"

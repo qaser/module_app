@@ -4,10 +4,5 @@
 }
 
 .table_pipelines th {
-    font-weight: 300;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    text-align: left;
     background-color: #6A5A8C;
-    color: white;
   }
