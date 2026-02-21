@@ -12,16 +12,16 @@ from users.models import ModuleUser
 
 
 class Pipeline(models.Model):
-    title = models.CharField('Название газопровода', max_length=100)
-    order = models.PositiveSmallIntegerField('Номер газопровода', default=1)
+    title = models.CharField("Название газопровода", max_length=100)
+    order = models.PositiveSmallIntegerField("Номер газопровода", default=1)
     description = models.TextField(blank=True)
 
     class Meta:
-        verbose_name = 'Газопровод'
-        verbose_name_plural = 'Газопроводы'
+        verbose_name = "Газопровод"
+        verbose_name_plural = "Газопроводы"
         indexes = [
-            models.Index(fields=['title']),
-            models.Index(fields=['order']),
+            models.Index(fields=["title"]),
+            models.Index(fields=["order"]),
         ]
 
     def __str__(self):
@@ -30,44 +30,32 @@ class Pipeline(models.Model):
 
 class Pipe(models.Model):
     pipeline = models.ForeignKey(
-        Pipeline,
-        on_delete=models.CASCADE,
-        related_name='pipes'
+        Pipeline, on_delete=models.CASCADE, related_name="pipes"
     )
     departments = models.ManyToManyField(
         Department,
-        through='PipeDepartment',
-        related_name='pipe_departments',
+        through="PipeDepartment",
+        related_name="pipe_departments",
     )
-    diameter = models.PositiveIntegerField(
-        'Диаметр, мм',
-        blank=True,
-        null=True
-    )
+    diameter = models.PositiveIntegerField("Диаметр, мм", blank=True, null=True)
     start_point = models.FloatField(
-        verbose_name='Начало участка, км',
-        blank=False,
-        null=False
+        verbose_name="Начало участка, км", blank=False, null=False
     )
     end_point = models.FloatField(
-        verbose_name='Конец участка, км',
-        blank=False,
-        null=False
+        verbose_name="Конец участка, км", blank=False, null=False
     )
     exploit_year = models.PositiveIntegerField(
-        'Год ввода в эксплуатацию',
-        blank=True,
-        null=True
+        "Год ввода в эксплуатацию", blank=True, null=True
     )
 
     class Meta:
-        verbose_name = 'Участок газопровода'
-        verbose_name_plural = 'Участки газопроводов'
-        ordering = ['pipeline']
+        verbose_name = "Участок газопровода"
+        verbose_name_plural = "Участки газопроводов"
+        ordering = ["pipeline"]
         indexes = [
-            models.Index(fields=['pipeline']),
-            models.Index(fields=['start_point', 'end_point']),
-            models.Index(fields=['diameter']),
+            models.Index(fields=["pipeline"]),
+            models.Index(fields=["start_point", "end_point"]),
+            models.Index(fields=["diameter"]),
         ]
 
     @property
@@ -80,30 +68,22 @@ class Pipe(models.Model):
 
 class PipeDepartment(models.Model):
     pipe = models.ForeignKey(
-        Pipe,
-        verbose_name='Участок газопровода',
-        on_delete=models.CASCADE
+        Pipe, verbose_name="Участок газопровода", on_delete=models.CASCADE
     )
     department = models.ForeignKey(
-        Department,
-        verbose_name='Филиал',
-        on_delete=models.CASCADE
+        Department, verbose_name="Филиал", on_delete=models.CASCADE
     )
     start_point = models.FloatField(
-        verbose_name='Начало участка, км',
-        blank=True,
-        null=True
+        verbose_name="Начало участка, км", blank=True, null=True
     )
     end_point = models.FloatField(
-        verbose_name='Конец участка, км',
-        blank=True,
-        null=True
+        verbose_name="Конец участка, км", blank=True, null=True
     )
 
     class Meta:
-        unique_together = ('pipe', 'department')
-        verbose_name = 'Эксплуатирующий филиал'
-        verbose_name_plural = 'Эксплуатирующие филиалы'
+        unique_together = ("pipe", "department")
+        verbose_name = "Эксплуатирующий филиал"
+        verbose_name_plural = "Эксплуатирующие филиалы"
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Только при создании
@@ -115,86 +95,80 @@ class PipeDepartment(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.pipe} - {self.department}'
+        return f"{self.pipe} - {self.department}"
 
 
 class Node(models.Model):
     TYPE_CHOICES = [
-        ('valve', 'Линейный кран'),
-        ('host', 'Узел подключения'),
-        ('bridge', 'Перемычка'),
-        ('tails', 'Шлейфы'),
-        ('ks', 'КС'),
+        ("valve", "Линейный кран"),
+        ("host", "Узел подключения"),
+        ("bridge", "Перемычка"),
+        ("tails", "Шлейфы"),
+        ("ks", "КС"),
     ]
     TYPE_ORIENTATION = [
-        ('normal', 'Нормально'),
-        ('reverse', 'Реверсивно'),
+        ("normal", "Нормально"),
+        ("reverse", "Реверсивно"),
     ]
     node_type = models.CharField(
-        max_length=25,
-        choices=TYPE_CHOICES,
-        verbose_name='Тип узла'
+        max_length=25, choices=TYPE_CHOICES, verbose_name="Тип узла"
     )
     pipeline = models.ForeignKey(
-        Pipeline,
-        on_delete=models.CASCADE,
-        related_name='nodes'
+        Pipeline, on_delete=models.CASCADE, related_name="nodes"
     )
     sub_pipeline = models.ForeignKey(
         Pipeline,
         on_delete=models.CASCADE,
-        related_name='join_nodes',
+        related_name="join_nodes",
         null=True,
-        blank=True
+        blank=True,
     )
     equipment = models.ForeignKey(
         Equipment,
         on_delete=models.CASCADE,
         blank=False,
         null=False,
-        related_name='node_equipments',
+        related_name="node_equipments",
     )
     location_point = models.FloatField(
-        verbose_name='Место расположения, км',
-        blank=False,
-        null=False
+        verbose_name="Место расположения, км", blank=False, null=False
     )
     orientation = models.CharField(
         max_length=40,
         choices=TYPE_ORIENTATION,
-        verbose_name='Ориентация',
-        help_text='Как элемент расположен на схеме',
-        default='normal',
+        verbose_name="Ориентация",
+        help_text="Как элемент расположен на схеме",
+        default="normal",
         blank=False,
         null=False,
     )
     is_shared = models.BooleanField(
-        verbose_name='Пограничный',
+        verbose_name="Пограничный",
         default=False,
         blank=False,
         null=False,
-        help_text='Расположен на участке совместной эксплуатации'
+        help_text="Расположен на участке совместной эксплуатации",
     )
 
     class Meta:
-        verbose_name = 'Крановый узел'
-        verbose_name_plural = 'Крановые узлы'
-        ordering = ['pipeline']
+        verbose_name = "Крановый узел"
+        verbose_name_plural = "Крановые узлы"
+        ordering = ["pipeline"]
         indexes = [
-            models.Index(fields=['pipeline']),
-            models.Index(fields=['equipment']),
-            models.Index(fields=['node_type']),
-            models.Index(fields=['location_point']),
+            models.Index(fields=["pipeline"]),
+            models.Index(fields=["equipment"]),
+            models.Index(fields=["node_type"]),
+            models.Index(fields=["location_point"]),
         ]
 
     def clean(self):
-        if self.node_type == 'bridge' and self.sub_pipeline is None:
+        if self.node_type == "bridge" and self.sub_pipeline is None:
             raise ValidationError(
-                {'sub_pipeline': 'Для перемычки необходимо выбрать второй газопровод.'}
+                {"sub_pipeline": "Для перемычки необходимо выбрать второй газопровод."}
             )
-        if self.node_type != 'bridge' and self.sub_pipeline is not None:
+        if self.node_type != "bridge" and self.sub_pipeline is not None:
             raise ValidationError(
-                {'sub_pipeline': 'Поле указывается только для перемычки.'}
+                {"sub_pipeline": "Поле указывается только для перемычки."}
             )
 
     def save(self, *args, **kwargs):
@@ -205,13 +179,17 @@ class Node(models.Model):
         departments = self.equipment.departments.all()
         root_department = None
         if departments.exists():
-            root_department = departments.order_by('tree_id', 'level').first().get_root()
-        department_name = root_department.name if root_department else '-'
-        if self.node_type == 'bridge':
+            root_department = (
+                departments.order_by("tree_id", "level").first().get_root()
+            )
+        department_name = root_department.name if root_department else "-"
+        if self.node_type == "bridge":
             return f'Перемычка {self.location_point} км между "{self.pipeline}" и "{self.sub_pipeline}"'
         else:
             node_type_display = self.get_node_type_display()
-            return f'{node_type_display} {self.location_point} км г-да "{self.pipeline}"'
+            return (
+                f'{node_type_display} {self.location_point} км г-да "{self.pipeline}"'
+            )
 
     # @property
     # def current_state(self):
@@ -222,40 +200,30 @@ class Repair(models.Model):
     pipe = models.ForeignKey(
         Pipe,
         on_delete=models.CASCADE,
-        related_name='pipe_repairs',
+        related_name="pipe_repairs",
         null=True,
-        blank=True
+        blank=True,
     )
     node = models.ForeignKey(
         Node,
         on_delete=models.CASCADE,
-        related_name='node_repairs',
+        related_name="node_repairs",
         null=True,
-        blank=True
+        blank=True,
     )
-    start_date = models.DateField(
-        verbose_name='Начало ремонта',
-        null=True,
-        blank=True
-    )
-    end_date = models.DateField(
-        verbose_name='Окончание ремонта',
-        null=True,
-        blank=True
-    )
+    start_date = models.DateField(verbose_name="Начало ремонта", null=True, blank=True)
+    end_date = models.DateField(verbose_name="Окончание ремонта", null=True, blank=True)
     description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=True
+        verbose_name="Дополнительная информация", max_length=500, blank=True
     )
 
     class Meta:
-        verbose_name = 'Ремонт МГ, КУ'
-        verbose_name_plural = 'Ремонты МГ, КУ'
+        verbose_name = "Ремонт МГ, КУ"
+        verbose_name_plural = "Ремонты МГ, КУ"
         indexes = [
-            models.Index(fields=['pipe']),
-            models.Index(fields=['node']),
-            models.Index(fields=['start_date', 'end_date']),
+            models.Index(fields=["pipe"]),
+            models.Index(fields=["node"]),
+            models.Index(fields=["start_date", "end_date"]),
         ]
 
     def clean(self):
@@ -271,37 +239,29 @@ class Repair(models.Model):
 
 
 class RepairStage(models.Model):
-    repair = models.ForeignKey(
-        Repair,
-        on_delete=models.CASCADE,
-        related_name='stages'
-    )
+    repair = models.ForeignKey(Repair, on_delete=models.CASCADE, related_name="stages")
     event_date = models.DateTimeField(
-        verbose_name='Дата проведения',
+        verbose_name="Дата проведения",
         blank=False,
         null=False,
     )
     title = models.CharField(
-        verbose_name='Наименование этапа',
+        verbose_name="Наименование этапа",
         max_length=50,
         blank=False,
         null=False,
     )
-    resource = models.TextField(
-        verbose_name='Ресурсы',
-        null=True,
-        blank=True
-    )
+    resource = models.TextField(verbose_name="Ресурсы", null=True, blank=True)
     description = models.TextField(
-        verbose_name='Дополнительная информация',
+        verbose_name="Дополнительная информация",
         max_length=500,
         blank=False,
         null=False,
     )
 
     class Meta:
-        verbose_name = 'Документация по ремонту'
-        verbose_name_plural = 'Документация по ремонтам'
+        verbose_name = "Документация по ремонту"
+        verbose_name_plural = "Документация по ремонтам"
 
 
 class Diagnostics(models.Model):
@@ -310,38 +270,24 @@ class Diagnostics(models.Model):
         related_name="pipe_diagnostics",
         verbose_name="Участки трубопровода",
     )
-    start_date = models.DateField(
-        verbose_name='Начало ВТД',
-        null=True,
-        blank=True
-    )
-    end_date = models.DateField(
-        verbose_name='Окончание ВТД',
-        null=True,
-        blank=True
-    )
+    start_date = models.DateField(verbose_name="Начало ВТД", null=True, blank=True)
+    end_date = models.DateField(verbose_name="Окончание ВТД", null=True, blank=True)
     description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=True
+        verbose_name="Дополнительная информация", max_length=500, blank=True
     )
 
     class Meta:
-        verbose_name = 'ВТД'
-        verbose_name_plural = 'ВТД'
-        ordering = ['-start_date', '-end_date']
+        verbose_name = "ВТД"
+        verbose_name_plural = "ВТД"
+        ordering = ["-start_date", "-end_date"]
         indexes = [
-            models.Index(fields=['start_date']),
-            models.Index(fields=['end_date']),
+            models.Index(fields=["start_date"]),
+            models.Index(fields=["end_date"]),
         ]
 
 
 class Tube(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='tubes'
-    )
+    pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE, related_name="tubes")
     tube_num = models.CharField("Номер трубы", max_length=20)
     active = models.BooleanField(default=True, verbose_name="Актуальная труба")
     installed_date = models.DateField("Дата установки", null=True, blank=True)
@@ -358,52 +304,42 @@ class Tube(models.Model):
 
 class TubeVersion(models.Model):
     TUBE_TYPE = [
-        ('one', '1Ш'),
-        ('two', '2Ш'),
-        ('spiral', 'СШ'),
-        ('without', 'БШ'),
+        ("one", "1Ш"),
+        ("two", "2Ш"),
+        ("spiral", "СШ"),
+        ("without", "БШ"),
     ]
     CATEGORY_CHOICES = [
-        ('B', 'B'),
-        ('I', 'I'),
-        ('II', 'II'),
-        ('III', 'III'),
-        ('IV', 'IV'),
+        ("B", "B"),
+        ("I", "I"),
+        ("II", "II"),
+        ("III", "III"),
+        ("IV", "IV"),
     ]
     tube = models.ForeignKey(
-        Tube,
-        verbose_name='Труба',
-        on_delete=models.CASCADE,
-        related_name='versions'
+        Tube, verbose_name="Труба", on_delete=models.CASCADE, related_name="versions"
     )
-    tube_num = models.CharField(
-        "Номер трубы",
-        max_length=20,
-        null=True,
-        blank=True
-    )
+    tube_num = models.CharField("Номер трубы", max_length=20, null=True, blank=True)
     diagnostics = models.ForeignKey(
         "Diagnostics",
-        verbose_name='ВТД',
+        verbose_name="ВТД",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
     repair = models.ForeignKey(
         "Repair",
-        verbose_name='Ремонт',
+        verbose_name="Ремонт",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
     date = models.DateField(
-        verbose_name='Дата изменения информации',
-        null=False,
-        blank=False
+        verbose_name="Дата изменения информации", null=False, blank=False
     )
     version_type = models.CharField(
         max_length=20,
-        verbose_name='Источник информации',
+        verbose_name="Источник информации",
         choices=[
             ("initial", "Первичное состояние"),
             ("diagnostic", "ВТД"),
@@ -411,283 +347,280 @@ class TubeVersion(models.Model):
         ],
     )
     odometr_data = models.FloatField(
-        'Расстояние по одометру, м',
+        "Расстояние по одометру, м",
         null=True,
         blank=True,
     )
     tube_length = models.FloatField(
-        'Длина элемента, м',
+        "Длина элемента, м",
         null=False,
         blank=False,
     )
     thickness = models.FloatField(
-        'Толщина стенки элемента, мм',
+        "Толщина стенки элемента, мм",
         null=False,
         blank=False,
     )
     tube_type = models.CharField(
         max_length=50,
         choices=TUBE_TYPE,
-        default='two',
-        verbose_name='Тип элемента',
+        default="two",
+        verbose_name="Тип элемента",
         blank=False,
         null=False,
     )
     diameter = models.PositiveSmallIntegerField(
-        'Диаметр элемента, мм',
+        "Диаметр элемента, мм",
         default=1420,
         null=False,
         blank=False,
     )
     yield_strength = models.CharField(
-        'Предел текучести стали, МПа',
-        default='-',
+        "Предел текучести стали, МПа",
+        max_length=100,
+        default="-",
         null=True,
         blank=True,
     )
     tear_strength = models.CharField(
-        'Сопротивление разрыву стали, МПа',
-        default='-',
+        "Сопротивление разрыву стали, МПа",
+        max_length=100,
+        default="-",
         null=True,
         blank=True,
     )
     category = models.CharField(
         max_length=10,
         choices=CATEGORY_CHOICES,
-        default='-',
-        verbose_name='Категория',
+        default="-",
+        verbose_name="Категория",
         null=True,
         blank=True,
     )
     reliability_material = models.CharField(
-        'Коэффициент надёжности по материалу',
-        null=True,
-        blank=True,
-        help_text='Согласно СНиП 2.05.06-85'
-    )
-    working_conditions = models.CharField(
-        'Коэффициент условий работы трубопровода',
-        null=True,
-        blank=True,
-        help_text='Согласно СНиП 2.05.06-85'
-    )
-    reliability_pressure = models.CharField(
-        'Коэффициент надёжности по внутреннему рабочему давлению',
-        null=True,
-        blank=True,
-        help_text='Согласно СНиП 2.05.06-85'
-    )
-    reliability_coef = models.CharField(
-        'Коэффициент надёжности трубопровода',
-        null=True,
-        blank=True,
-        help_text='Согласно СНиП 2.05.06-85'
-    )
-    impact_strength = models.CharField(
-        'Ударная вязкость стали, Дж/см²',
-        null=True,
-        blank=True
-    )
-    steel_grade = models.CharField(
-        'Марка стали',
-        default='-',
-        max_length=50,
-        null=True,
-        blank=True
-    )
-    weld_position = models.CharField(
-        'Положение швов, час',
+        "Коэффициент надёжности по материалу",
         max_length=100,
         null=True,
         blank=True,
-        default='-',
-        help_text='Формат: "2.3 = 8.3" для двухшовных, "2.3 // 11.5" для спиральных, "-" для бесшовных'
+        help_text="Согласно СНиП 2.05.06-85",
+    )
+    working_conditions = models.CharField(
+        "Коэффициент условий работы трубопровода",
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Согласно СНиП 2.05.06-85",
+    )
+    reliability_pressure = models.CharField(
+        "Коэффициент надёжности по внутреннему рабочему давлению",
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Согласно СНиП 2.05.06-85",
+    )
+    reliability_coef = models.CharField(
+        "Коэффициент надёжности трубопровода",
+        max_length=100,
+        null=True,
+        blank=True,
+        help_text="Согласно СНиП 2.05.06-85",
+    )
+    impact_strength = models.CharField(
+        "Ударная вязкость стали, Дж/см²", max_length=100, null=True, blank=True
+    )
+    steel_grade = models.CharField(
+        "Марка стали", default="-", max_length=50, null=True, blank=True
+    )
+    weld_position = models.CharField(
+        "Положение швов, час",
+        max_length=100,
+        null=True,
+        blank=True,
+        default="-",
+        help_text='Формат: "2.3 = 8.3" для двухшовных, "2.3 // 11.5" для спиральных, "-" для бесшовных',
     )
     # Реперные точки
     from_reference_start = models.CharField(
-        verbose_name='От репера, м',
+        verbose_name="От репера, м",
         max_length=50,
         blank=True,
         null=True,
     )
     to_reference_end = models.CharField(
-        verbose_name='До репера, м',
+        verbose_name="До репера, м",
         max_length=50,
         blank=True,
         null=True,
     )
     comment = models.TextField(
-        'Комментарий',
+        "Комментарий",
         null=True,
         blank=True,
-        help_text='Любой значимый комментарий для данного элемента'
+        help_text="Любой значимый комментарий для данного элемента",
     )
 
     class Meta:
-        verbose_name = 'Труба (элемент ВТД)'
-        verbose_name_plural = 'Трубы (элементы ВТД)'
-        ordering = ['tube']
+        verbose_name = "Труба (элемент ВТД)"
+        verbose_name_plural = "Трубы (элементы ВТД)"
+        ordering = ["tube"]
 
     def __str__(self):
-        return f'Элемент ВТД №{self.tube.tube_num}, участок {self.tube.pipe}'
+        return f"Элемент ВТД №{self.tube.tube_num}, участок {self.tube.pipe}"
 
 
 class TubeUnit(models.Model):
     UNIT_TYPE = [
-        ('valv', 'Кран'),
-        ('offt', 'Отвод-врезка'),
-        ('tee', 'Тройник'),
-        ('cpco', 'Подключение системы ЭХЗ'),
-        ('wiwd', 'Заварка окна'),
-        ('casb', 'Футляр-начало'),
-        ('case', 'Футляр-конец'),
-        ('mark', 'Маркер'),
-        ('anch', 'Пригруз'),
-        ('pfix', 'Элемент обустройства'),
+        ("valv", "Кран"),
+        ("offt", "Отвод-врезка"),
+        ("tee", "Тройник"),
+        ("cpco", "Подключение системы ЭХЗ"),
+        ("wiwd", "Заварка окна"),
+        ("casb", "Футляр-начало"),
+        ("case", "Футляр-конец"),
+        ("mark", "Маркер"),
+        ("anch", "Пригруз"),
+        ("pfix", "Элемент обустройства"),
     ]
     odometr_data = models.FloatField(
-        'Расстояние по одометру, м',
+        "Расстояние по одометру, м",
         null=True,
         blank=True,
     )
     unit_type = models.CharField(
         max_length=50,
         choices=UNIT_TYPE,
-        verbose_name='Тип элемента',
+        verbose_name="Тип элемента",
         blank=False,
         null=False,
     )
     tube = models.ForeignKey(
         TubeVersion,
         on_delete=models.CASCADE,
-        related_name='tube_units',
+        related_name="tube_units",
         blank=True,
         null=True,
     )
     description = models.TextField(
-        'Описание',
-        null=True,
-        blank=True,
-        help_text='Описание элемента'
+        "Описание", null=True, blank=True, help_text="Описание элемента"
     )
     comment = models.TextField(
-        'Комментарий',
+        "Комментарий",
         null=True,
         blank=True,
-        help_text='Любой значимый комментарий для данного элемента'
+        help_text="Любой значимый комментарий для данного элемента",
     )
 
     class Meta:
-        verbose_name = 'Элемент обустройства'
-        verbose_name_plural = 'Элементы обустройства'
+        verbose_name = "Элемент обустройства"
+        verbose_name_plural = "Элементы обустройства"
 
     def __str__(self):
-        return f'{self.unit_type}, {self.tube}'
+        return f"{self.unit_type}, {self.tube}"
 
 
 class Anomaly(models.Model):
     ANOMALY_NATURE = [
-        ('gwan', 'Аномалия кольцевого шва'),
-        ('swan', 'Аномалия спирального шва'),
-        ('lwan', 'Аномалия продольного шва'),
-        ('goug', 'Механическое повреждение'),
-        ('corr', 'Коррозия'),
-        ('dent', 'Вмятина'),
-        ('wrin', 'Гофр'),
-        ('artd', 'Технологический дефект'),
-        ('mian', 'Заводской дефект'),
-        ('scc', 'Зона продольных трещин'),
-        ('lwcr', 'Трещина на продольном шве'),
-        ('oval', 'Эллипсность'),
+        ("gwan", "Аномалия кольцевого шва"),
+        ("swan", "Аномалия спирального шва"),
+        ("lwan", "Аномалия продольного шва"),
+        ("goug", "Механическое повреждение"),
+        ("corr", "Коррозия"),
+        ("dent", "Вмятина"),
+        ("wrin", "Гофр"),
+        ("artd", "Технологический дефект"),
+        ("mian", "Заводской дефект"),
+        ("scc", "Зона продольных трещин"),
+        ("lwcr", "Трещина на продольном шве"),
+        ("oval", "Эллипсность"),
     ]
     SIZE_CLASS = [
-        ('', 'Не указан'),
-        ('gene', 'Обширный'),
-        ('pitt', 'Каверна'),
-        ('cigr', 'Поперечная канавка'),
-        ('axgr', 'Продольная канавка'),
-        ('axsl', 'Продольный паз'),
-        ('cisl', 'Поперечный паз'),
+        ("", "Не указан"),
+        ("gene", "Обширный"),
+        ("pitt", "Каверна"),
+        ("cigr", "Поперечная канавка"),
+        ("axgr", "Продольная канавка"),
+        ("axsl", "Продольный паз"),
+        ("cisl", "Поперечный паз"),
     ]
     LOCATION = [
-        ('int', 'INT'),
-        ('ext', 'EXT'),
-        ('mid', 'MID'),
-        ('n/a', 'N/A'),
+        ("int", "INT"),
+        ("ext", "EXT"),
+        ("mid", "MID"),
+        ("n/a", "N/A"),
     ]
     tube = models.ForeignKey(
         TubeVersion,
         on_delete=models.CASCADE,
-        related_name='anomalies',
+        related_name="anomalies",
         blank=False,
         null=False,
     )
     odometr_data = models.FloatField(
-        verbose_name='Расстояние, м',
+        verbose_name="Расстояние, м",
         blank=True,
         null=True,
     )
     # Геометрические параметры
     from_left_weld_to_max = models.FloatField(
-        verbose_name='От левого шва до точки максимума, м',
+        verbose_name="От левого шва до точки максимума, м",
         blank=True,
         null=True,
     )
     from_left_weld_to_start = models.FloatField(
-        verbose_name='От левого шва до начала, м',
+        verbose_name="От левого шва до начала, м",
         blank=True,
         null=True,
     )
     from_right_weld_to_max = models.FloatField(
-        verbose_name='От правого шва до точки максимума, м',
+        verbose_name="От правого шва до точки максимума, м",
         blank=True,
         null=True,
     )
     from_right_weld_to_start = models.FloatField(
-        verbose_name='От правого шва до начала, м',
+        verbose_name="От правого шва до начала, м",
         blank=True,
         null=True,
     )
     # Ориентационные параметры
     from_long_weld_to_start = models.FloatField(
-        verbose_name='От продольного шва до точки начала дефекта, мм',
+        verbose_name="От продольного шва до точки начала дефекта, мм",
         blank=True,
         null=True,
     )
     from_long_weld_to_max = models.FloatField(
-        verbose_name='От продольного шва до точки максимума, мм',
+        verbose_name="От продольного шва до точки максимума, мм",
         blank=True,
         null=True,
     )
     from_long_weld_to_center = models.FloatField(
-        verbose_name='От продольного шва до центра, мм',
+        verbose_name="От продольного шва до центра, мм",
         blank=True,
         null=True,
     )
     min_distance_to_long_weld = models.FloatField(
-        verbose_name='Минимальное расстояние до продольного шва, мм',
+        verbose_name="Минимальное расстояние до продольного шва, мм",
         blank=True,
         null=True,
     )
     min_distance_to_circ_weld = models.FloatField(
-        verbose_name='Минимальное расстояние до кольцевого шва, мм',
+        verbose_name="Минимальное расстояние до кольцевого шва, мм",
         blank=True,
         null=True,
     )
     start_point_orientation = models.CharField(
-        verbose_name='Ориентация точки начала дефекта, ч:мин',
+        verbose_name="Ориентация точки начала дефекта, ч:мин",
         max_length=5,
         blank=True,
         null=True,
     )
     max_point_orientation = models.CharField(
-        verbose_name='Ориентация точки максимума, ч:мин',
+        verbose_name="Ориентация точки максимума, ч:мин",
         max_length=5,
         blank=True,
         null=True,
     )
     center_orientation = models.CharField(
-        verbose_name='Ориентация центра, ч:мин',
+        verbose_name="Ориентация центра, ч:мин",
         max_length=5,
         blank=True,
         null=True,
@@ -696,12 +629,12 @@ class Anomaly(models.Model):
     anomaly_nature = models.CharField(
         max_length=50,
         choices=ANOMALY_NATURE,
-        verbose_name='Характер аномалии',
+        verbose_name="Характер аномалии",
         blank=True,
         null=True,
     )
     anomaly_description = models.CharField(
-        verbose_name='Описание',
+        verbose_name="Описание",
         max_length=200,
         blank=True,
         null=True,
@@ -709,25 +642,25 @@ class Anomaly(models.Model):
     size_class = models.CharField(
         max_length=50,
         choices=SIZE_CLASS,
-        verbose_name='Класс размера',
+        verbose_name="Класс размера",
         blank=True,
         null=True,
     )
     # Геометрические размеры
     anomaly_length = models.PositiveSmallIntegerField(
-        verbose_name='Длина аномалии, мм',
+        verbose_name="Длина аномалии, мм",
         default=0,
         blank=True,
         null=True,
     )
     anomaly_width = models.PositiveSmallIntegerField(
-        verbose_name='Ширина аномалии, мм',
+        verbose_name="Ширина аномалии, мм",
         default=0,
         blank=True,
         null=True,
     )
     anomaly_depth = models.FloatField(
-        verbose_name='Глубина аномалии, %',
+        verbose_name="Глубина аномалии, %",
         default=0,
         blank=True,
         null=True,
@@ -735,34 +668,34 @@ class Anomaly(models.Model):
     location = models.CharField(
         max_length=10,
         choices=LOCATION,
-        verbose_name='Расположение',
+        verbose_name="Расположение",
         blank=True,
         null=True,
     )
     safe_pressure_coefficient = models.FloatField(
-        verbose_name='Коэффициент безопасного давления',
+        verbose_name="Коэффициент безопасного давления",
         blank=True,
         null=True,
     )
     danger_level = models.CharField(
-        verbose_name='Опасность',
+        verbose_name="Опасность",
         max_length=10,
         blank=True,
         null=True,
     )
     comment = models.TextField(
-        verbose_name='Комментарий',
+        verbose_name="Комментарий",
         max_length=500,
         blank=True,
         null=True,
     )
 
     class Meta:
-        verbose_name = 'Аномалия'
-        verbose_name_plural = 'Аномалии'
+        verbose_name = "Аномалия"
+        verbose_name_plural = "Аномалии"
         indexes = [
-            models.Index(fields=['tube']),
-            models.Index(fields=['anomaly_nature']),
+            models.Index(fields=["tube"]),
+            models.Index(fields=["anomaly_nature"]),
         ]
         # ordering = ['tube__tube_num',]
 
@@ -772,63 +705,63 @@ class Anomaly(models.Model):
 
 class Bend(models.Model):
     BEND_TYPE_CHOICES = [
-        ('elastic_plastic', 'Упруго-пластический изгиб'),
-        ('cold_bend', 'Отвод холодного гнутья'),
-        ('segment_bend', 'Отвод сегментный'),
+        ("elastic_plastic", "Упруго-пластический изгиб"),
+        ("cold_bend", "Отвод холодного гнутья"),
+        ("segment_bend", "Отвод сегментный"),
     ]
     DIRECTION_CHOICES = [
-        ('vertical', 'Вертикальная'),
-        ('horizontal', 'Горизонтальная'),
+        ("vertical", "Вертикальная"),
+        ("horizontal", "Горизонтальная"),
     ]
     # Связь с трубой
     tube = models.ForeignKey(
         TubeVersion,
         on_delete=models.CASCADE,
-        related_name='bends',
-        verbose_name='Труба',
+        related_name="bends",
+        verbose_name="Труба",
         blank=False,
         null=False,
     )
     # Геометрические параметры отвода
     start_point = models.FloatField(
-        verbose_name='Начало отвода, м',
+        verbose_name="Начало отвода, м",
         blank=False,
         null=False,
     )
     end_point = models.FloatField(
-        verbose_name='Конец отвода, м',
+        verbose_name="Конец отвода, м",
         blank=False,
         null=False,
     )
     tube_num = models.CharField(
-        verbose_name='Номер трубы',
+        verbose_name="Номер трубы",
         max_length=20,
         blank=True,
         null=True,
     )
     # Параметры изгиба
     segment_count = models.PositiveSmallIntegerField(
-        verbose_name='Число сегментов',
+        verbose_name="Число сегментов",
         blank=True,
         null=True,
     )
     radius = models.FloatField(
-        verbose_name='Радиус, м',
+        verbose_name="Радиус, м",
         blank=True,
         null=True,
     )
     radius_in_diameters = models.FloatField(
-        verbose_name='Радиус в диаметрах (D)',
+        verbose_name="Радиус в диаметрах (D)",
         blank=True,
         null=True,
     )
     bend_angle = models.FloatField(
-        verbose_name='Угол изгиба, град.',
+        verbose_name="Угол изгиба, град.",
         blank=True,
         null=True,
     )
     projection_angle = models.CharField(
-        verbose_name='Угол в проекции, град.',
+        verbose_name="Угол в проекции, град.",
         max_length=20,
         blank=True,
         null=True,
@@ -837,83 +770,85 @@ class Bend(models.Model):
     bend_type = models.CharField(
         max_length=20,
         choices=BEND_TYPE_CHOICES,
-        verbose_name='Тип отвода',
+        verbose_name="Тип отвода",
         blank=False,
         null=False,
     )
     direction = models.CharField(
         max_length=15,
         choices=DIRECTION_CHOICES,
-        verbose_name='Направление',
+        verbose_name="Направление",
         blank=False,
         null=False,
     )
     # Координаты и параметры напряжений
     max_stress_coordinate = models.FloatField(
-        verbose_name='Координата максимального растяжения, м',
+        verbose_name="Координата максимального растяжения, м",
         blank=True,
         null=True,
     )
     max_stress_orientation = models.CharField(
-        verbose_name='Ориентация максимального растяжения, час',
+        verbose_name="Ориентация максимального растяжения, час",
         max_length=10,
         blank=True,
         null=True,
-        help_text='Например: 6.2 час'
+        help_text="Например: 6.2 час",
     )
     deflection = models.FloatField(
-        verbose_name='Прогиб, мм',
+        verbose_name="Прогиб, мм",
         blank=True,
         null=True,
     )
     # Статус безопасности
     safety_status = models.CharField(
         max_length=100,
-        verbose_name='Опасность',
+        verbose_name="Опасность",
         blank=True,
         null=True,
     )
     # Географические координаты
     latitude = models.FloatField(
-        verbose_name='Широта, °',
+        verbose_name="Широта, °",
         blank=True,
         null=True,
     )
     longitude = models.FloatField(
-        verbose_name='Долгота, °',
+        verbose_name="Долгота, °",
         blank=True,
         null=True,
     )
     altitude = models.FloatField(
-        verbose_name='Высота, м',
+        verbose_name="Высота, м",
         blank=True,
         null=True,
     )
     # Комментарии
     comment = models.TextField(
-        verbose_name='Комментарий',
+        verbose_name="Комментарий",
         blank=True,
         null=True,
     )
 
     class Meta:
-        verbose_name = 'Отвод'
-        verbose_name_plural = 'Отводы'
+        verbose_name = "Отвод"
+        verbose_name_plural = "Отводы"
         indexes = [
-            models.Index(fields=['tube']),
-            models.Index(fields=['start_point', 'end_point']),
-            models.Index(fields=['bend_type']),
-            models.Index(fields=['safety_status']),
+            models.Index(fields=["tube"]),
+            models.Index(fields=["start_point", "end_point"]),
+            models.Index(fields=["bend_type"]),
+            models.Index(fields=["safety_status"]),
         ]
-        ordering = ['tube__tube__tube_num', 'start_point']
+        ordering = ["tube__tube__tube_num", "start_point"]
 
     def __str__(self):
-        return f'Отвод трубы №{self.tube_num or self.tube.tube.tube_num} ({self.start_point}-{self.end_point} м)'
+        return f"Отвод трубы №{self.tube_num or self.tube.tube.tube_num} ({self.start_point}-{self.end_point} м)"
 
     def save(self, *args, **kwargs):
         # Автоматическое вычисление радиуса в диаметрах
         if self.radius and self.tube and self.tube.diameter:
-            self.radius_in_diameters = self.radius / (self.tube.diameter / 1000)  # переводим мм в метры
+            self.radius_in_diameters = self.radius / (
+                self.tube.diameter / 1000
+            )  # переводим мм в метры
 
         # Парсинг комментария для извлечения дополнительных данных
         if self.comment:
@@ -926,54 +861,54 @@ class Bend(models.Model):
         comment = self.comment.lower()
 
         # Извлечение радиуса в диаметрах
-        if 'радиус изгиба=' in comment and 'd' in comment:
+        if "радиус изгиба=" in comment and "d" in comment:
             try:
-                start = comment.find('радиус изгиба=') + len('радиус изгиба=')
-                end = comment.find('d', start)
+                start = comment.find("радиус изгиба=") + len("радиус изгиба=")
+                end = comment.find("d", start)
                 radius_d = comment[start:end].strip()
-                if radius_d.replace('.', '').isdigit():
+                if radius_d.replace(".", "").isdigit():
                     self.radius_in_diameters = float(radius_d)
             except (ValueError, IndexError):
                 pass
 
         # Извлечение координаты максимального растяжения
-        if 'координата=' in comment:
+        if "координата=" in comment:
             try:
-                start = comment.find('координата=') + len('координата=')
-                end = comment.find(',', start)
+                start = comment.find("координата=") + len("координата=")
+                end = comment.find(",", start)
                 coord = comment[start:end].strip()
-                if coord.replace('.', '').isdigit():
+                if coord.replace(".", "").isdigit():
                     self.max_stress_coordinate = float(coord)
             except (ValueError, IndexError):
                 pass
 
         # Извлечение ориентации максимального растяжения
-        if 'растяжение на' in comment and 'час' in comment:
+        if "растяжение на" in comment and "час" in comment:
             try:
-                start = comment.find('растяжение на') + len('растяжение на')
-                end = comment.find('час', start)
+                start = comment.find("растяжение на") + len("растяжение на")
+                end = comment.find("час", start)
                 orientation = comment[start:end].strip()
-                if orientation.replace('.', '').isdigit():
+                if orientation.replace(".", "").isdigit():
                     self.max_stress_orientation = orientation
             except (ValueError, IndexError):
                 pass
 
         # Извлечение прогиба
-        if 'прогиб' in comment and 'мм' in comment:
+        if "прогиб" in comment and "мм" in comment:
             try:
-                start = comment.find('прогиб') + len('прогиб')
-                end = comment.find('мм', start)
+                start = comment.find("прогиб") + len("прогиб")
+                end = comment.find("мм", start)
                 deflection_str = comment[start:end].strip().split()[-1]
-                if deflection_str.replace('.', '').isdigit():
+                if deflection_str.replace(".", "").isdigit():
                     self.deflection = float(deflection_str)
             except (ValueError, IndexError):
                 pass
 
         # Определение направления выпуклости
-        if 'выпуклый вправо' in comment:
-            self.convex_direction = 'вправо'
-        elif 'выпуклый влево' in comment:
-            self.convex_direction = 'влево'
+        if "выпуклый вправо" in comment:
+            self.convex_direction = "вправо"
+        elif "выпуклый влево" in comment:
+            self.convex_direction = "влево"
 
     # @property
     # def length(self):
@@ -985,113 +920,103 @@ class Bend(models.Model):
     def clean(self):
         """Валидация данных"""
         if self.end_point and self.start_point and self.end_point <= self.start_point:
-            raise ValidationError('Конечная точка отвода должна быть больше начальной точки')
+            raise ValidationError(
+                "Конечная точка отвода должна быть больше начальной точки"
+            )
 
         if self.radius and self.radius <= 0:
-            raise ValidationError('Радиус должен быть положительным числом')
+            raise ValidationError("Радиус должен быть положительным числом")
 
 
 class Defect(models.Model):
     DEFECT_TYPE = [
-        ('krn', 'КРН'),
-        ('scratch', 'Царапина'),
-        ('burr', 'Задир'),
-        ('dent', 'Вмятина'),
-        ('crack', 'Трещина'),
-        ('shell', 'Раковина'),
-        ('potholes', 'Забоина'),
-        ('risk', 'Риска'),
-        ('oval', 'Овальность'),
-        ('curve', 'Кривизна'),
-        ('goffer', 'Гофр'),
-        ('notbrewed', 'Непровар'),
-        ('undercutting', 'Подрез зоны сплавления'),
-        ('displacement', 'Смещение сваренных кромок'),
-        ('pore', 'Пора'),
-        ('slag', 'Шлаковые включения'),
-        ('fistula', 'Свищ в сварном шве'),
+        ("krn", "КРН"),
+        ("scratch", "Царапина"),
+        ("burr", "Задир"),
+        ("dent", "Вмятина"),
+        ("crack", "Трещина"),
+        ("shell", "Раковина"),
+        ("potholes", "Забоина"),
+        ("risk", "Риска"),
+        ("oval", "Овальность"),
+        ("curve", "Кривизна"),
+        ("goffer", "Гофр"),
+        ("notbrewed", "Непровар"),
+        ("undercutting", "Подрез зоны сплавления"),
+        ("displacement", "Смещение сваренных кромок"),
+        ("pore", "Пора"),
+        ("slag", "Шлаковые включения"),
+        ("fistula", "Свищ в сварном шве"),
     ]
     tube = models.ForeignKey(
         TubeVersion,
         on_delete=models.CASCADE,
-        related_name='defects',
-        verbose_name='Труба',
+        related_name="defects",
+        verbose_name="Труба",
         blank=True,
         null=True,
     )
     anomaly = models.OneToOneField(
         Anomaly,
         on_delete=models.CASCADE,
-        related_name='rel_defects',
+        related_name="rel_defects",
         blank=True,
         null=True,
     )
     defect_num = models.PositiveSmallIntegerField(
-        verbose_name='Номер дефекта',
+        verbose_name="Номер дефекта",
         blank=False,
         null=False,
     )
     defect_type = models.CharField(
         max_length=50,
         choices=DEFECT_TYPE,
-        verbose_name='Тип дефекта',
+        verbose_name="Тип дефекта",
         blank=False,
         null=False,
     )
     description = models.TextField(
-        verbose_name='Дополнительная информация',
-        max_length=500,
-        blank=True
+        verbose_name="Дополнительная информация", max_length=500, blank=True
     )
     is_done = models.BooleanField(
-        verbose_name='Устранено',
+        verbose_name="Устранено",
         default=False,
     )
 
     class Meta:
-        verbose_name = 'Дефект'
-        verbose_name_plural = 'Дефекты'
+        verbose_name = "Дефект"
+        verbose_name_plural = "Дефекты"
         indexes = [
-            models.Index(fields=['defect_type']),
+            models.Index(fields=["defect_type"]),
         ]
 
 
 class Hole(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='holes'
-    )
+    pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE, related_name="holes")
     location_point = models.FloatField(
-        verbose_name='Место расположения, км',
-        blank=False,
-        null=False
+        verbose_name="Место расположения, км", blank=False, null=False
     )
     cutting_date = models.DateField(
-        verbose_name='Дата вырезки',
+        verbose_name="Дата вырезки",
         null=False,
         blank=False,
     )
     welding_date = models.DateField(
-        verbose_name='Дата заварки',
+        verbose_name="Дата заварки",
         null=True,
         blank=True,
     )
 
     class Meta:
-        verbose_name = 'Технологическое отверстие'
-        verbose_name_plural = 'Технологические отверстия'
+        verbose_name = "Технологическое отверстие"
+        verbose_name_plural = "Технологические отверстия"
 
 
 class HoleDocument(models.Model):
-    hole = models.ForeignKey(
-        Hole,
-        on_delete=models.CASCADE,
-        related_name='hole_docs'
-    )
-    doc = models.FileField(upload_to='pipelines/docs/holes/')
+    hole = models.ForeignKey(Hole, on_delete=models.CASCADE, related_name="hole_docs")
+    doc = models.FileField(upload_to="pipelines/docs/holes/")
     name = models.CharField(
-        'Наименование документа',
+        "Наименование документа",
         max_length=100,
         blank=False,
         null=False,
@@ -1099,19 +1024,15 @@ class HoleDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Документация по ТО'
-        verbose_name_plural = 'Документация по ТО'
+        verbose_name = "Документация по ТО"
+        verbose_name_plural = "Документация по ТО"
 
 
 class PipeDocument(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='pipe_docs'
-    )
-    doc = models.FileField(upload_to='pipelines/docs/pipes/')
+    pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE, related_name="pipe_docs")
+    doc = models.FileField(upload_to="pipelines/docs/pipes/")
     name = models.CharField(
-        'Наименование документа',
+        "Наименование документа",
         max_length=100,
         blank=False,
         null=False,
@@ -1119,19 +1040,17 @@ class PipeDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Документация участка МГ'
-        verbose_name_plural = 'Документация участков МГ'
+        verbose_name = "Документация участка МГ"
+        verbose_name_plural = "Документация участков МГ"
 
 
 class TubeVersionDocument(models.Model):
     tube = models.ForeignKey(
-        TubeVersion,
-        on_delete=models.CASCADE,
-        related_name='tube_docs'
+        TubeVersion, on_delete=models.CASCADE, related_name="tube_docs"
     )
-    doc = models.FileField(upload_to='pipelines/docs/tubes/')
+    doc = models.FileField(upload_to="pipelines/docs/tubes/")
     name = models.CharField(
-        'Наименование документа',
+        "Наименование документа",
         max_length=100,
         blank=False,
         null=False,
@@ -1139,19 +1058,15 @@ class TubeVersionDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Документация элемента'
-        verbose_name_plural = 'Документация элементов'
+        verbose_name = "Документация элемента"
+        verbose_name_plural = "Документация элементов"
 
 
 class NodeDocument(models.Model):
-    node = models.ForeignKey(
-        Node,
-        on_delete=models.CASCADE,
-        related_name='node_docs'
-    )
-    doc = models.FileField(upload_to='pipelines/docs/nodes/')
+    node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="node_docs")
+    doc = models.FileField(upload_to="pipelines/docs/nodes/")
     name = models.CharField(
-        'Наименование документа',
+        "Наименование документа",
         max_length=100,
         blank=False,
         null=False,
@@ -1159,19 +1074,17 @@ class NodeDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Документация КУ МГ'
-        verbose_name_plural = 'Документация КУ МГ'
+        verbose_name = "Документация КУ МГ"
+        verbose_name_plural = "Документация КУ МГ"
 
 
 class DiagnosticDocument(models.Model):
     diagnostic = models.ForeignKey(
-        Diagnostics,
-        on_delete=models.CASCADE,
-        related_name='diagnostic_docs'
+        Diagnostics, on_delete=models.CASCADE, related_name="diagnostic_docs"
     )
-    doc = models.FileField(upload_to='pipelines/docs/dianostics/')
+    doc = models.FileField(upload_to="pipelines/docs/dianostics/")
     name = models.CharField(
-        'Наименование документа',
+        "Наименование документа",
         max_length=100,
         blank=False,
         null=False,
@@ -1179,19 +1092,17 @@ class DiagnosticDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Документация по диагностике участка МГ'
-        verbose_name_plural = 'Документация по диагностике участков МГ'
+        verbose_name = "Документация по диагностике участка МГ"
+        verbose_name_plural = "Документация по диагностике участков МГ"
 
 
 class RepairDocument(models.Model):
     repair = models.ForeignKey(
-        Repair,
-        on_delete=models.CASCADE,
-        related_name='repair_docs'
+        Repair, on_delete=models.CASCADE, related_name="repair_docs"
     )
-    doc = models.FileField(upload_to='pipelines/docs/repairs/')
+    doc = models.FileField(upload_to="pipelines/docs/repairs/")
     name = models.CharField(
-        'Наименование документа',
+        "Наименование документа",
         max_length=100,
         blank=False,
         null=False,
@@ -1199,198 +1110,155 @@ class RepairDocument(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Документация по ремонту участка МГ'
-        verbose_name_plural = 'Документация по ремонтам участков МГ'
+        verbose_name = "Документация по ремонту участка МГ"
+        verbose_name_plural = "Документация по ремонтам участков МГ"
 
 
 class PipeState(models.Model):
     STATE_CHOICES = [
-        ('repair', 'В ремонте'),
-        ('operation', 'В работе'),
-        ('disabled', 'Отключен'),
+        ("repair", "В ремонте"),
+        ("operation", "В работе"),
+        ("disabled", "Отключен"),
         # ('empty', 'Стравлен'),
-        ('depletion', 'На выработке'),
-        ('diagnostics', 'Проведение ВТД'),
+        ("depletion", "На выработке"),
+        ("diagnostics", "Проведение ВТД"),
     ]
     STATE_COLORS = {
-        'repair': '#FF0000',  # Красный
-        'operation': '#00FF00',  # Зеленый
-        'disabled': '#888888',  # Серый
+        "repair": "#FF0000",  # Красный
+        "operation": "#00FF00",  # Зеленый
+        "disabled": "#888888",  # Серый
         # 'empty': '#FFFFFF',  # Белый
-        'depletion': '#FFA500',  # Оранжевый
-        'diagnostics': '#0000FF',  # Синий
+        "depletion": "#FFA500",  # Оранжевый
+        "diagnostics": "#0000FF",  # Синий
     }
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='states'
-    )
+    pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE, related_name="states")
     state_type = models.CharField(
-        max_length=25,
-        choices=STATE_CHOICES,
-        verbose_name='Тип состояния'
+        max_length=25, choices=STATE_CHOICES, verbose_name="Тип состояния"
     )
     start_date = models.DateField(
-        verbose_name='Начало состояния',
+        verbose_name="Начало состояния",
         blank=False,
         null=False,
     )
     end_date = models.DateField(
-        verbose_name='Окончание состояния',
-        null=True,
-        blank=True
+        verbose_name="Окончание состояния", null=True, blank=True
     )
     description = models.TextField(
-        verbose_name='Описание состояния',
-        max_length=500,
-        blank=True
+        verbose_name="Описание состояния", max_length=500, blank=True
     )
     created_by = models.ForeignKey(
-        ModuleUser,
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name='Кем создано'
+        ModuleUser, on_delete=models.SET_NULL, null=True, verbose_name="Кем создано"
     )
     current_pressure = models.FloatField(
-        verbose_name='Давление, кгс/см²',
-        null=True,
-        blank=True
+        verbose_name="Давление, кгс/см²", null=True, blank=True
     )
 
     class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Состояние участка'
-        verbose_name_plural = 'Состояния участков'
+        ordering = ["-start_date"]
+        verbose_name = "Состояние участка"
+        verbose_name_plural = "Состояния участков"
         indexes = [
-            models.Index(fields=['pipe']),
-            models.Index(fields=['state_type']),
-            models.Index(fields=['start_date', 'end_date']),
-            models.Index(fields=['created_by']),
+            models.Index(fields=["pipe"]),
+            models.Index(fields=["state_type"]),
+            models.Index(fields=["start_date", "end_date"]),
+            models.Index(fields=["created_by"]),
         ]
 
     def __str__(self):
-        return f'{self.get_state_type_display()} ({self.pipe})'
+        return f"{self.get_state_type_display()} ({self.pipe})"
 
     @property
     def color(self):
-        return self.STATE_COLORS.get(self.state_type, '#CCCCCC')
+        return self.STATE_COLORS.get(self.state_type, "#CCCCCC")
 
     # def clean(self):
     #     if self.end_date and self.end_date < self.start_date:
     #         raise ValidationError('Дата окончания не может быть раньше даты начала')
 
     def save(self, *args, **kwargs):
-        PipeState.objects.filter(
-            pipe=self.pipe,
-            end_date__isnull=True
-        ).exclude(pk=self.pk).update(end_date=self.start_date)
+        PipeState.objects.filter(pipe=self.pipe, end_date__isnull=True).exclude(
+            pk=self.pk
+        ).update(end_date=self.start_date)
         super().save(*args, **kwargs)
 
 
 class PipeLimit(models.Model):
-    pipe = models.ForeignKey(
-        Pipe,
-        on_delete=models.CASCADE,
-        related_name='limits'
-    )
+    pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE, related_name="limits")
     pressure_limit = models.FloatField(
-        verbose_name='Ограничение давления, кгс/см²',
-        null=True,
-        blank=True
+        verbose_name="Ограничение давления, кгс/см²", null=True, blank=True
     )
     limit_reason = models.CharField(
-        max_length=100,
-        verbose_name='Причина ограничения',
-        null=True,
-        blank=True
+        max_length=100, verbose_name="Причина ограничения", null=True, blank=True
     )
     start_date = models.DateField(
-        verbose_name='Начало ограничения',
+        verbose_name="Начало ограничения",
         blank=False,
         null=False,
     )
     end_date = models.DateField(
-        verbose_name='Окончание ограничения',
+        verbose_name="Окончание ограничения",
         null=True,
         blank=True,
-        help_text='Указывается когда ограничение фактически будет снято'
+        help_text="Указывается когда ограничение фактически будет снято",
     )
 
     class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Ограничение давления'
-        verbose_name_plural = 'Ограничения давления'
+        ordering = ["-start_date"]
+        verbose_name = "Ограничение давления"
+        verbose_name_plural = "Ограничения давления"
 
     def __str__(self):
-        return f'Ограничение {self.pressure_limit} кгс/см² ({self.pipe}) с {self.start_date}'
+        return f"Ограничение {self.pressure_limit} кгс/см² ({self.pipe}) с {self.start_date}"
 
     def save(self, *args, **kwargs):
         # Закрываем предыдущие активные ограничения
         if self.start_date and self.pipe:
-            PipeLimit.objects.filter(
-                pipe=self.pipe,
-                end_date__isnull=True
-            ).exclude(pk=self.pk).update(end_date=self.start_date)
+            PipeLimit.objects.filter(pipe=self.pipe, end_date__isnull=True).exclude(
+                pk=self.pk
+            ).update(end_date=self.start_date)
         self.full_clean()
         super().save(*args, **kwargs)
 
 
 class NodeState(models.Model):
     NODE_STATES = [
-        ('open', 'Открыто'),
-        ('closed', 'Закрыто'),
+        ("open", "Открыто"),
+        ("closed", "Закрыто"),
     ]
 
-    node = models.ForeignKey(
-        Node,
-        on_delete=models.CASCADE,
-        related_name='states'
-    )
+    node = models.ForeignKey(Node, on_delete=models.CASCADE, related_name="states")
     state_type = models.CharField(
-        max_length=25,
-        choices=NODE_STATES,
-        verbose_name='Состояние'
+        max_length=25, choices=NODE_STATES, verbose_name="Состояние"
     )
-    start_date = models.DateField(
-        auto_now_add=True,
-        verbose_name='Дата изменения'
-    )
+    start_date = models.DateField(auto_now_add=True, verbose_name="Дата изменения")
     end_date = models.DateField(
-        verbose_name='Окончание состояния',
-        null=True,
-        blank=True
+        verbose_name="Окончание состояния", null=True, blank=True
     )
     changed_by = models.ForeignKey(
-        ModuleUser,
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name='Кем изменено'
+        ModuleUser, on_delete=models.SET_NULL, null=True, verbose_name="Кем изменено"
     )
     description = models.TextField(
-        verbose_name='Комментарий',
-        max_length=500,
-        blank=True
+        verbose_name="Комментарий", max_length=500, blank=True
     )
 
     class Meta:
-        ordering = ['-start_date']
-        verbose_name = 'Состояние кранового узла'
-        verbose_name_plural = 'Состояния крановых узлов'
+        ordering = ["-start_date"]
+        verbose_name = "Состояние кранового узла"
+        verbose_name_plural = "Состояния крановых узлов"
         indexes = [
-            models.Index(fields=['node']),
-            models.Index(fields=['state_type']),
-            models.Index(fields=['start_date']),
-            models.Index(fields=['changed_by']),
+            models.Index(fields=["node"]),
+            models.Index(fields=["state_type"]),
+            models.Index(fields=["start_date"]),
+            models.Index(fields=["changed_by"]),
         ]
 
     def __str__(self):
         return f"{self.node} - {self.get_state_type_display()}"
 
     def save(self, *args, **kwargs):
-        NodeState.objects.filter(
-            node=self.node,
-            end_date__isnull=True
-        ).exclude(pk=self.pk).update(end_date=now().date())
+        NodeState.objects.filter(node=self.node, end_date__isnull=True).exclude(
+            pk=self.pk
+        ).update(end_date=now().date())
 
         super().save(*args, **kwargs)
 
@@ -1399,82 +1267,76 @@ class ComplexPlan(models.Model):
     department = models.ForeignKey(
         Department,
         on_delete=models.CASCADE,
-        related_name='pipelines_plans',
-        verbose_name='Филиал'
+        related_name="pipelines_plans",
+        verbose_name="Филиал",
     )
     year = models.PositiveIntegerField(
-        verbose_name='Год планирования',
-        choices=[(y, y) for y in range(datetime.now().year, datetime.now().year + 4)]
+        verbose_name="Год планирования",
+        choices=[(y, y) for y in range(datetime.now().year, datetime.now().year + 4)],
     )
 
     class Meta:
-        unique_together = ('department', 'year')
-        verbose_name = 'КПГ'
-        verbose_name_plural = 'КПГ'
+        unique_together = ("department", "year")
+        verbose_name = "КПГ"
+        verbose_name_plural = "КПГ"
         indexes = [
-            models.Index(fields=['department']),
-            models.Index(fields=['year']),
-            models.Index(fields=['department', 'year']),
+            models.Index(fields=["department"]),
+            models.Index(fields=["year"]),
+            models.Index(fields=["department", "year"]),
         ]
 
     def __str__(self):
-        return f'КПГ {self.year}г. - {self.department.name}'
+        return f"КПГ {self.year}г. - {self.department.name}"
 
 
 class PlannedWork(models.Model):
     WORK_TYPE_CHOICES = [
-        ('repair', 'Ремонт'),
-        ('replacement', 'Замена'),
-        ('diagnostics', 'ВТД'),
+        ("repair", "Ремонт"),
+        ("replacement", "Замена"),
+        ("diagnostics", "ВТД"),
     ]
     complex_plan = models.ForeignKey(
         ComplexPlan,
         on_delete=models.CASCADE,
-        related_name='planned_works',
-        verbose_name='КПГ'
+        related_name="planned_works",
+        verbose_name="КПГ",
     )
     work_type = models.CharField(
-        max_length=50,
-        choices=WORK_TYPE_CHOICES,
-        verbose_name='Тип работы'
+        max_length=50, choices=WORK_TYPE_CHOICES, verbose_name="Тип работы"
     )
     description = models.TextField(
-        verbose_name='Описание работы',
+        verbose_name="Описание работы",
         blank=True,
     )
-    start_date = models.DateField(
-        verbose_name='Плановая дата начала'
-    )
-    end_date = models.DateField(
-        verbose_name='Плановая дата окончания'
-    )
+    start_date = models.DateField(verbose_name="Плановая дата начала")
+    end_date = models.DateField(verbose_name="Плановая дата окончания")
     pipe = models.ForeignKey(
         Pipe,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name='planned_works',
-        verbose_name='Участок газопровода'
+        related_name="planned_works",
+        verbose_name="Участок газопровода",
     )
     node = models.ForeignKey(
         Node,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
-        related_name='planned_works',
-        verbose_name='Крановый узел'
+        related_name="planned_works",
+        verbose_name="Крановый узел",
     )
 
     class Meta:
-        verbose_name = 'Запланированная работа'
-        verbose_name_plural = 'Запланированные работы'
-        ordering = ['complex_plan']
+        verbose_name = "Запланированная работа"
+        verbose_name_plural = "Запланированные работы"
+        ordering = ["complex_plan"]
 
     def clean(self):
         if not self.pipe and not self.node:
-            raise ValidationError('Необходимо указать либо участок МГ, либо КУ.')
+            raise ValidationError("Необходимо указать либо участок МГ, либо КУ.")
         if self.pipe and self.node:
-            raise ValidationError('Нельзя одновременно указывать и участок МГ, и КУ.')
+            raise ValidationError("Нельзя одновременно указывать и участок МГ, и КУ.")
 
     def save(self, *args, **kwargs):
         self.clean()

@@ -2,15 +2,17 @@ from django.apps import apps
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from pipelines.models import Tube
+
 
 class Command(BaseCommand):
     help = "Полностью очищает данные во всех моделях из заданного списка приложений"
 
     # список приложений, которые нужно очищать
     APP_LABELS = [
-        "users",
-        "equipments",
-        "rational",
+        # "users",
+        # "equipments",
+        # "rational",
         "pipelines",
         # "leaks",
         # добавь сюда остальные
@@ -34,21 +36,26 @@ class Command(BaseCommand):
             if confirm.lower() != "y":
                 self.stdout.write(self.style.WARNING("Операция отменена"))
                 return
+        Tube.objects.all().delete()
 
-        for app_label in self.APP_LABELS:
-            try:
-                app_config = apps.get_app_config(app_label)
-            except LookupError:
-                self.stdout.write(self.style.ERROR(f"Приложение '{app_label}' не найдено"))
-                continue
+        # for app_label in self.APP_LABELS:
+        #     try:
+        #         app_config = apps.get_app_config(app_label)
+        #     except LookupError:
+        #         self.stdout.write(
+        #             self.style.ERROR(f"Приложение '{app_label}' не найдено")
+        #         )
+        #         continue
 
-            # удаляем модели в обратном порядке (ForeignKey зависящие модели чистятся первыми)
-            models = list(app_config.get_models())[::-1]
+        #     # удаляем модели в обратном порядке (ForeignKey зависящие модели чистятся первыми)
+        #     models = list(app_config.get_models())[::-1]
 
-            for model in models:
-                deleted, _ = model.objects.all().delete()
-                self.stdout.write(
-                    self.style.SUCCESS(f"{app_label}.{model.__name__}: удалено {deleted} объектов")
-                )
+        #     for model in models:
+        #         deleted, _ = model.objects.all().delete()
+        #         self.stdout.write(
+        #             self.style.SUCCESS(
+        #                 f"{app_label}.{model.__name__}: удалено {deleted} объектов"
+        #             )
+        #         )
 
-        self.stdout.write(self.style.SUCCESS("✅ Очистка завершена"))
+        # self.stdout.write(self.style.SUCCESS("✅ Очистка завершена"))
