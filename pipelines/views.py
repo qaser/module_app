@@ -7,14 +7,17 @@ from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
 from equipments.models import Equipment
-from pipelines.filters import (AnomalyFilter, BendFilter, DiagnosticsFilter, RepairFilter, TubeFilter, TubeUnitFilter,
+from pipelines.filters import (AnomalyFilter, BendFilter, DiagnosticsFilter,
+                               RepairFilter, TubeFilter, TubeUnitFilter,
                                TubeVersionFilter)
-from pipelines.tables import (AnomalyTable, BendTable, DiagnosticsTable, RepairTable, TubeTable, TubeUnitTable,
+from pipelines.tables import (AnomalyTable, BendTable, DiagnosticsTable,
+                              RepairTable, TubeTable, TubeUnitTable,
                               TubeVersionTable)
 from users.models import ModuleUser, Role
 
-from .models import (Anomaly, Bend, ComplexPlan, Diagnostics, Pipe, PipeDepartment, Pipeline,
-                     PipeState, Repair, Tube, TubeUnit, TubeVersion)
+from .models import (Anomaly, Bend, ComplexPlan, Diagnostics, Pipe,
+                     PipeDepartment, Pipeline, PipeState, Repair, Tube,
+                     TubeUnit, TubeVersion)
 
 
 @login_required

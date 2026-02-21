@@ -1,0 +1,7 @@
+<div class="event-card {% if instance.is_archived %}event-card--archive{% else %}{{ instance.status_css_class }}{% endif %}">
+    <div class="event-card__info">
+        {% include "plans/includes/event_departments.html" %}
+        {% include "plans/includes/event_description.html" %}
+    </div>
+    {% include "plans/includes/event_service.html" %}
+</div>

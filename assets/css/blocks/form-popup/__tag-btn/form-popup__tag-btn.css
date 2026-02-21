@@ -1,0 +1,24 @@
+.form-popup__tag-btn {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.form-popup__tag-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.form-popup__tag-btn[data-selected="true"] {
+    background-color: #1976d2;
+    color: white;
+    border-color: #1976d2;
+}
+
+.form-popup__tag-btn[aria-pressed="true"] {
+    box-shadow: 0 0 0 2px #1976d2 inset;
+}

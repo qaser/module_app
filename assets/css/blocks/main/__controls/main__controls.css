@@ -1,0 +1,8 @@
+.main__controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin: 4px 0 4px 20px;
+    align-self: stretch;
+    align-items: center;
+}

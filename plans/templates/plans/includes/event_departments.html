@@ -1,0 +1,28 @@
+<div class="event-card__departments">
+    {% for dept_info in item.departments_info %}
+        {% with dept=dept_info.department completion=dept_info.completion %}
+            <span class="event-card__department-tag
+                {% if completion %}
+                    {% if completion.status == 'completed' %} event-card__department-tag--completed
+                    {% elif completion.status == 'in_work' %} event-card__department-tag--in_work
+                    {% elif completion.status == 'delayed' %} event-card__department-tag--delayed
+                    {% elif completion.status == 'overdue' %} event-card__department-tag--overdue
+                    {% else %} event-card__department-tag--not_started
+                    {% endif %}
+                {% else %}
+                    event-card__department-tag--not_started
+                {% endif %}
+                {% if dept_info.is_user_department %} event-card__department-tag--user{% endif %}"
+                data-tooltip="Подразделение: {{ dept.name }} {% if completion %}
+                Статус: {{ completion.get_status_display }} {% if completion.actual_completion_date %}
+                Завершено: {{ completion.actual_completion_date|date:'d.m.Y' }} {% endif %} {% if completion.comment %}
+                Комментарий: {{ completion.comment|truncatechars:50 }} {% endif %} {% else %}Статус: Не начато {% endif %}">
+                {{ dept.name }}
+            </span>
+        {% endwith %}
+    {% empty %}
+        <span class="event-card__department-tag event-card__department-tag--no-department">
+            Без подразделения
+        </span>
+    {% endfor %}
+</div>

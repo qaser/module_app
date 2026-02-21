@@ -1,0 +1,22 @@
+/* Улучшение отображения полей */
+.field-departments_list,
+.field-completion_progress,
+.field-days_until_deadline {
+    white-space: nowrap;
+}
+
+/* Цвета для статусов */
+.status-badge {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.status-not_started { background-color: #f0f0f0; color: #666; }
+.status-in_work { background-color: #d1ecf1; color: #0c5460; }
+.status-deadline { background-color: #fff3cd; color: #856404; }
+.status-overdue { background-color: #f8d7da; color: #721c24; }
+.status-delayed { background-color: #f5e6ca; color: #856404; }
+.status-completed { background-color: #d4edda; color: #155724; }
+.status-cancelled { background-color: #e2e3e5; color: #383d41; }

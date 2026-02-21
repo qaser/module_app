@@ -4,29 +4,19 @@ export default class Api {
         this._headers = options.headers;
     }
 
-    // Получение годовых корневых планов
-    getAnnualPlans() {
-        return fetch(`${this._baseUrl}/rational-plans/`, {
-            headers: this._headers,
-        })
-        .then(response => response.json());
+    _checkResponse(res) {
+        if (!res.ok) {
+            return res.json().then(err => {
+                console.error('Ошибка API:', err);
+                throw new Error(`${res.status} ${res.statusText}: ${JSON.stringify(err)}`);
+            }).catch(e => {
+                // Если не JSON (например, HTML)
+                throw new Error(`${res.status} ${res.statusText}`);
+            });
+        }
+        return res.json();
     }
 
-    // получение годового плана с дочерними годовыми планами
-    getPlanWithChildren(planId) {
-        return fetch(`${this._baseUrl}/rational-plans/${planId}/`, {
-            headers: this._headers,
-        })
-        .then(response => response.json());
-    }
-
-    // Получение квартальных планов для годового плана
-    getQuarterlyPlans(annualPlanId) {
-        return fetch(`${this._baseUrl}/plans/quarterly/${annualPlanId}/`, {
-            headers: this._headers,
-        })
-        .then(response => response.json());
-    }
 
     // загрузка данных пользователя
     getMyProfile() {
@@ -98,6 +88,10 @@ export default class Api {
         })
         .then(this._checkResponse);
     }
+
+
+    //----------------------------------------------------------------------//
+    // Приложение tpa
 
     // загрузка ТПА с сервера
     getValves() {
@@ -254,6 +248,10 @@ export default class Api {
         .then(this._checkResponse);
     }
 
+
+    //----------------------------------------------------------------------//
+    // Приложение Equipment
+
     // Получение дочерних объектов оборудования
     getDepartmentChildren(parentId) {
         return fetch(`${this._baseUrl}/department-search/?parent_id=${parentId}`, {
@@ -270,7 +268,31 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // загрузка РП с сервера
+
+    //----------------------------------------------------------------------//
+    // Приложение Rational
+
+    getAnnualPlans() {
+        return fetch(`${this._baseUrl}/rational-plans/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    getPlanWithChildren(planId) {
+        return fetch(`${this._baseUrl}/rational-plans/${planId}/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
+    getQuarterlyPlans(annualPlanId) {
+        return fetch(`${this._baseUrl}/plans/quarterly/${annualPlanId}/`, {
+            headers: this._headers,
+        })
+        .then(response => response.json());
+    }
+
     getProposals() {
         return fetch(`${this._baseUrl}/rational/`, {
             headers: this._headers,
@@ -278,7 +300,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // загрузка одного РП с сервера
     getProposalItem(id) {
         return fetch(`${this._baseUrl}/rational/${id}`, {
             headers: this._headers,
@@ -286,7 +307,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // добавление нового РП
     addNewProposal(proposal) {
         return fetch(`${this._baseUrl}/rational/`, {
             method: 'POST',
@@ -299,7 +319,6 @@ export default class Api {
         .then(this._checkResponse);
     }
 
-    // удаление РП
     deleteProposal(id) {
         return fetch(`${this._baseUrl}/rational/${id}/`, {
             method: 'DELETE',
@@ -308,7 +327,6 @@ export default class Api {
         .then(this._checkResponse);
     }
 
-    // изменить РП
     changeProposal(form, id) {
         // delete this._headers['Content-Type']
         return fetch(`${this._baseUrl}/rational/${id}/`, {
@@ -319,8 +337,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-
-    // добавление нового файла РП
     addProposalFile(form) {
         // delete this._headers['Content-Type']
         return fetch(`${this._baseUrl}/rational-docs/`, {
@@ -331,7 +347,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // удаление файла РП
     deleteProposalFile(id) {
         return fetch(`${this._baseUrl}/rational-docs/${id}/`, {
             method: 'DELETE',
@@ -340,7 +355,6 @@ export default class Api {
         // .then(this._checkResponse);
     }
 
-    // добавление нового РП
     addNewStatus(form) {
         return fetch(`${this._baseUrl}/statuses/`, {
             method: 'POST',
@@ -349,6 +363,32 @@ export default class Api {
         })
         .then(this._checkResponse);
     }
+
+
+    //----------------------------------------------------------------------//
+    // Приложение Notifications
+
+    getNotifications(url) {
+        return fetch(this._baseUrl + url, {
+            headers: this._headers,
+            credentials: 'include'
+        })
+        .then(response => response.json());
+    }
+
+    postNotification(url, body) {
+        return fetch(this._baseUrl + url, {
+            method: 'POST',
+            headers: this._headers,
+            credentials: 'include',
+            body: JSON.stringify(body)
+        })
+        .then(this._checkResponse);
+    }
+
+
+    //----------------------------------------------------------------------//
+    // Приложение Pipelines
 
     getPipelines() {
         return fetch(`${this._baseUrl}/pipelines/`, {
@@ -407,25 +447,6 @@ export default class Api {
         .then(this._checkResponse);
     }
 
-    getNotifications(url) {
-        return fetch(this._baseUrl + url, {
-            headers: this._headers,
-            credentials: 'include'
-        })
-        .then(response => response.json());
-    }
-
-    postNotification(url, body) {
-        return fetch(this._baseUrl + url, {
-            method: 'POST',
-            headers: this._headers,
-            credentials: 'include',
-            body: JSON.stringify(body)
-        })
-        .then(this._checkResponse);
-    }
-
-    // добавление новой файла pipe
     addPipeFile(form) {
         // delete this._headers['Content-Type']
         return fetch(`${this._baseUrl}/pipe-docs/`, {
@@ -436,7 +457,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // удаление файла pipe
     deletePipeFile(id) {
         return fetch(`${this._baseUrl}/pipe-docs/${id}/`, {
             method: 'DELETE',
@@ -445,7 +465,6 @@ export default class Api {
         // .then(this._checkResponse);
     }
 
-    // добавление новой файла tube
     addTubeFile(form) {
         // delete this._headers['Content-Type']
         return fetch(`${this._baseUrl}/tube-docs/`, {
@@ -456,7 +475,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // удаление файла tube
     deleteTubeFile(id) {
         return fetch(`${this._baseUrl}/tube-docs/${id}/`, {
             method: 'DELETE',
@@ -493,7 +511,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // добавление новой файла tube
     addDiagnosticFile(form) {
         // delete this._headers['Content-Type']
         return fetch(`${this._baseUrl}/diagnostic-docs/`, {
@@ -504,7 +521,6 @@ export default class Api {
         .then(response => response.json());
     }
 
-    // удаление файла diagnostic
     deleteDiagnosticFile(id) {
         return fetch(`${this._baseUrl}/diagnostic-docs/${id}/`, {
             method: 'DELETE',
@@ -512,10 +528,54 @@ export default class Api {
         })
         // .then(this._checkResponse);
     }
-    // _checkResponse(res) {
-    //     if (res.ok) {
-    //         return res.json();
-    //     }
-    //     return Promise.reject(`Ошибка ${res.status}`);
-    // }
+
+
+    //---------------------------------------------------//
+    // Приложение Plans
+
+    createDoc(data) {
+        return fetch(`${this._baseUrl}/plans/docs/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: JSON.stringify(data),
+        }).then(this._checkResponse);
+    }
+
+    deleteDoc(id) {
+        return fetch(`${this._baseUrl}/plans/docs/${id}/`, {
+            method: 'DELETE',
+            headers: this._headers,
+        })
+    }
+
+    createEvent(data) {
+        return fetch(`${this._baseUrl}/plans/events/`, {
+            method: 'POST',
+            headers: this._headers,
+            body: JSON.stringify(data),
+        }).then(this._checkResponse);
+    }
+
+    changeEvent(id) {
+        return fetch(`${this._baseUrl}/plans/instances/${id}/`, {
+            method: 'DELETE',
+            headers: this._headers,
+        })
+    }
+
+    markEvent(id, data) {
+        return fetch(`${this._baseUrl}/plans/instances/${id}/mark/`, {
+            method: 'PATCH',
+            headers: this._headers,
+            body: JSON.stringify(data),
+        }).then(this._checkResponse);
+    }
+
+    completeEvent(id) {
+        return fetch(`${this._baseUrl}/plans/instances/${id}/complete/`, {
+            method: 'PATCH',
+            headers: this._headers,
+            // body: JSON.stringify(data),
+        })
+    }
 }

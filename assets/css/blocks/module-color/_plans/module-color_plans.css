@@ -1,0 +1,12 @@
+.module-color_plans {
+    background-color: rgb(215, 220, 227);
+}
+
+.module-color__header_plans {
+    background-color: rgb(123, 138, 161);
+}
+
+.module-color__button_plans {
+    color: white;
+    background: rgb(123, 138, 161);
+}

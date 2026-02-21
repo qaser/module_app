@@ -10,7 +10,6 @@ from api.serializers.rational_serializers import (AnnualPlanSerializer,
                                                   ProposalSerializer,
                                                   QuarterlyPlanSerializer,
                                                   StatusSerializer)
-from leaks.models import Leak
 from rational.models import (AnnualPlan, Proposal, ProposalDocument,
                              ProposalStatus, QuarterlyPlan)
 
@@ -23,12 +22,6 @@ class ProposalDocumentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
-
-
-class LeaksViewSet(viewsets.ModelViewSet):
-    queryset = Leak.objects.all()
-    serializer_class = LeakSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class ProposalViewSet(viewsets.ModelViewSet):

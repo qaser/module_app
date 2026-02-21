@@ -1,0 +1,95 @@
+{% extends "plans/base_plans.html" %}
+
+{% load static %}
+{% load render_table from django_tables2 %}
+{% load plans_filters %}
+
+
+{% block app_specific_sidepanel %}
+    <form id="filter_submit" class="sidebar__form">
+        {% for field in filter.form %}
+            <div class="sidebar__form-field">
+                <label for="" class="sidebar__form-label">{{ field.label }}</label>
+                {{ field|addclass:'sidebar__form-input' }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="sidebar__button button module-color__button_plans">Применить</button>
+    </form>
+    <a class="link_simple" href="{% url 'plans:reports' %}">
+        <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
+    </a>
+{% endblock %}
+
+{% block app_content %}
+    <main class="content" id="reports" data-category="report">
+    <section class="main" id="main">
+        <div class="main__header">
+            <h1 class="main__title">Обзор отчётов</h1>
+                <!-- Блок кнопок — справа -->
+                <div class="main__controls">
+                    <!-- Кнопка "Добавить report" — только для admin -->
+                    {% if user.role == 'admin' %}
+                        <button
+                            class="main__control-button button module-color__button_plans"
+                            aria-label="Добавить новый отчёт"
+                            data-tooltip="Добавить новый отчёт"
+                            id="addNewDocBtn"
+                        >
+                            <img
+                                class="main__icon_middle"
+                                src="{% static 'img/form_add.png' %}"
+                                alt="Добавить"
+                            />
+                        </button>
+                    {% endif %}
+
+                    <!-- Кнопка "Показать все мероприятия" — видна всем -->
+                    <button
+                        class="main__control-button button module-color__button_plans"
+                        aria-label="Показать все мероприятия"
+                        data-tooltip="Просмотр всех мероприятий"
+                        id="showAllEventsBtn"
+                    >
+                        <img
+                            class="main__icon_middle"
+                            src="{% static 'img/select_all.svg' %}"
+                            alt="Мероприятия"
+                        />
+                    </button>
+                </div>
+        </div>
+        {% render_table table %}
+    </section>
+    </main>
+
+    <div class="popup" id="popup-add-doc">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="add-doc" id="form-add-doc">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="title" name="title" placeholder="Введите название документа" required>
+                    <span class="form-popup__input-error" id="title-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="num_doc" name="num_doc" placeholder="Введите номер документа">
+                    <span class="form-popup__input-error" id="num_doc-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="date_doc" type="date" name="date_doc" required>
+                    <span class="form-popup__input-error" id="date_doc-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="subject" name="subject" placeholder="Введите тему (при необходимости)" data-tooltip="Например: РПО, Общие вопросы и т.д." required>
+                    <span class="form-popup__input-error" id="subject-error"></span>
+                </label>
+                <button class="form-popup__button button module-color__button_plans" type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block app_script %}
+    <script type="module" src="{% static 'js/apps/plans/indexDocuments.js' %}"></script>
+{% endblock %}

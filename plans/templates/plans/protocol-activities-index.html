@@ -1,0 +1,341 @@
+{% extends "plans/base_plans.html" %}
+
+{% load static %}
+{% load plans_filters %}
+{% load query_transform %}
+
+{% block app_specific_sidepanel %}
+    <form id="filter_submit" class="sidebar__form">
+        {% for field in filter.form %}
+            <div class="sidebar__form-field">
+                <label for="" class="sidebar__form-label">{{ field.label }}</label>
+                {{ field|addclass:'sidebar__form-input' }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="sidebar__button button module-color__button_plans">Применить</button>
+    </form>
+    <a class="link_simple" href="{% url 'plans:protocol-activities' %}">
+        <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
+    </a>
+{% endblock %}
+
+{% block app_content %}
+
+<main class="content">
+    <section class="main" id="main">
+        <!-- <div class="main__header"> -->
+            <h1 class="main__title">Мероприятия, принятые по результатам совещаний</h1>
+
+            <!-- Блок кнопок — справа -->
+            <!-- <div class="main__controls">
+                    <button
+                        class="main__control-button button module-color__button_plans"
+                        aria-label="Добавить мероприятие"
+                        data-tooltip="Добавить новое мероприятие"
+                        id="addNewActivityBtn"
+                        data-protocol-id="{{ protocol.id }}"
+                    >
+                        <img
+                            class="main__icon_middle"
+                            src="{% static 'img/form_add.png' %}"
+                            alt="Добавить"
+                        />
+                    </button>
+                    <button
+                        class="main__control-button button button_light-red"
+                        aria-label="Удалить"
+                        data-tooltip="Удалить протокол"
+                        id="deleteActivityBtn"
+                        data-protocol-id="{{ protocol.id }}"
+                    >
+                        <img
+                            class="main__icon_middle"
+                            src="{% static 'img/icon-delete.svg' %}"
+                            alt="Удалить"
+                        />
+                    </button>
+            </div> -->
+        <!-- </div> -->
+
+        {% for activity in page_obj %}
+            <div class="activity-card
+                {% if activity.is_archived %}
+                    activity-card--status-archive
+                {% elif activity.status == 'completed' %}
+                    activity-card--status-completed
+                {% elif activity.status == 'overdue' %}
+                    activity-card--status-overdue
+                {% elif activity.status == 'approaching_deadline' %}
+                    activity-card--status-approaching
+                {% else %}
+                    activity-card--status-open
+                {% endif %}">
+
+                <div class="activity-card__info">
+                    <div class="activity-card__departments">
+                        {% for dept in activity.departments.all %}
+                            {% with r=dept.responsibility %}
+                                <span class="activity-card__department
+                                    {% if r %}
+                                        {% if r.status == 'completed' %}activity-card__department--green
+                                        {% elif r.status in 'mark' %}activity-card__department--blue
+                                        {% else %}activity-card__department--gray
+                                        {% endif %}
+                                    {% else %}
+                                        activity-card__department--gray
+                                    {% endif %}"
+                                    data-tooltip="{% if r %}Статус: {{ r.get_status_display }}
+                                    {% if r.actual_completion_date %}Дата: {{ r.actual_completion_date|date:'d.m.Y' }}{% endif %}
+                                    Комментарий: {% if r.comment %}{{ r.comment }}{% else %}отсутствует{% endif %}
+                                    {% else %}Нет данных по исполнению{% endif %}">
+                                    {{ dept.name }}
+                                </span>
+                            {% endwith %}
+                        {% empty %}
+                            <span class="activity-card__department activity-card__department--gray">Без подразделения</span>
+                        {% endfor %}
+                    </div>
+                    <p class="activity-card__description">{{ activity.description }}</p>
+                    <p class="activity-card__footer">{{ activity.protocol.full_title }}</p>
+                </div>
+
+                <div class="activity-card__status">
+                    <!-- <div>
+                        <div class="activity-card__status-label">Статус</div>
+                        <div class="activity-card__status-value">
+                            {% if activity.status == 'open' %}В работе
+                            {% elif activity.status == 'approaching_deadline' %}Подходит срок
+                            {% elif activity.status == 'overdue' %}Просрочено
+                            {% elif activity.status == 'completed' %}Выполнено
+                            {% else %}—{% endif %}
+                        </div>
+                    </div> -->
+                    <div>
+                        <div class="activity-card__status-label">Срок</div>
+                        <div class="activity-card__status-value">
+                            {% if activity.deadline_type == "date" and activity.deadline_date %}
+                                {{ activity.deadline_date|date:"d.m.Y" }}
+                            {% else %}
+                                {{ activity.get_deadline_type_display }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="activity-card__status-label">Факт</div>
+                        <div class="activity-card__status-value">
+                            {% if activity.actual_completion_date %}{{ activity.actual_completion_date|date:"d.m.Y" }}{% else %}—{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="activity-card__buttons">
+                    {% if not activity.is_archived %}
+                        {% if activity.can_mark %}
+                            <button
+                                class="activity-card__button button"
+                                aria-label="Отметить мероприятие"
+                                data-tooltip="Отметить выполнение мероприятия"
+                                data-action="mark"
+                                data-activity-id="{{ activity.id }}"
+                            >
+                                <img
+                                    class="activity-card__icon"
+                                    src="{% static 'img/mark-pen-line.svg' %}"
+                                    alt="Отметить"
+                                />
+                            </button>
+                        {% endif %}
+
+                        {% if activity.can_archive %}
+                            <button
+                                class="activity-card__button button"
+                                aria-label="Архивировать"
+                                data-tooltip="Архивировать мероприятие"
+                                data-action="archive"
+                                data-activity-id="{{ activity.id }}"
+                            >
+                                <img
+                                    class="activity-card__icon"
+                                    src="{% static 'img/archive-outline.svg' %}"
+                                    alt="Архивировать"
+                                />
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        {% if activity.can_archive %}
+                            <button
+                                class="activity-card__button button"
+                                aria-label="Восстановить из архива"
+                                data-tooltip="Восстановить мероприятие из архива"
+                                data-action="unarchive"
+                                data-activity-id="{{ activity.id }}"
+                            >
+                                <img
+                                    class="activity-card__icon"
+                                    src="{% static 'img/unarchive.svg' %}"
+                                    alt="Восстановить"
+                                />
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+
+            </div>
+        {% empty %}
+            <p class="main__header">Мероприятия отсутствуют.</p>
+        {% endfor %}
+    </section>
+
+    {% block pagination %}
+        {% if page_obj.has_other_pages %}
+            <ul class="table__pagination">
+                <!-- Кнопка "Назад" -->
+                {% if page_obj.has_previous %}
+                    <li class="table__pagination-item">
+                        <a class="table__pagination-link" href="?{% query_transform request page=page_obj.previous_page_number %}">
+                            <
+                        </a>
+                    </li>
+                {% endif %}
+
+                <!-- Диапазон страниц -->
+                {% for p in page_obj.paginator.page_range %}
+                    {% if p == page_obj.number %}
+                        <!-- Текущая страница — без ссылки, с подсветкой -->
+                        <li class="table__pagination-item module-color_{{ request.resolver_match.app_name }}">
+                            <span class="table__pagination-link current">{{ p }}</span>
+                        </li>
+                    {% elif p == '...' %}
+                        <!-- Многоточие — разделитель диапазонов -->
+                        <li class="table__pagination-item">
+                            <span class="table__pagination-link disabled">{{ p }}</span>
+                        </li>
+                    {% else %}
+                        <!-- Обычная страница -->
+                        <li class="table__pagination-item">
+                            <a class="table__pagination-link" href="?{% query_transform request page=p %}">
+                                {{ p }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Кнопка "Вперёд" -->
+                {% if page_obj.has_next %}
+                    <li class="table__pagination-item">
+                        <a class="table__pagination-link" href="?{% query_transform request page=page_obj.next_page_number %}">
+                            >
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% endblock pagination %}
+
+
+</main>
+
+<div class="popup" id="popup-mark-activity">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="mark-activity" id="form-mark-activity">
+            <h2 class="form-popup__header"></h2>
+            <label class="form-popup__field">
+                <select class="form-popup__input" id="status" name="status">
+                    {% for value, label in statuses %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <span class="form-popup__input-error" id="status-error"></span>
+            </label>
+            <label class="form-popup__field">
+                <input class="form-popup__input" id="actual_completion_date" type="date" required name="actual_completion_date">
+                <span class="form-popup__input-error" id="actual_completion_date-error"></span>
+            </label>
+            <label class="form-popup__field">
+                <textarea class="form-popup__input" id="comment" name="comment" rows="4" placeholder="При необходимости введите дополнительную информацию" maxlength="100" minlength="5"></textarea>
+                <span class="form-popup__input-error" id="comment-error"></span>
+            </label>
+            <button class="form-popup__button button module-color__button_plans" type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+<div class="popup" id="popup-confirm-archive">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="confirm-archive" id="form-archive" novalidate>
+            <h2 class="form-popup__header">Архивировать мероприятие?</h2>
+            <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+<div class="popup" id="popup-confirm-unarchive">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="confirm-unarchive" id="form-unarchive" novalidate>
+            <h2 class="form-popup__header">Восстановить мероприятие из архива?</h2>
+            <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+<div class="popup" id="popup-confirm-delete">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup" name="confirm-delete" id="form-delete" novalidate>
+            <h2 class="form-popup__header">Удалить протокол со всеми мероприятиями?</h2>
+            <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+        </form>
+    </div>
+</div>
+
+<div class="popup" id="popup-new-activity">
+    <div class="popup__container">
+        <button class="popup__button-close" type="button"></button>
+        <form class="form-popup form-popup_wide" name="new-activity" id="form-new-activity">
+            <h2 class="form-popup__header"></h2>
+
+            <label class="form-popup__field">
+                <textarea class="form-popup__input" id="description" name="description" rows="4" placeholder="Введите текст мероприятия" maxlength="1000" minlength="5" required></textarea>
+                <span class="form-popup__input-error" id="description-error"></span>
+            </label>
+
+            <label class="form-popup__field">
+                <select class="form-popup__input" id="deadline_type" name="deadline_type">
+                    {% for value, label in deadline_types %}
+                        <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <span class="form-popup__input-error" id="deadline_type-error"></span>
+            </label>
+
+            <label class="form-popup__field">
+                <input class="form-popup__input" id="deadline_date" type="date" name="deadline_date">
+                <span class="form-popup__input-error" id="deadline_date-error"></span>
+            </label>
+
+            <label class="form-popup__field">
+                <div class="form-popup__tags-container" id="departments-container">
+                    {% for dept in departments %}
+                        <button type="button" class="form-popup__tag-btn" data-value="{{ dept.id }}" data-selected="false">
+                            {{ dept.name }}
+                        </button>
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="departments" name="departments" required/>
+                <span class="form-popup__input-error" id="departments-error"></span>
+            </label>
+
+            <button class="form-popup__button button module-color__button_plans" type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block app_script %}
+    <script type="module" src="{% static 'js/apps/plans/indexProtocolActivities.js' %}"></script>
+{% endblock %}

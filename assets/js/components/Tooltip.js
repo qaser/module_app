@@ -6,7 +6,6 @@ export default class Tooltip {
             <div class='tooltip-glass'>
                 <div class='tooltip-content'></div>
             </div>
-            <div class='tooltip-arrow'></div>
         `;
         document.body.appendChild(this.tooltipElement);
         this.currentElement = null;

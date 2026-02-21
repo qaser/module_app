@@ -1,0 +1,184 @@
+.activity-card {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    margin-top: 10px;
+}
+
+/* Модификаторы цвета карточки */
+.activity-card--status-open {
+    border-left: 6px solid #1976d2;
+    background-color: #f8f9fa;
+}
+
+.activity-card--status-completed {
+    border-left: 6px solid #4caf50;
+    background-color: #f3faf3;
+}
+
+.activity-card--status-overdue {
+    border-left: 6px solid #f44336;
+    background-color: #fff3f3;
+}
+
+.activity-card--status-approaching {
+    border-left: 6px solid #ff9800;
+    background-color: #fff9f0;
+}
+
+.activity-card--status-archive {
+    border-left: 6px solid #9e9e9e;
+    background-color: #f5f5f5;
+    opacity: 0.5;
+    filter: grayscale(10%);
+    /* pointer-events: none; */
+}
+
+/* Элемент: область информации */
+.activity-card__info {
+    flex: 14;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    /* gap: 12px; */
+}
+
+/* Элемент: список подразделений */
+.activity-card__departments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.activity-card__department {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 400;
+    color: white;
+    cursor: default;
+}
+
+.activity-card__department--gray {
+    background-color: #7E7474;
+}
+
+.activity-card__department--green {
+    background-color: #4caf50;
+}
+
+.activity-card__department--red {
+    background-color: #f44336;
+}
+
+.activity-card__department--blue {
+    background-color: #1976d2;
+}
+
+/* Элемент: описание */
+.activity-card__description {
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 10px 0 10px 0;
+    font-weight: 300;
+}
+
+.activity-card__footer {
+    font-size: 12px;
+    border-top: 1px solid #9e9e9e;
+    line-height: 1.5;
+    font-style: italic;
+    margin: 5px 0 5px 0;
+    font-weight: 300;
+}
+
+/* Элемент: область статуса */
+.activity-card__status {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 16px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-left: 1px solid #e0e0e0;
+    font-size: 12px;
+    gap: 15px;
+}
+
+.activity-card__status-label {
+    font-weight: 700;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    font-size: 12px;
+    /* color: #555; */
+}
+
+.activity-card__status-value {
+    font-size: 12px;
+    /* color: #333; */
+}
+
+.activity-card__buttons {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6px;
+    text-align: center;
+    border-left: 1px solid #e0e0e0;
+    font-size: 12px;
+    gap: 15px;
+}
+
+.activity-card__button {
+    /* padding: 8px; */
+    background: none;
+    border: none;
+    border-radius: 6px; /* Скругленные углы */
+    cursor: pointer;
+    transition: background-color 0.2s; /* Плавный эффект */
+}
+
+.activity-card__icon {
+    width: 28px;
+    height: 28px;
+}
+
+/* Адаптивность */
+@media screen and (max-width: 800px) {
+    .activity-card {
+        flex-direction: column;
+    }
+
+    .activity-card__description {
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .activity-card__status {
+        flex-direction: row;
+        justify-content: space-around;
+        border-left: none;
+        border-top: 1px solid #e0e0e0;
+        gap: 10px;
+        padding: 12px 0;
+    }
+
+    .activity-card__buttons {
+        flex-direction: row;
+        justify-content: right;
+        border-left: none;
+        border-top: 1px solid #e0e0e0;
+        gap: 10px;
+        padding: 12px 20px;
+    }
+
+    .activity-card__status-label {
+        margin-bottom: 0;
+    }
+}

@@ -10,6 +10,8 @@
         <title>{% block title %}{% endblock %} | Module</title>
         {% load static %}
         <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}">
+        <link rel="stylesheet" href="{% static 'css/pages/base_styles.css'%}">
+        <link rel="stylesheet" href="{% static 'css/pages/admin_styles.css'%}">
         {% block style %}{% endblock %}
     </head>
 
@@ -44,6 +46,7 @@
 
     </body>
 
+    <script type="module" src="{% static 'js/apps/notifications/Polling.js' %}"></script>
     {% block script %}{% endblock %}
 
 </html>

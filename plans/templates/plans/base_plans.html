@@ -1,0 +1,56 @@
+{% extends "module_app/base.html" %}
+
+{% block title %}Планёрка{% endblock %}
+
+{% block app_name %}Планёрка{% endblock %}
+
+{% load static %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/plans_styles.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <!-- Общие элементы для ВСЕХ шаблонов приложения plans -->
+    <a href="{% url 'plans:orders' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_info"></div>
+        <h3 class="sidebar__text">Приказы</h3>
+    </a>
+    <a href="{% url 'plans:protocols' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_objects"></div>
+        <h3 class="sidebar__text">Протоколы совещаний</h3>
+    </a>
+    <a href="{% url 'plans:reports' %}" class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Отчёты</h3>
+    </a>
+    <a href="{% url 'plans:inspects' %}" class="sidebar__item" id="addNewReportBtn">
+        <div class="sidebar__icon sidebar__icon_service"></div>
+        <h3 class="sidebar__text">Устранение замечаний</h3>
+    </a>
+    <a class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_edit"></div>
+        <h3 class="sidebar__text">СУПХД</h3>
+    </a>
+    <!-- <a class="sidebar__item">
+        <div class="sidebar__icon sidebar__icon_new"></div>
+        <h3 class="sidebar__text">ЭПБ</h3>
+    </a>
+    <a class="sidebar__item" id="addNewReportBtn">
+        <div class="sidebar__icon sidebar__icon_doc"></div>
+        <h3 class="sidebar__text">Выполнение распоряжений</h3>
+    </a> -->
+
+    {% block app_specific_sidepanel %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    {% block app_content %}{% endblock %}
+{% endblock %}
+
+
+{% block script %}
+    {% block app_script %}{% endblock %}
+{% endblock %}

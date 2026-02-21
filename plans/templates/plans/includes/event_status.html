@@ -1,0 +1,40 @@
+<div class="event-card__status">
+
+    <div>
+        <div class="event-card__status-label">
+            {% if instance.days_until_due is not None %}
+                {% if instance.days_until_due < 0 %} Срок истёк
+                {% else %} Срок
+                {% endif %}
+            {% else %}
+                Срок
+            {% endif %}
+        </div>
+        <div class="event-card__status-value
+            {% if instance.days_until_due is not None and instance.days_until_due < 0 %}
+                event-card__status-value--overdue
+            {% elif instance.days_until_due is not None and instance.days_until_due <= 3 %}
+                event-card__status-value--approaching
+            {% endif %}">
+            {% if instance.due_date %}
+                {{ instance.due_date|date:"d.m.Y" }}
+            {% else %}
+                Постоянно
+            {% endif %}
+        </div>
+    </div>
+
+    <div>
+        <div class="event-card__status-label">Факт</div>
+        <div class="event-card__status-value">
+            {% if instance.completed_at %}
+                {{ instance.completed_at|date:"d.m.Y" }}
+            {% elif item.user_completion and item.user_completion.actual_completion_date %}
+                {{ item.user_completion.actual_completion_date|date:"d.m.Y" }}
+            {% else %}
+                —
+            {% endif %}
+        </div>
+    </div>
+
+</div>

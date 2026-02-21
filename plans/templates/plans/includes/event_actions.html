@@ -1,0 +1,53 @@
+{% load static %}
+
+<div class="event-card__buttons">
+    {% if not instance.is_archived %}
+        {% if item.can_mark %}
+            <button
+                class="event-card__button button"
+                aria-label="Отметить выполнение"
+                data-tooltip="Отметить выполнение"
+                data-action="mark"
+                data-instance-id="{{ instance.id }}"
+            >
+                <img class="event-card__icon" src="{% static 'img/mark-pen-line.svg' %}" alt="Отметить" />
+            </button>
+        {% endif %}
+
+        {% if can_manage_events and item.can_complete %}
+            <button
+                class="event-card__button button"
+                aria-label="Завершить мероприятие"
+                data-tooltip="Завершить всё мероприятие"
+                data-action="complete"
+                data-instance-id="{{ instance.id }}"
+            >
+                <img class="event-card__icon" src="{% static 'img/all_complete.svg' %}" alt="Завершить" />
+            </button>
+        {% endif %}
+
+        {% if can_manage_events and item.can_archive %}
+            <button
+                class="event-card__button button"
+                aria-label="Архивировать"
+                data-tooltip="Архивировать мероприятие"
+                data-action="archive"
+                data-instance-id="{{ instance.id }}"
+            >
+                <img class="event-card__icon" src="{% static 'img/archive-outline.svg' %}" alt="Архивировать" />
+            </button>
+        {% endif %}
+    {% else %}
+        {% if can_manage_events %}
+            <button
+                class="event-card__button button"
+                aria-label="Восстановить"
+                data-tooltip="Восстановить мероприятие"
+                data-action="unarchive"
+                data-instance-id="{{ instance.id }}"
+            >
+                <img class="event-card__icon" src="{% static 'img/unarchive.svg' %}" alt="Восстановить" />
+            </button>
+        {% endif %}
+    {% endif %}
+</div>

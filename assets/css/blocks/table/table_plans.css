@@ -1,0 +1,8 @@
+.table_plans tr:hover {
+    background-color: rgb(215, 220, 227);
+    cursor: pointer;
+}
+
+.table_plans th {
+    background-color: rgb(123, 138, 161);
+  }

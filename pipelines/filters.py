@@ -3,8 +3,9 @@ from django import forms
 from django.db.models import Exists, OuterRef, Q, Subquery
 
 from equipments.models import Department
-from pipelines.models import (Anomaly, Bend, Diagnostics, Node, Pipe, PipeDepartment,
-                              Pipeline, Repair, Tube, TubeUnit, TubeVersion)
+from pipelines.models import (
+    Anomaly, Bend, Diagnostics, Node, Pipe, PipeDepartment, Pipeline, Repair,
+    Tube, TubeUnit, TubeVersion)
 
 
 def unit_exists(unit_type=None):

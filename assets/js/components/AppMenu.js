@@ -48,21 +48,25 @@ export default class AppMenu {
                 <div class="sidebar__icon sidebar__icon_app"></div>
                 <h3 class="sidebar__text">Кабинет пользователя</h3>
             </a>
+            <a href="/plans/" class="sidebar__item module-color_plans">
+                <div class="sidebar__icon sidebar__icon_app"></div>
+                <h3 class="sidebar__text">Планёрка</h3>
+            </a>
+            <a href="/pipelines/" class="sidebar__item module-color_pipelines">
+                <div class="sidebar__icon sidebar__icon_app"></div>
+                <h3 class="sidebar__text">Магистральные газопроводы</h3>
+            </a>
             <a href="/tpa/" class="sidebar__item module-color_tpa">
                 <div class="sidebar__icon sidebar__icon_app"></div>
                 <h3 class="sidebar__text">Техническое обслуживание ТПА</h3>
-            </a>
-            <a href="/leaks/" class="sidebar__item module-color_leaks">
-                <div class="sidebar__icon sidebar__icon_app"></div>
-                <h3 class="sidebar__text">Регистрация утечек газа</h3>
             </a>
             <a href="/rational/" class="sidebar__item module-color_rational">
                 <div class="sidebar__icon sidebar__icon_app"></div>
                 <h3 class="sidebar__text">Рационализаторская работа</h3>
             </a>
-            <a href="/pipelines/" class="sidebar__item module-color_pipelines">
+            <a href="/leaks/" class="sidebar__item module-color_leaks">
                 <div class="sidebar__icon sidebar__icon_app"></div>
-                <h3 class="sidebar__text">Магистральные газопроводы</h3>
+                <h3 class="sidebar__text">Регистрация утечек газа</h3>
             </a>
         `;
 

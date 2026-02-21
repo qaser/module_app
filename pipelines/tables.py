@@ -2,8 +2,8 @@ import django_tables2 as tables
 
 from users.models import Role
 
-from .models import (Anomaly, Bend, Diagnostics, PipeDepartment, Repair, Tube, TubeUnit,
-                     TubeVersion)
+from .models import (Anomaly, Bend, Diagnostics, PipeDepartment, Repair, Tube,
+                     TubeUnit, TubeVersion)
 
 
 class TubeVersionTable(tables.Table):

@@ -1,0 +1,194 @@
+{% extends "plans/base_plans.html" %}
+
+{% load static %}
+{% load plans_filters %}
+
+
+{% block app_specific_sidepanel %}
+    <form id="filter_submit" class="sidebar__form">
+        {% for field in filter.form %}
+            <div class="sidebar__form-field">
+                <label for="" class="sidebar__form-label">{{ field.label }}</label>
+                {{ field|addclass:'sidebar__form-input' }}
+            </div>
+        {% endfor %}
+        <button type="submit" class="sidebar__button button module-color__button_plans">Применить</button>
+    </form>
+    <a class="link_simple" href="{% url 'plans:inspects-events' %}">
+        <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
+    </a>
+{% endblock %}
+
+{% block app_content %}
+<main class="content" id="orders">
+    <section class="main" id="main">
+        <div class="main__header">
+            <h1 class="main__title" id="">Все замечания</h1>
+        </div>
+
+        {% for item in events_with_actions %}
+            {% with instance=item.instance event=item.event %}
+                {% include "plans/includes/event_card.html" %}
+            {% endwith %}
+        {% empty %}
+            {% include "plans/includes/events_empty.html" %}
+        {% endfor %}
+
+    </section>
+</main>
+
+
+    <div class="popup" id="popup-mark-event">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="mark-event" id="form-mark-event">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <select class="form-popup__input" id="status" name="status">
+                        {% for value, label in statuses %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-popup__input-error" id="status-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="actual_completion_date" type="date" required name="actual_completion_date">
+                    <span class="form-popup__input-error" id="actual_completion_date-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <textarea class="form-popup__input" id="comment" name="comment" rows="4" placeholder="При необходимости введите дополнительную информацию" maxlength="100" minlength="5"></textarea>
+                    <span class="form-popup__input-error" id="comment-error"></span>
+                </label>
+                <button class="form-popup__button button module-color__button_plans" type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup" id="popup-confirm-complete">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="confirm-complete" id="form-complete" novalidate>
+                <h2 class="form-popup__header">Отметить выполнение замечания?</h2>
+                <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup" id="popup-confirm-archive">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="confirm-archive" id="form-archive" novalidate>
+                <h2 class="form-popup__header">Архивировать замечание?</h2>
+                <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup" id="popup-confirm-unarchive">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="confirm-unarchive" id="form-unarchive" novalidate>
+                <h2 class="form-popup__header">Восстановить замечание из архива?</h2>
+                <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup" id="popup-new-event">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup form-popup_wide" name="new-event" id="form-new-event">
+                <h2 class="form-popup__header"></h2>
+
+                <label class="form-popup__field">
+                    <select class="form-popup__input" id="schedule_type" name="schedule_type">
+                        {% for value, label in schedule_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-popup__input-error" id="schedule_type-error"></span>
+                </label>
+
+                <!-- =============СМЕННЫЕ БЛОКИ==================== -->
+                <label class="form-popup__field" schedule_type="once">
+                    <span class="form-popup__help">Укажите срок выполнения</span>
+                    <input class="form-popup__input" id="due_date" type="date" name="due_date">
+                    <span class="form-popup__input-error" id="due_date-error"></span>
+                </label>
+
+                <label class="form-popup__field" schedule_type="periodic">
+                    <span class="form-popup__help">Выберите периодичность</span>
+                    <select class="form-popup__input" id="period_unit" name="period_unit">
+                        {% for value, label in period_units %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-popup__input-error" id="period_unit-error"></span>
+                </label>
+
+                <label class="form-popup__field" schedule_type="periodic">
+                    <span class="form-popup__help">Укажите интервал периодичности</span>
+                    <input class="form-popup__input" id="period_interval" name="period_interval" type="number">
+                    <span class="form-popup__input-error" id="period_interval-error"></span>
+                </label>
+
+                <label class="form-popup__field" schedule_type="periodic">
+                    <span class="form-popup__help">Укажите дату начала периода</span>
+                    <input class="form-popup__input" id="start_date" type="date" name="start_date">
+                    <span class="form-popup__input-error" id="start_date-error"></span>
+                </label>
+
+                <label class="form-popup__field" schedule_type="relative">
+                    <span class="form-popup__help">Выберите вариант</span>
+                    <select class="form-popup__input" id="relative_base" name="relative_base">
+                        {% for value, label in relative_bases %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-popup__input-error" id="relative_base-error"></span>
+                </label>
+
+                <label class="form-popup__field" schedule_type="relative">
+                    <span class="form-popup__help">Выберите вариант</span>
+                    <select class="form-popup__input" id="relative_position" name="relative_position">
+                        {% for value, label in relative_positions %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-popup__input-error" id="relative_position-error"></span>
+                </label>
+
+                <label class="form-popup__field" schedule_type="relative">
+                    <span class="form-popup__help">Введите количество дней смещения</span>
+                    <input class="form-popup__input" id="relative_day" name="relative_day" type="digit">
+                    <span class="form-popup__input-error" id="relative_day-error"></span>
+                </label>
+                <!-- ============= КОНЕЦ СМЕННЫХ БЛОКИ==================== -->
+
+                <label class="form-popup__field">
+                    <textarea class="form-popup__input" id="description" name="description" rows="4" placeholder="Введите текст замечания" maxlength="1000" minlength="5" required></textarea>
+                    <span class="form-popup__input-error" id="description-error"></span>
+                </label>
+
+                <label class="form-popup__field">
+                    <div class="form-popup__tags-container" id="departments-container">
+                        {% for dept in departments %}
+                            <button type="button" class="form-popup__tag-btn" data-value="{{ dept.id }}" data-selected="false">
+                                {{ dept.name }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" id="departments" name="departments" required/>
+                    <span class="form-popup__input-error" id="departments-error"></span>
+                </label>
+
+                <button class="form-popup__button button module-color__button_plans" type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block app_script %}
+    <script type="module" src="{% static 'js/apps/plans/eventsView.js' %}"></script>
+{% endblock %}

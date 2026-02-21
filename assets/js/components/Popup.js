@@ -4,6 +4,15 @@ export default class Popup {
     this._closeButton = this._popup.querySelector('.popup__button-close');
     this._handleEscapeClose = this._handleEscapeClose.bind(this);
     this._handleOverlayClose = this._handleOverlayClose.bind(this);
+    this.extraData = {};
+  }
+
+  setExtraData(data) {
+    this.extraData = { ...this.extraData, ...data };
+  }
+
+  getExtraData() {
+    return this.extraData;
   }
 
   open() {

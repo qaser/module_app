@@ -17,6 +17,7 @@ urlpatterns = [
     path('pipelines/', include('pipelines.urls')),
     path('tpa/', include('tpa.urls')),
     path('rational/', include('rational.urls')),
+    path('plans/', include('plans.urls')),
     path('auth/', include('django.contrib.auth.urls')),
     path('api/', include('api.urls')),
 ]

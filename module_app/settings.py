@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'tpa',
     'leaks',
     'rational',
+    'plans',
     'notifications',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -93,11 +94,10 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            # 'NAME': 'module_app',
             'NAME': 'module_db',
             'USER': 'postgres',
-            'PASSWORD': 'qazaq1',
-            # 'PASSWORD': 'admin',
+            # 'PASSWORD': 'qazaq1',
+            'PASSWORD': 'admin',
             'HOST': 'localhost',
             'PORT': '',
         }

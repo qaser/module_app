@@ -1,0 +1,17 @@
+{% extends "plans/base_plans.html" %}
+
+{% load static %}
+
+
+{% block app_content %}
+<main class="content">
+  <section class="main" id="main">
+    <h1 class="main__title"></h1>
+  </section>
+</main>
+
+{% endblock %}
+
+{% block app_script %}
+    <script type="module" src="{% static 'js/apps/plans/indexPlans.js' %}"></script>
+{% endblock %}

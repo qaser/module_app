@@ -10,6 +10,8 @@ from api.views.pipelines_views import (DiagnosticDocumentViewSet,
                                        PipelineViewSet, PipeStatesViewSet,
                                        PipeViewSet, TubesViewSet,
                                        TubeVersionDocumentViewSet)
+from api.views.plans_views import (DocumentViewSet, EventInstanceViewSet, EventViewSet, OrdersActivitiesViewSet, OrderViewSet,
+                                   ProtocolsActivitiesViewSet, ProtocolViewSet)
 from api.views.rational_views import (
     AnnualPlanViewSet, ProposalDocumentViewSet, ProposalViewSet,
     QuarterlyPlanViewSet, StatusViewSet)
@@ -43,6 +45,15 @@ router.register('rational-docs', ProposalDocumentViewSet, basename='rational-doc
 router.register('statuses', StatusViewSet, basename='statuses')
 router.register('rational-plans', AnnualPlanViewSet, basename='rational-plans')
 router.register(r'rational-plans/(?P<plan_id>\d+)/quarterly', QuarterlyPlanViewSet, basename='rational-plans-quarterly')
+
+# router.register('plans/reports', ReportViewSet, basename='reports')
+router.register('plans/docs', DocumentViewSet, basename='docs')
+router.register('plans/events', EventViewSet, basename='events')
+router.register('plans/instances', EventInstanceViewSet, basename='instances')
+router.register('plans/protocols/activities', ProtocolsActivitiesViewSet, basename='protocols_activities')
+router.register('plans/protocols', ProtocolViewSet, basename='protocols')
+router.register('plans/orders/activities', OrdersActivitiesViewSet, basename='orders_activities')
+router.register('plans/orders', OrderViewSet, basename='orders')
 
 router.register('pipelines', PipelineViewSet, basename='pipelines')
 router.register('pipe-states', PipeStatesViewSet, basename='pipe-states')

@@ -7,7 +7,6 @@ import AppMenu from '../../components/AppMenu.js';
 import PipelineVisualizer from '../../components/PipelineVisualizer.js';
 import PipelineContextMenu from '../../components/PipelineContextMenu.js';
 import PopupWithForm from '../../components/PopupWithForm.js';
-import PollingClient from '../../api/PollingClient.js';
 
 
 const formValidators = {};
@@ -22,9 +21,6 @@ const formConfig = {
     errorClass: 'form-popup__input-error_active'
 }
 
-const pollingClient = new PollingClient({
-  endpoint: '/api/notifications/unread/'
-});
 
 // создание объекта api
 const api = new Api({
@@ -222,7 +218,6 @@ Promise.all([api.getMyProfile(), api.getPipelines()])
     .then(([userData, pipelines]) => {
         newUserInfo.setUserInfo(userData);
         pipelineScheme.render(pipelines);
-        pollingClient.start();
     })
     .catch(err => {
         console.log(err);

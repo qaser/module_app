@@ -4,10 +4,5 @@
 }
 
 .table_tpa th {
-    font-weight: 300;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    text-align: left;
     background-color: #648763;
-    color: white;
   }
