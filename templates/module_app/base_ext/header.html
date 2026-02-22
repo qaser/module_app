@@ -1,7 +1,11 @@
 {% load static %}
 
-<header class="header module-color_{{ app }}" id="header">
-    <a class="header__link" href=""><img class="header__logo" src="{% static 'img/logo-full-large.png' %}" alt="Логотип"></a>
+<header class="header" id="header">
+    <a href="" class="header__app module-color_{{ request.resolver_match.app_name }}" id="menu-apps">
+        <div class="sidebar__icon sidebar__icon_app"></div>
+        <h3 class="sidebar__text">{% block app_name %}{% endblock %}</h3>
+    </a>
+    <div class="header__title"></div>
     <a class="header__link_no-transparent" href="{% url 'logout' %}" data-tooltip="Выйти из системы">
         <div class="header__auth">
             <div class="header__userinfo">

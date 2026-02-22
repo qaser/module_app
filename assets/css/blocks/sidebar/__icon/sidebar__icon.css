@@ -1,6 +1,6 @@
 .sidebar__icon {
-    width: 35px;
-    height: 35px;
-    background-size: auto;
+    width: 20px;
+    height: 20px;
+    background-size: contain;
     margin-left: 10px;
 }

@@ -22,15 +22,26 @@
         {% include 'module_app/base_ext/loader.html' %}
 
         <!-- хэдер -->
-        {% include 'module_app/base_ext/header.html' with app=request.resolver_match.app_name %}
+        <header class="header" id="header">
+            <a href="" class="header__app module-color_{{ request.resolver_match.app_name }}" id="menu-apps">
+                <div class="sidebar__icon sidebar__icon_app"></div>
+                <h3 class="sidebar__text">{% block app_name %}{% endblock %}</h3>
+            </a>
+            <div class="header__title"></div>
+            <a class="header__link_no-transparent" href="{% url 'logout' %}" data-tooltip="Выйти из системы">
+                <div class="header__auth">
+                    <div class="header__userinfo">
+                        <p class="header__username"></p>
+                        <p class="header__user-proff"></p>
+                    </div>
+                    <img class="header__avatar" src="{% static 'img/avatar.png' %}" alt="Аватар">
+                </div>
+            </a>
+        </header>
 
         <!-- боковая панель -->
         <section  class="sidebar" id="sidebar">
             <div class="sidebar__panel">
-                <div class="sidebar__item module-color_{{ request.resolver_match.app_name }}" id="menu-apps">
-                    <div class="sidebar__icon sidebar__icon_app"></div>
-                    <h3 class="sidebar__text">{% block app_name %}{% endblock %}</h3>
-                </div>
                 {% block sidepanel %}{% endblock %}
             </div>
         </section>
@@ -38,15 +49,13 @@
         <!-- главный контент -->
         {% block content %}{% endblock %}
 
-        {% comment %} {% if page.has_other_pages %}
-            {% include "module_app/base_ext/paginator.html" with app=request.resolver_match.app_name %}
-        {% endif %} {% endcomment %}
-
         </div>
 
     </body>
 
     <script type="module" src="{% static 'js/apps/notifications/Polling.js' %}"></script>
+    <script type="module" src="{% static 'js/mainMenu.js' %}"></script>
+    <script type="module" src="{% static 'js/Tooltip.js' %}"></script>
     {% block script %}{% endblock %}
 
 </html>

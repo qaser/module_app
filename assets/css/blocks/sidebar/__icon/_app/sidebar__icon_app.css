@@ -1,3 +1,5 @@
 .sidebar__icon_app {
+    width: 35px;
+    height: 35px;
     background-image: url(../../../../../img/link-app.svg);
 }

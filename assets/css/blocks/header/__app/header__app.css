@@ -1,0 +1,102 @@
+.header__app {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 216px;
+  height: 44px;
+  margin: 0 20px;
+  border: 1px solid #D2D2D2;
+  border-radius: 10px;
+  /* box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25); */
+  transition: box-shadow .1s linear .1s, transform .1s linear .1s;
+}
+
+.header__app:hover {
+  cursor: pointer;
+  box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.25);
+  transform: scale(1.05);
+}
+
+@media screen and (max-width: 520px) {
+  .header__app {
+    margin-right: 15px;
+  }
+}
+
+
+.header__float-panel {
+  position: absolute;
+  left: 100%;
+  /* Справа от боковой панели */
+  top: 20px;
+  width: 240px;
+  border-radius: 10px;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+  background-color: white;
+  border: .5px solid white;
+  z-index: 99999;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Начальное скрытое состояние */
+.header__float-panel_hidden {
+  opacity: 0;
+  transform: translateX(20px) scale(0.95);
+}
+
+/* Видимое состояние */
+.header__float-panel_visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.header__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.2s ease-out;
+  z-index: 99998;
+}
+
+/* Плавное появление затемнения */
+.header__overlay_visible {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+@media screen and (max-width: 800px) {
+  .header__float-panel {
+    width: calc(100% - 40px);
+    margin: 20px;
+    left: 0;
+  }
+}
+
+
+.header__item {
+  width: 90%;
+  height: 50px;
+  display: flex;
+  border: .5px solid #C5C5C5;
+  border-radius: 10px;
+  text-decoration: none;
+  color: black;
+  margin: 10px auto;
+  align-items: center;
+  transition: transform .1s ease-out .1s, box-shadow .1s ease-out .1s;
+}
+
+@media screen and (max-width: 800px) {
+  .header__item {
+    width: calc(100% - 40px);
+  }
+}
+
+.header__item:hover {
+  cursor: pointer;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+  transform: scale(1.03);
+}

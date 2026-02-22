@@ -10,16 +10,19 @@
     padding: 0;
     background-color: #F8F8F8;
     display: grid;
-    grid-template-columns: 280px 1fr; /* sidebar занимает 280px, content - всё остальное */
+    grid-template-columns: 260px 1fr;
+    /* sidebar занимает 280px, content - всё остальное */
     grid-template-areas:
         "header header"
         "sidebar content";
-    min-height: 100vh; /* растягиваем на весь экран */
+    min-height: 100vh;
+    /* растягиваем на весь экран */
 }
 
 @media screen and (max-width: 1600px) {
     .page {
-        grid-template-columns: 280px 1fr; /* sidebar занимает 280px, content - всё остальное */
+        grid-template-columns: 260px 1fr;
+        /* sidebar занимает 280px, content - всё остальное */
         grid-template-areas:
             "header header"
             "sidebar content";
@@ -28,7 +31,8 @@
 
 @media screen and (max-width: 800px) {
     .page {
-        grid-template-columns: 1fr; /* на мобильных устройствах sidebar и content занимают всю ширину */
+        grid-template-columns: 1fr;
+        /* на мобильных устройствах sidebar и content занимают всю ширину */
         grid-template-areas:
             "header"
             "sidebar"
@@ -43,5 +47,6 @@ input::-webkit-inner-spin-button {
 
 input[type=number] {
     appearance: none;
-    -moz-appearance: textfield; /* Firefox */
+    -moz-appearance: textfield;
+    /* Firefox */
 }

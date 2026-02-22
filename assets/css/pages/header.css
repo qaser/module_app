@@ -7,3 +7,5 @@
 @import url(../blocks/header/__userinfo/header__userinfo.css);
 @import url(../blocks/header/__username/header__username.css);
 @import url(../blocks/header/__user-proff/header__user-proff.css);
+@import url(../blocks/header/__app/header__app.css);
+@import url(../blocks/header/__title/header__title.css);
