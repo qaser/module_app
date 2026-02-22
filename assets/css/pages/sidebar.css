@@ -1,6 +1,5 @@
 @import url(../blocks/sidebar/sidebar.css);
 @import url(../blocks/sidebar/__panel/sidebar__panel.css);
-@import url(../blocks/sidebar/__float-panel/sidebar__float-panel.css);
 @import url(../blocks/sidebar/__form/sidebar__form.css);
 @import url(../blocks/sidebar/__form-field/sidebar__form-field.css);
 @import url(../blocks/sidebar/__form-label/sidebar__form-label.css);

@@ -1,0 +1,15 @@
+.header__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.2s ease-out;
+  z-index: 99998;
+}
+
+/* Плавное появление затемнения */
+.header__overlay_visible {
+  background: rgba(0, 0, 0, 0.75);
+}

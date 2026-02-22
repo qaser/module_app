@@ -1,0 +1,8 @@
+@import url(../blocks/table/table.css);
+@import url(../blocks/table/table_tpa.css);
+@import url(../blocks/table/table_leaks.css);
+@import url(../blocks/table/table_rational.css);
+@import url(../blocks/table/table_oil.css);
+@import url(../blocks/table/table_pipelines.css);
+@import url(../blocks/table/table_plans.css);
+@import url(../blocks/table/__pagination/table__pagination.css);

@@ -1,7 +1,7 @@
 export default class AppMenu {
   constructor() {
     this.mainMenuButton = document.getElementById('menu-apps');
-    this.headerPanel = document.querySelector('.header');
+    this.headerPanel = document.querySelector('.header__app');
     this.floatPanel = null;
     this.overlay = null;
 

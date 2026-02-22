@@ -1,0 +1,7 @@
+@import url(../blocks/main/main.css);
+@import url(../blocks/main/__header/main__header.css);
+@import url(../blocks/main/__title/main__title.css);
+@import url(../blocks/main/__controls/main__controls.css);
+@import url(../blocks/main/__control-button/main__control-button.css);
+@import url(../blocks/main/__icon/main__icon.css);
+@import url(../blocks/main/__icon/_middle/main__icon_middle.css);

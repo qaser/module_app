@@ -5,7 +5,7 @@
     line-height: 14px;
 }
 
-@media screen and (max-width: 360px) {
+@media screen and (max-width: 800px) {
     .header__user-proff {
         font-size: 10px;
         line-height: 12px;

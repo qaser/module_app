@@ -9,3 +9,9 @@
 @import url(../blocks/header/__user-proff/header__user-proff.css);
 @import url(../blocks/header/__app/header__app.css);
 @import url(../blocks/header/__title/header__title.css);
+@import url(../blocks/header/__icon/header_icon.css);
+@import url(../blocks/header/__text/header__text.css);
+@import url(../blocks/header/__buttons/header__buttons.css);
+@import url(../blocks/header/__item/header__item.css);
+@import url(../blocks/header/__float-panel/header__float-panel.css);
+@import url(../blocks/header/__overlay/header__overlay.css);

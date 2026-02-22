@@ -3,8 +3,15 @@
     height: 60px;
     display: flex;
     justify-content: space-between;
+    gap: 20px;
     align-items: center;
     flex-wrap: nowrap;
-    z-index: 80000;
     grid-area: header;
+}
+
+
+@media screen and (max-width: 800px) {
+    .header {
+        gap: 5px;
+    }
 }

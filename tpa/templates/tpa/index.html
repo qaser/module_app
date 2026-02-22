@@ -1,6 +1,7 @@
 {% extends "module_app/base.html" %}
 {% block title %}Обзор трубопроводной арматуры{% endblock %}
 {% block app_name %}Техническое обслуживание ТПА{% endblock %}
+{% block page_title %}Обзор трубопроводной арматуры{% endblock %}
 
 {% load static %}
 {% load render_table from django_tables2 %}
@@ -42,7 +43,7 @@
 {% csrf_token %}
 <main class="content">
   <section class="main" id="main">
-    <h1 class="main__title">Обзор трубопроводной арматуры</h1>
+    {% comment %} <h1 class="main__title">Обзор трубопроводной арматуры</h1> {% endcomment %}
     {% render_table table %}
   </section>
 </main>

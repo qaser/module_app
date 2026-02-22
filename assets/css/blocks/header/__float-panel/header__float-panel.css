@@ -1,0 +1,34 @@
+.header__float-panel {
+  position: absolute;
+  left: 260px;
+  /* Справа от боковой панели */
+  top: 5px;
+  width: 240px;
+  border-radius: 8px;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
+  background-color: white;
+  border: .5px solid white;
+  z-index: 99999;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Начальное скрытое состояние */
+.header__float-panel_hidden {
+  opacity: 0;
+  transform: translateX(20px) scale(0.95);
+}
+
+/* Видимое состояние */
+.header__float-panel_visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+
+@media screen and (max-width: 800px) {
+  .header__float-panel {
+    width: calc(100% - 40px);
+    margin: 20px;
+    left: 0;
+  }
+}

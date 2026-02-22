@@ -1,8 +1,8 @@
 .table_plans tr:hover {
-    background-color: rgb(215, 220, 227);
+    background-color: #96bdec;
     cursor: pointer;
 }
 
 .table_plans th {
-    background-color: rgb(123, 138, 161);
-  }
+    background-color: #6893C7;
+}
