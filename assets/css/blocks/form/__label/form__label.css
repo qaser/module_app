@@ -1,7 +1,7 @@
 .form__label {
     margin: auto 0;
-    padding: 10px 10px 5px 10px;
-    font-size: 14px;
-    line-height: 20px;
+    /* padding: 0 10px 5px 0; */
+    font-size: 12px;
+    line-height: 16px;
     font-weight: 400;
 }

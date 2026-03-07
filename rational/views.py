@@ -74,7 +74,7 @@ def filter_by_user_role(user: ModuleUser, queryset: QuerySet, department_field: 
 
 @login_required
 def single_proposal(request, proposal_id):
-    proposal = Proposal.objects.filter(id=proposal_id)
+    proposal = Proposal.objects.filter(id=proposal_id).first()
     return render(
         request,
         'rational/single-proposal.html',

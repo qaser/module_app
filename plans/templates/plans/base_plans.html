@@ -13,25 +13,25 @@
 
 {% block sidepanel %}
     <!-- Общие элементы для ВСЕХ шаблонов приложения plans -->
-    <a href="{% url 'plans:orders' %}" class="sidebar__item">
+    <a href="{% url 'plans:orders' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'orders' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
         <div class="sidebar__icon sidebar__icon_info"></div>
         <h3 class="sidebar__text">Приказы</h3>
     </a>
-    <a href="{% url 'plans:protocols' %}" class="sidebar__item">
+    <a href="{% url 'plans:protocols' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'protocols' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
         <div class="sidebar__icon sidebar__icon_objects"></div>
         <h3 class="sidebar__text">Протоколы совещаний</h3>
     </a>
-    <a href="{% url 'plans:reports' %}" class="sidebar__item">
+    <a href="{% url 'plans:reports' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'reports' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
         <div class="sidebar__icon sidebar__icon_index"></div>
         <h3 class="sidebar__text">Отчёты</h3>
     </a>
-    <a href="{% url 'plans:inspects' %}" class="sidebar__item" id="addNewReportBtn">
+    <a href="{% url 'plans:inspects' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'inspects' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}" id="addNewReportBtn">
         <div class="sidebar__icon sidebar__icon_service"></div>
         <h3 class="sidebar__text">Устранение замечаний</h3>
-    </a>
-    <a class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_edit"></div>
-        <h3 class="sidebar__text">СУПХД</h3>
     </a>
     <!-- <a class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_new"></div>

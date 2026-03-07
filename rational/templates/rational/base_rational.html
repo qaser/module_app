@@ -1,0 +1,43 @@
+{% extends "module_app/base.html" %}
+
+{% block title %}Журнал рационализаторских предложений{% endblock %}
+
+{% block app_name %}Рационализаторская работа{% endblock %}
+
+{% load static %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/rational_styles.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="{% url 'rational:index' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'index' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Журнал РП</h3>
+    </a>
+    <a href="{% url 'rational:proposal_new' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'proposal_new' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
+        <div class="sidebar__icon sidebar__icon_new"></div>
+        <h3 class="sidebar__text">Внести предложение</h3>
+    </a>
+    {% if user.role == 'admin' or user.role == 'manager' %}
+        <a href="{% url 'rational:index_plan' %}"
+            class="sidebar__item {% if request.resolver_match.url_name == 'index_plan' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
+            <div class="sidebar__icon sidebar__icon_objects"></div>
+            <h3 class="sidebar__text">Планирование</h3>
+        </a>
+    {% endif %}
+    {% block app_specific_sidepanel %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    {% block app_content %}{% endblock %}
+{% endblock %}
+
+
+{% block script %}
+    {% block app_script %}{% endblock %}
+{% endblock %}

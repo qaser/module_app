@@ -1,40 +1,13 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор рационализаторского предложения{% endblock %}
-{% block app_name %}Рационализаторская работа{% endblock %}
+{% extends "rational/base_rational.html" %}
 
 {% load static %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/single-proposal.css'%}">
-{% endblock %}
+{% block page_title %}РП №{{ proposal.reg_num }} {% endblock %}
 
-{% block sidepanel %}
-    <a href="{% url 'rational:index' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_index"></div>
-        <h3 class="sidebar__text">Журнал РП</h3>
-    </a>
-    <a href="{% url 'rational:proposal_new' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_new"></div>
-        <h3 class="sidebar__text">Внести предложение</h3>
-    </a>
-    {% if user.role == 'admin' or user.role == 'manager' %}
-        <a href="{% url 'rational:index_plan' %}" class="sidebar__item">
-            <div class="sidebar__icon sidebar__icon_objects"></div>
-            <h3 class="sidebar__text">Планирование</h3>
-        </a>
-    {% endif %}
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a>
-{% endblock %}
-
-{% block content %}
-    {% csrf_token %}
+{% block app_content %}
     <main class="content">
       <!-- основная панель -->
       <section class="main" id="main">
-        <h1 class="main__title"></h1>
         <div class="card" id="{{ proposal_id }}" app-name="{{ request.resolver_match.app_name }}">
           <div class="card__container">
               <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
@@ -98,7 +71,7 @@
             <form class="form-popup form-popup_wide" name="new-file" id="form-newfile" enctype="multipart/form-data">
                 <h2 class="form-popup__header"></h2>
                 <label class="form-popup__field">
-                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4"></input>
+                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4">
                     <span class="form-popup__input-error" id="file-name-error"></span>
                 </label>
                 <label class="form-popup__file-field">
@@ -111,7 +84,7 @@
                     <span class="form-popup__status" id="uploadForm_Status"></span>
                     <span id="uploadForm_Size"></span>
                 </div>
-                <button class="form-popup__button button module-color__button_rational" type="submit">Сохранить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
             </form>
         </div>
     </div>
@@ -130,7 +103,7 @@
                     <textarea class="form-popup__input" id="note" name="note" rows="5" placeholder="Введите примечание к смене статуса" maxlength="500"></textarea>
                     <span class="form-popup__input-error" id="note-error"></span>
                 </label>
-                <button class="form-popup__button button module-color__button_rational" type="submit">Применить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Применить</button>
             </form>
         </div>
     </div>
@@ -145,5 +118,5 @@
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/singleProposal.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/rational/singleProposal.js' %}"></script>
 {% endblock %}

@@ -10,7 +10,7 @@
     padding: 0;
     background-color: #F8F8F8;
     display: grid;
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 255px 1fr;
     /* sidebar занимает 280px, content - всё остальное */
     grid-template-areas:
         "header header"
@@ -21,7 +21,7 @@
 
 @media screen and (max-width: 1600px) {
     .page {
-        grid-template-columns: 260px 1fr;
+        grid-template-columns: 255px 1fr;
         /* sidebar занимает 280px, content - всё остальное */
         grid-template-areas:
             "header header"

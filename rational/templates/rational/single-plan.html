@@ -1,40 +1,15 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор плана РП на {{ plan.year }} год | {{ plan.department }}{% endblock %}
-{% block app_name %}Рационализаторская работа{% endblock %}
+{% extends "rational/base_rational.html" %}
 
 {% load static %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/single-plan.css'%}">
-{% endblock %}
+{% block page_title %}Обзор плана РП на {{ plan.year }} год{% endblock %}
 
-{% block sidepanel %}
-    <a href="{% url 'rational:index' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_index"></div>
-        <h3 class="sidebar__text">Журнал РП</h3>
-    </a>
-    <a href="{% url 'rational:proposal_new' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_new"></div>
-        <h3 class="sidebar__text">Внести предложение</h3>
-    </a>
-    {% if user.role == 'admin' or user.role == 'manager' %}
-        <a href="{% url 'rational:index_plan' %}" class="sidebar__item">
-            <div class="sidebar__icon sidebar__icon_objects"></div>
-            <h3 class="sidebar__text">Планирование</h3>
-        </a>
-    {% endif %}
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a>
-{% endblock %}
 
-{% block content %}
+{% block app_content %}
     {% csrf_token %}
     <main class="content">
       <!-- основная панель -->
       <section class="main" id="main">
-        <h1 class="main__title">Обзор плана РП на {{ plan.year }} год</h1>
         <div class="card" id="{{ plan.id }}" app-name="{{ request.resolver_match.app_name }}">
             <div class="plan">
 
@@ -93,5 +68,5 @@
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/singlePlan.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/rational/singlePlan.js' %}"></script>
 {% endblock %}

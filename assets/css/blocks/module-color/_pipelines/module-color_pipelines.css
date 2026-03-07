@@ -10,3 +10,7 @@
     color: white;
     background: #6A5A8C;
 }
+
+.module-color__borders_pipelines {
+    border-color: #6A5A8C;
+}

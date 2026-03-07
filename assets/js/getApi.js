@@ -6,7 +6,7 @@ const api = new Api({
   baseUrl: config.apiConfig.url,
   headers: {
     'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json',
     // authorization: constant.apiConfig.token,
   },
 });

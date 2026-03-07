@@ -1,12 +1,19 @@
 .module-color_users {
-    background-color: #F8F8F8; /* Very light color that complements #3b82f6 */
+    background-color: #F8F8F8;
+    /* Very light color that complements #3b82f6 */
 }
 
 .module-color__header_users {
-    background-color: #4C9EFB; /* Lighter shade of blue */
+    background-color: #4C9EFB;
+    /* Lighter shade of blue */
 }
 
 .module-color__button_users {
     color: white;
-    background: #4C9EFB; /* Same as .module-color__header_users */
+    background: #4C9EFB;
+    /* Same as .module-color__header_users */
+}
+
+.module-color__borders_users {
+    border-color: #4C9EFB;
 }

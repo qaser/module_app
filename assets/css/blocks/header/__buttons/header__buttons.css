@@ -1,11 +1,11 @@
 .header__buttons {
   display: flex;
-  gap: 10px;
+  gap: 14px;
   justify-content: space-around;
   align-items: center;
   padding: 0 15px;
   height: 44px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   background-color: #F6F6F6;
 }
 

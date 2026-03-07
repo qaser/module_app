@@ -43,13 +43,16 @@
 /* Цветная полоса */
 .status-stripe {
     width: 16px;
-    background-color: inherit; /* Цвет будет задан через стили */
-    flex-shrink: 0; /* Запрещаем сжатие полосы */
+    background-color: inherit;
+    /* Цвет будет задан через стили */
+    flex-shrink: 0;
+    /* Запрещаем сжатие полосы */
 }
 
 /* Контент карточки */
 .status-content {
-    flex-grow: 1; /* Занимает оставшееся пространство */
+    flex-grow: 1;
+    /* Занимает оставшееся пространство */
     padding: 10px 14px;
 }
 
@@ -61,7 +64,7 @@
 }
 
 .status-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 900;
     color: #333;
 }
@@ -72,7 +75,7 @@
 }
 
 .status-note {
-    font-size: 14px;
+    font-size: 12px;
     color: #555;
     line-height: 1.5;
 }
@@ -82,7 +85,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 14px;
+    font-size: 12px;
     color: #666;
 }
 

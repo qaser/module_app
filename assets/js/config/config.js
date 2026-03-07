@@ -1,7 +1,7 @@
 export const apiConfig = {
-    url: '/api',
-}
+  url: '/api',
+};
 
 export const wsConfig = {
-    url: '/ws/notifications',
-}
+  url: '/ws/notifications',
+};

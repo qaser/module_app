@@ -1,6 +1,6 @@
-.header__item {
-  width: 95%;
-  height: 44px;
+.sidebar__item_active {
+  width: 90%;
+  height: 40px;
   display: flex;
   border: .5px solid #C5C5C5;
   /* border-radius: 10px; */
@@ -12,13 +12,13 @@
 }
 
 @media screen and (max-width: 800px) {
-  .header__item {
-    width: calc(100% - 20px);
+  .sidebar__item {
+    width: calc(100% - 40px);
   }
 }
 
-.header__item:hover {
+/* .sidebar__item:hover {
   cursor: pointer;
   box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.25);
   transform: scale(1.03);
-}
+} */
