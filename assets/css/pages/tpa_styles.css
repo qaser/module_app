@@ -1,0 +1,47 @@
+@import url(../pages/popup_styles.css);
+
+@import url(../pages/main_styles.css);
+
+@import url(../pages/table_styles.css);
+
+@import url(../pages/form_styles.css);
+
+@import url(../pages/card_styles.css);
+
+@import url(../blocks/calendar/calendar.css);
+@import url(../blocks/calendar/__header/calendar__header.css);
+@import url(../blocks/calendar/__item-header/calendar__item-header.css);
+@import url(../blocks/calendar/__item/calendar__item.css);
+@import url(../blocks/calendar/__month/calendar__month.css);
+@import url(../blocks/calendar/__row-month/calendar__row-month.css);
+@import url(../blocks/calendar/__row-name/calendar__row-name.css);
+@import url(../blocks/calendar/__row/calendar__row.css);
+@import url(../blocks/calendar/__row-month/_blue/calendar__row-month_blue.css);
+@import url(../blocks/calendar/__row-month/_gray/calendar__row-month_gray.css);
+@import url(../blocks/calendar/__row-month/_violet/calendar__row-month_violet.css);
+@import url(../blocks/calendar/__row-month/_yellow/calendar__row-month_yellow.css);
+@import url(../blocks/calendar/__row-month/_red/calendar__row-month_red.css);
+
+@import url(../blocks/report/report.css);
+@import url(../blocks/report/__column-title/report__column-title.css);
+@import url(../blocks/report/__column-value/report__column-value.css);
+@import url(../blocks/report/__header/report__header.css);
+@import url(../blocks/report/__work/report__work.css);
+@import url(../blocks/report/__photo/report__photo.css);
+@import url(../blocks/report/__photo/_active/report__photo_active.css);
+
+@import url(../blocks/service/service.css);
+@import url(../blocks/service/__button/service__button.css);
+@import url(../blocks/service/__buttons/service__buttons.css);
+@import url(../blocks/service/__button/_basket/service__button_basket.css);
+@import url(../blocks/service/__button/_add/service__button_add.css);
+@import url(../blocks/service/__header/service__header.css);
+@import url(../blocks/service/__item/service__item.css);
+@import url(../blocks/service/__title/service__title.css);
+
+@import url(../blocks/images/images.css);
+@import url(../blocks/images/__display/images__display.css);
+@import url(../blocks/images/__title/images__title.css);
+@import url(../blocks/images/__panel/images__panel.css);
+@import url(../blocks/images/__item/images__item.css);
+@import url(../blocks/images/__item/_active/images__item_active.css);

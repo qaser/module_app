@@ -1,33 +1,13 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор ремонтных работ{% endblock %}
-{% block app_name %}Магистральные газопроводы{% endblock %}
+{% extends "pipelines/base_pipelines.html" %}
 
 {% load static %}
+
+{% block page_title %}Обзор ремонтных работ{% endblock %}
+
 {% load render_table from django_tables2 %}
 {% load pipelines_filters %}
 
-
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
-{% endblock %}
-
-{% block sidepanel %}
-    <a href="{% url 'pipelines:index' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_objects"></div>
-        <h3 class="sidebar__text">Схема магистральных газопроводов</h3>
-    </a>
-    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_edit"></div>
-        <h3 class="sidebar__text">Диагностика МГ</h3>
-    </a>
-    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_index"></div>
-        <h3 class="sidebar__text">Планирование</h3>
-    </a>
-    <!-- <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a> -->
+{% block app_specific_sidepanel %}
     <form id="filter_submit" class="sidebar__form">
         {% for field in filter.form %}
             <div class="sidebar__form-field">
@@ -35,22 +15,20 @@
                 {{ field|addclass:'sidebar__form-input' }}
             </div>
         {% endfor %}
-        <button type="submit" class="sidebar__button button module-color__button_pipelines">Применить</button>
+        <button type="submit" class="sidebar__button button button_dark-green">Применить</button>
     </form>
     <a class="link_simple" href="{% url 'pipelines:repairs' %}">
         <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
     </a>
 {% endblock %}
 
-{% block content %}
-{% csrf_token %}
-<main class="content">
-  <section class="main" id="main">
-    <h1 class="main__title">Обзор ремонтных работ</h1>
-    <div class="scheme" id="scheme"></div>
-    {% render_table table %}
-  </section>
-</main>
+{% block app_content %}
+    {% csrf_token %}
+    <main class="content">
+        <section class="main" id="main">
+            {% render_table table %}
+        </section>
+    </main>
 {% endblock %}
 
 {% block script %}

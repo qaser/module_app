@@ -1,30 +1,13 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор трубопроводной арматуры{% endblock %}
-{% block app_name %}Техническое обслуживание ТПА{% endblock %}
-{% block page_title %}Обзор трубопроводной арматуры{% endblock %}
+{% extends "tpa/base_tpa.html" %}
 
 {% load static %}
 {% load render_table from django_tables2 %}
 {% load tpa_filters %}
 
+{% block page_title %}Обзор трубопроводной арматуры{% endblock %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
-{% endblock %}
 
-{% block sidepanel %}
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_objects"></div>
-        <h3 class="sidebar__text">Обзор объектов</h3>
-    </a>
-    <a href="{% url 'tpa:valve_new' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_new"></div>
-        <h3 class="sidebar__text">Добавить ТПА</h3>
-    </a>
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a>
+{% block app_specific_sidepanel %}
     <form id="filter_submit" class="sidebar__form">
         {% for field in filter.form %}
             <div class="sidebar__form-field">
@@ -32,23 +15,22 @@
                 {{ field|addclass:'sidebar__form-input' }}
             </div>
         {% endfor %}
-        <button type="submit" class="sidebar__button button module-color__button_tpa">Применить</button>
+        <button type="submit" class="sidebar__button button button_dark-green">Применить</button>
     </form>
     <a class="link_simple" href="{% url 'tpa:index' %}">
         <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>
     </a>
 {% endblock %}
 
-{% block content %}
-{% csrf_token %}
-<main class="content">
-  <section class="main" id="main">
-    {% comment %} <h1 class="main__title">Обзор трубопроводной арматуры</h1> {% endcomment %}
-    {% render_table table %}
-  </section>
-</main>
+{% block app_content %}
+    {% csrf_token %}
+    <main class="content">
+        <section class="main" id="main">
+            {% render_table table %}
+        </section>
+    </main>
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/indexValve.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/tpa/indexValve.js' %}"></script>
 {% endblock %}

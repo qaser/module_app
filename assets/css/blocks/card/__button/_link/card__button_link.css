@@ -1,6 +1,4 @@
 .card__button_link {
-    background-image: url(../../../../../img/link-icon-white.svg);
-    margin-left: 10px;
-    width: 18px;
-    height: 18px;
-  }
+  background-image: url(../../../../../img/link-icon-white.svg);
+  margin-left: 10px;
+}

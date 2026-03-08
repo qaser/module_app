@@ -4,6 +4,8 @@
     padding: 0;
     margin: 0;
     color: white;
+    font-size: 14px;
+    line-height: 18px;
 }
 
 .report__column-title:first-of-type {

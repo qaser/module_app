@@ -61,7 +61,7 @@ def single_node(request):
 
 @login_required
 def single_diagnostic(request, diagnostic_id):
-    # pipe = Pipe.objects.filter(id=pipe_id)
+    # diagnostic = Diagnostics.objects.filter(id=diagnostic_id).first()
     return render(
         request,
         'pipelines/single_diagnostic.html',

@@ -1,13 +1,14 @@
-import * as config from '../../config/config.js';
-import * as constant from '../../utils/constants.js';
-import Api from '../../api/Api.js';
-import UserInfo from '../../components/UserInfo.js';
+import { getApi } from '../../getApi.js';
+import { initUser } from '../..//userInfo.js';
+import { renderLoading } from '../../loadingScreen.js';
 import FormValidator from '../../components/FormValidator.js';
 import PipelineVisualizer from '../../components/PipelineVisualizer.js';
 import PipelineContextMenu from '../../components/PipelineContextMenu.js';
 import PopupWithForm from '../../components/PopupWithForm.js';
 
 const formValidators = {};
+
+const api = getApi();
 
 // словарь с селекторами и классами форм, использую при валидации форм
 const formConfig = {
@@ -18,16 +19,6 @@ const formConfig = {
   inputErrorClass: 'form-popup__input_invalid',
   errorClass: 'form-popup__input-error_active',
 };
-
-// создание объекта api
-const api = new Api({
-  baseUrl: config.apiConfig.url,
-  headers: {
-    'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    'Content-Type': 'application/json',
-    // authorization: constant.apiConfig.token,
-  },
-});
 
 // универсальная функция для валидации форм (доступ по имени формы)
 const enableValidation = (config) => {
@@ -40,12 +31,6 @@ const enableValidation = (config) => {
     validator.enableValidation();
   });
 };
-
-// создание объекта с данными пользователя
-const newUserInfo = new UserInfo({
-  name: '.header__username',
-  job: '.header__user-proff',
-});
 
 const contextMenu = new PipelineContextMenu();
 
@@ -94,12 +79,6 @@ const pipelineScheme = new PipelineVisualizer(
   popupWithFormPipeLimitEnd,
   {}
 );
-
-function renderLoading(isLoading) {
-  if (isLoading) {
-    constant.loadingScreen.classList.add('loader_disactive');
-  }
-}
 
 function submitFormLimit(data) {
   const selected = pipelineScheme.getSelectedElement();
@@ -212,9 +191,8 @@ popupWithFormNodeChangeState.setEventListeners();
 popupWithFormPipeLimit.setEventListeners();
 popupWithFormPipeLimitEnd.setEventListeners();
 
-Promise.all([api.getMyProfile(), api.getPipelines()])
+Promise.all([initUser(), api.getPipelines()])
   .then(([userData, pipelines]) => {
-    newUserInfo.setUserInfo(userData);
     pipelineScheme.render(pipelines);
   })
   .catch((err) => {

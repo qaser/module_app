@@ -57,12 +57,14 @@ def filter_valves_by_user_role(user):
 
 @login_required
 def single_valve(request, valve_id):
-    valve = Valve.objects.filter(id=valve_id)
-    # print(valve.model._meta.fields)
+    valve = Valve.objects.filter(id=valve_id).first()
     return render(
         request,
         'tpa/single-valve.html',
-        {'valve_id': valve_id, 'valve': valve.model._meta.fields}
+        {
+            'valve_id': valve_id,
+            'valve': valve
+        }
     )
 
 

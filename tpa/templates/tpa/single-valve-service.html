@@ -1,44 +1,25 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор графика ТО | {{ valve.valve_type }} Ду{{ valve.diameter }}, Ру{{ valve.pressure }}{% endblock %}
-{% block app_name %}Техническое обслуживание ТПА{% endblock %}
+{% extends "tpa/base_tpa.html" %}
 
 {% load static %}
+
+{% block page_title %}График ТОиР | {{ valve.equipment }} | {{ valve.valve_type }} DN{{ valve.diameter }} №{{ valve.tech_number }}{% endblock %}
+
 {% load tpa_filters %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/single_valve_service.css'%}">
+{% block app_specific_sidepanel %}
+    <a href="{% url 'tpa:single_valve_service' valve.id %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'single_valve_service' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
+        <div class="sidebar__icon sidebar__icon_service"></div>
+        <h3 class="sidebar__text">Информация о ТОиР</h3>
+    </a>
 {% endblock %}
 
-{% block sidepanel %}
-        <a href="{% url 'tpa:index' %}" class="sidebar__item">
-            <div class="sidebar__icon sidebar__icon_index"></div>
-            <h3 class="sidebar__text">Обзор ТПА</h3>
-        </a>
-        <a href="{% url 'tpa:equipment_valve_service' valve.equipment.id %}" class="sidebar__item">
-            <div class="sidebar__icon sidebar__icon_objects"></div>
-            <h3 class="sidebar__text">Обзор объекта</h3>
-        </a>
-        <a href="{% url 'tpa:single_valve' valve.id %}" class="sidebar__item">
-            <div class="sidebar__icon sidebar__icon_info"></div>
-            <h3 class="sidebar__text">Информация о ТПА</h3>
-        </a>
-        <a href="" class="sidebar__item">
-            <div class="sidebar__icon sidebar__icon_doc"></div>
-            <h3 class="sidebar__text">Документация на ТПА</h3>
-        </a>
-        <a href="" class="sidebar__item">
-            <div class="sidebar__icon sidebar__icon_help"></div>
-            <h3 class="sidebar__text">Справочная информация</h3>
-        </a>
-{% endblock %}
-
-{% block content %}
+{% block app_content %}
     {% csrf_token %}
         <!-- главный контент -->
         <main class="content">
         <!-- основная панель -->
         <section class="main" id="main">
-            <h1 class="main__title">График ТОиР | {{ valve.equipment }} | {{ valve.valve_type }} (Ду{{ valve.diameter }}) №{{ valve.tech_number }}</h1>
             <div class="calendar" id="{{ valve.id }}">
                 <div class="calendar__header">
                     <p class="calendar__month"></p> <!-- пустой блок для отступа-->
@@ -92,7 +73,7 @@
                         <input class="form-popup__input" id="service-date" type="date" name="date">
                         <span class="form-popup__input-error" id="service-date-error"></span>
                     </label>
-                    <button class="form-popup__button button module-color__button_tpa" type="submit">Сохранить</button>
+                    <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
                 </form>
             </div>
         </div>
@@ -128,7 +109,7 @@
                         <span class="form-popup__status" id="uploadForm_Status"></span>
                         <span id="uploadForm_Size"></span>
                     </div>
-                    <button class="form-popup__button button module-color__button_tpa" type="submit">Сохранить</button>
+                    <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
                 </form>
             </div>
         </div>
@@ -164,7 +145,7 @@
                         <span class="form-popup__status" id="uploadFormEdit_Status"></span>
                         <span id="uploadFormEdit_Size"></span>
                     </div>
-                    <button class="form-popup__button button module-color__button_tpa" type="submit">Сохранить</button>
+                    <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
                 </form>
             </div>
         </div>
@@ -175,7 +156,7 @@
                 <button class="popup__button-close" type="button"></button>
                 <form class="form-popup" name="confirm-delete" id="form-delete" novalidate>
                     <h2 class="form-popup__header">Вы удаляете запись о ТО</h2>
-                    <button class="form-popup__button button module-color__button_tpa" type="submit">Подтвердить</button>
+                    <button class="form-popup__button button button_dark-green" type="submit">Подтвердить</button>
                 </form>
             </div>
         </div>
@@ -229,5 +210,5 @@
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/singleValveService.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/tpa/singleValveService.js' %}"></script>
 {% endblock %}

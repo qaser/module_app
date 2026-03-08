@@ -1,6 +1,4 @@
 .card__button_add {
-    background-image: url(../../../../../img/form_add.png);
-    margin-left: 10px;
-    width: 18px;
-    height: 18px;
-  }
+  background-image: url(../../../../../img/form_add.png);
+  margin-left: 10px;
+}

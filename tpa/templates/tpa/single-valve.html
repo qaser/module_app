@@ -1,33 +1,17 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор выбранной ТПА{% endblock %}
-{% block app_name %}Техническое обслуживание ТПА{% endblock %}
+{% extends "tpa/base_tpa.html" %}
 
 {% load static %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
-{% endblock %}
+{% block page_title %}{{ valve.equipment }} | {{ valve.valve_type }} DN{{ valve.diameter }}, PN{{ valve.pressure }} | №{{ valve.tech_number }}{% endblock %}
 
-{% block sidepanel %}
-    <a href="{% url 'tpa:index' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_index"></div>
-        <h3 class="sidebar__text">Обзор ТПА</h3>
-    </a>
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_objects"></div>
-        <h3 class="sidebar__text">Обзор объекта</h3>
-    </a>
+{% block app_specific_sidepanel %}
     <a href="{% url 'tpa:single_valve_service' valve_id %}" class="sidebar__item">
         <div class="sidebar__icon sidebar__icon_service"></div>
         <h3 class="sidebar__text">Информация о ТОиР</h3>
     </a>
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a>
 {% endblock %}
 
-{% block content %}
+{% block app_content %}
     {% csrf_token %}
     <main class="content">
       <!-- основная панель -->
@@ -160,7 +144,7 @@
             <form class="form-popup form-popup_wide" name="new-file" id="form-newfile" enctype="multipart/form-data">
                 <h2 class="form-popup__header"></h2>
                 <label class="form-popup__field">
-                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4"></input>
+                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4">
                     <span class="form-popup__input-error" id="file-name-error"></span>
                 </label>
                 <label class="form-popup__file-field">
@@ -173,7 +157,7 @@
                     <span class="form-popup__status" id="uploadForm_Status"></span>
                     <span id="uploadForm_Size"></span>
                 </div>
-                <button class="form-popup__button button module-color__button_{{ request.resolver_match.app_name }}" type="submit">Сохранить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
             </form>
         </div>
     </div>
@@ -194,5 +178,5 @@
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/singleValve.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/tpa/singleValve.js' %}"></script>
 {% endblock %}

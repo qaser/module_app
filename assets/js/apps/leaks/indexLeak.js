@@ -1,9 +1,11 @@
-import * as config from './config/config.js';
-import * as constant from './utils/constants.js';
-import Api from './api/Api.js';
-import UserInfo from './components/UserInfo.js';
-import Table from './components/Table.js';
-import FormFilter from './components/FormFilter.js';
+import * as config from '../../config/config.js';
+import * as constant from '../../utils/constants.js';
+import Api from '../../api/Api.js';
+import UserInfo from '../../components/UserInfo.js';
+import Table from '../../components/Table.js';
+import FormFilter from '../../components/FormFilter.js';
+import Tooltip from '../../components/Tooltip.js';
+import AppMenu from '../../components/AppMenu.js';
 
 // создание объекта api
 const api = new Api({
@@ -30,19 +32,21 @@ function renderLoading(isLoading) {
   }
 }
 
+new Tooltip();
+new AppMenu();
 newTable.init();
 
 api
   .getMyProfile()
   .then((userData) => {
     newUserInfo.setUserInfo(userData);
-    new FormFilter(
-      api.getEquipmentChildren.bind(api),
-      'filter_submit',
-      'id_equipment',
-      'equipment',
-      'sidebar__form-input'
-    );
+    // new FormFilter(
+    //     api.getEquipmentChildren.bind(api),
+    //     'filter_submit',
+    //     'id_equipment',
+    //     'equipment',
+    //     'sidebar__form-input',
+    // );
     const targetField = document.querySelector('#id_equipment');
     targetField.setAttribute('data-tooltip', constant.tooltipFormField);
   })

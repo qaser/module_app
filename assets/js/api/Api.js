@@ -187,7 +187,10 @@ export default class Api {
   addNewService(service) {
     return fetch(`${this._baseUrl}/services/`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify({
         name: service.name,
         prod_date: service.prod_date,
@@ -364,7 +367,10 @@ export default class Api {
   changePipeState(stateData) {
     return fetch(`${this._baseUrl}/pipe-states/`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify({ stateData }),
     }).then(this._checkResponse);
   }
@@ -372,7 +378,10 @@ export default class Api {
   editPipeLimit(limitData) {
     return fetch(`${this._baseUrl}/pipe-limits/`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify({ limitData }),
     }).then(this._checkResponse);
   }
@@ -380,7 +389,10 @@ export default class Api {
   endPipeLimit(limitData) {
     return fetch(`${this._baseUrl}/pipe-limits/${limitData.id}/`, {
       method: 'PATCH',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify({ limitData }),
     }).then(this._checkResponse);
   }
@@ -388,7 +400,10 @@ export default class Api {
   changeNodeState(stateData) {
     return fetch(`${this._baseUrl}/node-states/`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify({ stateData }),
     }).then(this._checkResponse);
   }

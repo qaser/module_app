@@ -1,124 +1,100 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор магистральных газопроводов{% endblock %}
-{% block app_name %}Магистральные газопроводы{% endblock %}
+{% extends "pipelines/base_pipelines.html" %}
 
 {% load static %}
 
+{% block page_title %}Схема магистральных газопроводов{% endblock %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index_pipelines.css'%}">
-{% endblock %}
 
-{% block sidepanel %}
-    <a href="{% url 'pipelines:repairs' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_service"></div>
-        <h3 class="sidebar__text">Обзор ремонтов</h3>
-    </a>
-    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_edit"></div>
-        <h3 class="sidebar__text">Диагностика МГ</h3>
-    </a>
-    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_index"></div>
-        <h3 class="sidebar__text">Планирование</h3>
-    </a>
-    <!-- <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a> -->
-{% endblock %}
+{% block app_content %}
+    {% csrf_token %}
+    <main class="content">
+        <section class="main" id="main">
+            <div class="scheme" id="scheme"></div>
+        </section>
+    </main>
 
-{% block content %}
-{% csrf_token %}
-<main class="content">
-  <section class="main" id="main">
-    <h1 class="main__title">Обзор магистральных газопроводов</h1>
-    <div class="scheme" id="scheme"></div>
-  </section>
-</main>
-
-<div class="popup" id="popup-pipe-statechange">
-    <div class="popup__container">
-        <button class="popup__button-close" type="button"></button>
-        <form class="form-popup" name="state-change" id="form-pipe-statechange">
-            <h2 class="form-popup__header"></h2>
-            <label class="form-popup__field">
-                <select class="form-popup__input" id="state_type" name="state_type">
-                    {% for value, label in state_choices %}
-                        <option value="{{ value }}">{{ label }}</option>
-                    {% endfor %}
-                </select>
-                <span class="form-popup__input-error" id="state_type-error"></span>
-            </label>
-            <label class="form-popup__field">
-                <input class="form-popup__input" id="start_date" type="date" required name="start_date">
-                <span class="form-popup__input-error" id="start_date-error"></span>
-            </label>
-            <label class="form-popup__field">
-                <textarea class="form-popup__input" id="state-description" name="description" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="500" minlength="7"></textarea>
-                <span class="form-popup__input-error" id="state-description-error"></span>
-            </label>
-            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
-        </form>
+    <div class="popup" id="popup-pipe-statechange">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="state-change" id="form-pipe-statechange">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <select class="form-popup__input" id="state_type" name="state_type">
+                        {% for value, label in state_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="form-popup__input-error" id="state_type-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="start_date" type="date" required name="start_date">
+                    <span class="form-popup__input-error" id="start_date-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <textarea class="form-popup__input" id="state-description" name="description" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="500" minlength="7"></textarea>
+                    <span class="form-popup__input-error" id="state-description-error"></span>
+                </label>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<div class="popup" id="popup-pipe-limit">
-    <div class="popup__container">
-        <button class="popup__button-close" type="button"></button>
-        <form class="form-popup" name="limit" id="form-pipe-limit">
-            <h2 class="form-popup__header"></h2>
-            <label class="form-popup__field">
-                <input class="form-popup__input" id="pressure_limit" name="pressure_limit" type="number" step="any">
-                <span class="form-popup__input-error" id="pressure_limit-error"></span>
-            </label>
-            <label class="form-popup__field">
-                <input class="form-popup__input" id="start_date" type="date" required name="start_date">
-                <span class="form-popup__input-error" id="start_date-error"></span>
-            </label>
-            <label class="form-popup__field">
-                <textarea class="form-popup__input" id="limit_reason" name="limit_reason" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="100" minlength="7"></textarea>
-                <span class="form-popup__input-error" id="limit_reason-error"></span>
-            </label>
-            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
-        </form>
+    <div class="popup" id="popup-pipe-limit">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="limit" id="form-pipe-limit">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="pressure_limit" name="pressure_limit" type="number" step="any">
+                    <span class="form-popup__input-error" id="pressure_limit-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="start_date" type="date" required name="start_date">
+                    <span class="form-popup__input-error" id="start_date-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <textarea class="form-popup__input" id="limit_reason" name="limit_reason" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="100" minlength="7"></textarea>
+                    <span class="form-popup__input-error" id="limit_reason-error"></span>
+                </label>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<div class="popup" id="popup-pipe-limit-end">
-    <div class="popup__container">
-        <button class="popup__button-close" type="button"></button>
-        <form class="form-popup" name="limit-end" id="form-pipe-limit-end">
-            <h2 class="form-popup__header"></h2>
-            <label class="form-popup__field">
-                <input class="form-popup__input" id="end_date" type="date" required name="end_date">
-                <span class="form-popup__input-error" id="end_date-error"></span>
-            </label>
-            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
-        </form>
+    <div class="popup" id="popup-pipe-limit-end">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="limit-end" id="form-pipe-limit-end">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <input class="form-popup__input" id="end_date" type="date" required name="end_date">
+                    <span class="form-popup__input-error" id="end_date-error"></span>
+                </label>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+            </form>
+        </div>
     </div>
-</div>
 
-<div class="popup" id="popup-node-statechange">
-    <div class="popup__container">
-        <button class="popup__button-close" type="button"></button>
-        <form class="form-popup" name="state-change" id="form-node-statechange">
-            <h2 class="form-popup__header"></h2>
-            <label class="form-popup__field">
-                <select class="form-popup__input" id="state_type" name="state_type">
-                    <option value="open">Открыто</option>
-                    <option value="closed">Закрыто</option>
-                </select>
-                <span class="form-popup__input-error" id="state_type-error"></span>
-            </label>
-            <label class="form-popup__field">
-                <textarea class="form-popup__input" id="description" name="description" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="500" minlength="7"></textarea>
-                <span class="form-popup__input-error" id="description-error"></span>
-            </label>
-            <button class="form-popup__button button module-color__button_pipelines" type="submit">Сохранить</button>
-        </form>
+    <div class="popup" id="popup-node-statechange">
+        <div class="popup__container">
+            <button class="popup__button-close" type="button"></button>
+            <form class="form-popup" name="state-change" id="form-node-statechange">
+                <h2 class="form-popup__header"></h2>
+                <label class="form-popup__field">
+                    <select class="form-popup__input" id="state_type" name="state_type">
+                        <option value="open">Открыто</option>
+                        <option value="closed">Закрыто</option>
+                    </select>
+                    <span class="form-popup__input-error" id="state_type-error"></span>
+                </label>
+                <label class="form-popup__field">
+                    <textarea class="form-popup__input" id="description" name="description" rows="5" placeholder="При необходимости введите дополнительную информацию" maxlength="500" minlength="7"></textarea>
+                    <span class="form-popup__input-error" id="description-error"></span>
+                </label>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
+            </form>
+        </div>
     </div>
-</div>
 {% endblock %}
 
 {% block script %}

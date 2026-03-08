@@ -278,7 +278,7 @@ class DiagnosticsTable(tables.Table):
                     all_roots.add(root.name)
 
         if all_roots:
-            return ' / '.join(sorted(all_roots))
+            return '  -  '.join(sorted(all_roots))
         return '-'
 
     def render_pipes_distance(self, record):

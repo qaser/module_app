@@ -1,45 +1,16 @@
-import * as config from '../../config/config.js';
-import * as constant from '../../utils/constants.js';
-import Api from '../../api/Api.js';
-import UserInfo from '../../components/UserInfo.js';
+import { getApi } from '../../getApi.js';
+import { initUser } from '../..//userInfo.js';
+import { renderLoading } from '../../loadingScreen.js';
 import Table from '../../components/Table.js';
 
-// const pipeId = document.querySelector('.card').id;
-
-// создание объекта api
-const api = new Api({
-  baseUrl: config.apiConfig.url,
-  headers: {
-    'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
-    'Content-Type': 'application/json',
-    // authorization: constant.apiConfig.token,
-  },
-});
+const api = getApi();
 
 // создание объекта таблицы со строками ссылками
 const newTable = new Table({ table: '.table__body' });
 
-// создание объекта с данными пользователя
-const newUserInfo = new UserInfo({
-  name: '.header__username',
-  job: '.header__user-proff',
-});
-
-function renderLoading(isLoading) {
-  if (isLoading) {
-    constant.loadingScreen.classList.add('loader_disactive');
-  }
-}
-
 newTable.init();
 
-api
-  .getMyProfile()
-  .then((userData) => {
-    newUserInfo.setUserInfo(userData);
-    // const targetField = document.querySelector('#id_department')
-    // targetField.setAttribute('data-tooltip', constant.tooltipFormField)
-  })
+initUser()
   .catch((err) => {
     console.log(`Ошибка: ${err}`);
   })

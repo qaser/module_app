@@ -1,44 +1,24 @@
-{% extends "module_app/base.html" %}
-
-{% block title %}Добавить новую запись о ТПА{% endblock %}
-{% block app_name %}Техническое обслуживание ТПА{% endblock %}
+{% extends "tpa/base_tpa.html" %}
 
 {% load static %}
 {% load tpa_filters %}
 
+{% block page_title %}Добавить новую запись о ТПА{% endblock %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/form-tpa.css'%}">
-{% endblock %}
 
-{% block sidepanel %}
-    <a href="{% url 'tpa:index' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_index"></div>
-        <h3 class="sidebar__text">Обзор ТПА</h3>
-    </a>
-    <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a>
-{% endblock %}
-
-{% block content %}
-    {% csrf_token %}
+{% block app_content %}
     <main class="content">
         <section class="main" id="main">
             <!-- блок формы -->
 
-            <form class="card__container" method="post" enctype="multipart/form-data" id="form-new-tpa">
-                <div class="card__header module-color__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">Добавить новую запись о ТПА</h3>
-                </div>
+            <form class="form" method="post" enctype="multipart/form-data" id="form-new-tpa">
                 {% csrf_token %}
 
                 {% for field in form %}
 
-                    <div class="card__line" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
-                        <label for="{{ field.id_for_label }}" class="card__param">{{ field.label }}</label>
-                        {{ field|addclass:'card__value card__input' }}
+                    <div class="form__group" aria-required="{% if field.field.required %}true{% else %}false{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="form__label">{{ field.label }}</label>
+                        {{ field|addclass:'form__input form__input_textarea' }}
                         {% include 'tpa/tpa_ext/form_extend/error.html' with field=field %}
                     </div>
 
@@ -54,5 +34,5 @@
 
 
 {% block script %}
-    <script type="module" src="{% static 'js/newValve.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/tpa/newValve.js' %}"></script>
 {% endblock %}

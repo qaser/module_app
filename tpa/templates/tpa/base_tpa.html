@@ -1,0 +1,34 @@
+{% extends "module_app/base.html" %}
+{% block title %}Обзор трубопроводной арматуры{% endblock %}
+{% block app_name %}Техническое обслуживание ТПА{% endblock %}
+
+{% load static %}
+
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'css/pages/tpa_styles.css'%}">
+{% endblock %}
+
+{% block sidepanel %}
+    <a href="{% url 'tpa:index' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'index' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
+        <div class="sidebar__icon sidebar__icon_index"></div>
+        <h3 class="sidebar__text">Обзор ТПА</h3>
+    </a>
+    <a href="{% url 'tpa:valve_new' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'valve_new' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
+        <div class="sidebar__icon sidebar__icon_new"></div>
+        <h3 class="sidebar__text">Добавить ТПА</h3>
+    </a>
+    {% block app_specific_sidepanel %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    {% block app_content %}{% endblock %}
+{% endblock %}
+
+
+{% block script %}
+    {% block app_script %}{% endblock %}
+{% endblock %}
