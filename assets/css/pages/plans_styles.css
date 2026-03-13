@@ -7,3 +7,19 @@
 
 @import url(../blocks/activity-card/activity-card.css);
 @import url(../blocks/event-card/event-card.css);
+
+@import url(../blocks/dashboard/dashboard.css);
+
+@import url(../blocks/chart/chart.css);
+@import url(../blocks/chart/__inline/chart__inline.css);
+@import url(../blocks/chart/__title/chart__title.css);
+
+
+.chart {
+  display: flex;
+  flex-direction: row;
+  /* align-items: center; */
+  gap: 20px;
+  /* width: 40%; */
+  /* margin-left: 20px; */
+}

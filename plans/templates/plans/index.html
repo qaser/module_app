@@ -2,12 +2,66 @@
 
 {% load static %}
 
-
 {% block app_content %}
 <main class="content">
-  <section class="main" id="main">
-    <h1 class="main__title"></h1>
-  </section>
+
+<div class="dashboard">
+
+    <div class="stat-card">
+        <div class="stat-title">Утечки газа</div>
+        <div class="stat-value red">13</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-title">Замечания</div>
+        <div class="stat-value">34</div>
+        {% comment %} <div class="stat-unit">МПа</div> {% endcomment %}
+    </div>
+
+    <div class="widget">
+        <div class="widget-title">Аудиты</div>
+        <ul class="events">
+            <li>18.05.2026 - АПК - 4 уровня</li>
+            <li>01.04.2026 - Диагностика АКБ СПТ</li>
+            <li>06.07.2026 - Проверка Газнадзор</li>
+        </ul>
+    </div>
+
+
+    <div class="widget full">
+        <div class="widget-title">Работы на сегодня</div>
+
+        <ul class="work-list">
+            <li>Ремонт участка 12</li>
+            <li>Проверка К-18</li>
+            <li>Осмотр перемычки 4</li>
+            <li>Диагностика участка 73</li>
+        </ul>
+
+    </div>
+
+    <div class="widget">
+        <div class="widget-title">Последние события</div>
+        <ul class="events">
+            <li>14:02 Утечка на участке 8</li>
+            <li>13:40 Открыт кран К-22</li>
+            <li>13:15 Плановый осмотр</li>
+        </ul>
+    </div>
+
+    <div class="widget large" id="rational" plan_id="{{ rational_plan.id }}">
+        <div class="widget-title">Рационализаторская работа</div>
+        <div class="chart">
+            <div id="chart-annual" class="chart__inline"></div>
+            <div class="chart__inline">
+                <div id="chart-q" class="chart__item"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
 </main>
 
 {% endblock %}

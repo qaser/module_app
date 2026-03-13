@@ -1,7 +1,6 @@
-import * as config from '../../config/config.js';
-import * as constant from '../../utils/constants.js';
-import Api from '../../api/Api.js';
-import UserInfo from '../../components/UserInfo.js';
+import { getApi } from '../../getApi.js';
+import { initUser } from '../..//userInfo.js';
+import { renderLoading } from '../../loadingScreen.js';
 import TubeItem from '../../components/TubeItem.js';
 import Section from '../../components/Section.js';
 import PopupWithForm from '../../components/PopupWithForm.js';
@@ -15,6 +14,8 @@ let haveFiles = 0;
 const filesContainer = document.querySelector('.card__files'); // контейнер с файлами
 const formValidators = {};
 
+const api = getApi();
+
 const formFileConfig = {
   formSelector: '.form-popup',
   inputSelector: '.form-popup__input',
@@ -23,15 +24,6 @@ const formFileConfig = {
   inputErrorClass: 'form-popup__input_invalid',
   errorClass: 'form-popup__input-error_active',
 };
-
-// создание объекта api
-const api = new Api({
-  baseUrl: config.apiConfig.url,
-  headers: {
-    // 'Content-Type': 'application/json',
-    'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
-  },
-});
 
 // const cardWithFiles = new HiddenElement('#card_files')
 const btnFileAdd = new HiddenElement('.card__button_add');
@@ -47,12 +39,6 @@ const fileInstance = new Section(
   },
   '.card__files'
 );
-
-// создание объекта с данными пользователя
-const newUserInfo = new UserInfo({
-  name: '.header__username',
-  job: '.header__user-proff',
-});
 
 // создание объекта с данными о tube
 const tubeInstance = new TubeItem({
@@ -144,16 +130,11 @@ const enableValidation = (config) => {
   });
 };
 
-function renderLoading() {
-  constant.loadingScreen.classList.toggle('loader_disactive');
-}
-
 enableValidation(formFileConfig);
 popupWithFormNewFile.setEventListeners();
 
-Promise.all([api.getMyProfile(), api.getTubeItem(tubeId)])
+Promise.all([initUser(), api.getTubeItem(tubeId)])
   .then(([userData, tube]) => {
-    newUserInfo.setUserInfo(userData);
     tubeInstance.renderItem(tube);
     tubeVersionId = tube.version_id;
     if (tube.files.length > 0) {

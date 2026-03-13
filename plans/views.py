@@ -9,6 +9,7 @@ from django_tables2 import SingleTableMixin
 from django.utils import timezone
 
 from equipments.models import Department
+from rational.models import AnnualPlan
 from users.models import ModuleUser, Role, UserAppRoute
 
 from .filters import DocumentFilter, EventInstanceFilter
@@ -18,10 +19,20 @@ from .tables import DocumentTable
 
 @login_required
 def index(request):
+    if not request.user or not request.user.department:
+        return None
+    root_dept = request.user.department.get_root()
+    current_year = timezone.now().year
+    annual_plans = AnnualPlan.objects.filter(
+        department=root_dept,
+        year=current_year
+    )
     return render(
         request,
         'plans/index.html',
-        {}
+        {
+            'rational_plan': annual_plans.first()
+        }
     )
 
 

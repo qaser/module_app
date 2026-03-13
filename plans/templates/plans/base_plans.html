@@ -13,6 +13,11 @@
 
 {% block sidepanel %}
     <!-- Общие элементы для ВСЕХ шаблонов приложения plans -->
+    <a href="{% url 'plans:index' %}"
+       class="sidebar__item {% if request.resolver_match.url_name == 'index' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
+        <div class="sidebar__icon sidebar__icon_info"></div>
+        <h3 class="sidebar__text">Обзор филиала</h3>
+    </a>
     <a href="{% url 'plans:orders' %}"
        class="sidebar__item {% if request.resolver_match.url_name == 'orders' %}module-color__borders_{{ request.resolver_match.app_name }}{% endif %}">
         <div class="sidebar__icon sidebar__icon_info"></div>

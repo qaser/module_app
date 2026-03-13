@@ -24,3 +24,4 @@
 @import url(../blocks/card/__image-container/_delete/card__image-container_delete.css);
 @import url(../blocks/card/__input/card__input.css);
 @import url(../blocks/card/_inline/card_inline.css);
+@import url(../blocks/card/__button/_link/card__button_link.css);

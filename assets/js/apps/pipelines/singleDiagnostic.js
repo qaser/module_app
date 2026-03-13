@@ -1,5 +1,3 @@
-import * as config from '../../config/config.js';
-import * as constant from '../../utils/constants.js';
 import { getApi } from '../../getApi.js';
 import { initUser } from '../..//userInfo.js';
 import { renderLoading } from '../../loadingScreen.js';

@@ -1,38 +1,11 @@
-{% extends "module_app/base.html" %}
-{% block title %}Обзор участка МГ{% endblock %}
-{% block app_name %}Магистральные газопроводы{% endblock %}
+{% extends "pipelines/base_pipelines.html" %}
 
 {% load static %}
 
+{% block page_title %}Информация об участке{% endblock %}
 
-{% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/single-pipe.css'%}">
-{% endblock %}
 
-{% block sidepanel %}
-    <a href="{% url 'pipelines:index' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_objects"></div>
-        <h3 class="sidebar__text">Схема магистральных газопроводов</h3>
-    </a>
-    <a href="{% url 'pipelines:repairs' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_service"></div>
-        <h3 class="sidebar__text">Обзор ремонтов</h3>
-    </a>
-    <a href="{% url 'pipelines:diagnostics' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_edit"></div>
-        <h3 class="sidebar__text">Диагностика МГ</h3>
-    </a>
-    <a href="{% url 'pipelines:plans' %}" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_index"></div>
-        <h3 class="sidebar__text">Планирование</h3>
-    </a>
-    <!-- <a href="" class="sidebar__item">
-        <div class="sidebar__icon sidebar__icon_help"></div>
-        <h3 class="sidebar__text">Справочная информация</h3>
-    </a> -->
-{% endblock %}
-
-{% block content %}
+{% block app_content %}
     {% csrf_token %}
     <main class="content">
       <!-- основная панель -->
@@ -147,7 +120,7 @@
             <form class="form-popup form-popup_wide" name="new-file" id="form-newfile" enctype="multipart/form-data">
                 <h2 class="form-popup__header"></h2>
                 <label class="form-popup__field">
-                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4"></input>
+                    <input class="form-popup__input" id="file-name" name="name" placeholder="Введите название документа" required maxlength="50" minlength="4">
                     <span class="form-popup__input-error" id="file-name-error"></span>
                 </label>
                 <label class="form-popup__file-field">
@@ -160,7 +133,7 @@
                     <span class="form-popup__status" id="uploadForm_Status"></span>
                     <span id="uploadForm_Size"></span>
                 </div>
-                <button class="form-popup__button button module-color__button_{{ request.resolver_match.app_name }}" type="submit">Сохранить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
             </form>
         </div>
     </div>

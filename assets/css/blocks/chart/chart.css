@@ -14,8 +14,3 @@
         margin: 30px auto;
     }
 }
-
-.chart__item {
-    display: flex;
-    justify-content: center;
-}
