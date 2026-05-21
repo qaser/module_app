@@ -1,5 +1,7 @@
 {% extends "plans/base_plans.html" %}
 
+{% block page_title %}{{ doc.full_title }}{% endblock %}
+
 {% load static %}
 {% load plans_filters %}
 
@@ -12,7 +14,7 @@
                 {{ field|addclass:'sidebar__form-input' }}
             </div>
         {% endfor %}
-        <button type="submit" class="sidebar__button button module-color__button_plans">Применить</button>
+        <button type="submit" class="sidebar__button button button_dark-green">Применить</button>
     </form>
     <a class="link_simple" href="{% url 'plans:single_inspect' doc.id %}">
         <button class="sidebar__button button button_dark-red sidebar__button_mar-bottom">Сбросить</button>

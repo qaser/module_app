@@ -3,6 +3,8 @@
 {% load static %}
 {% load plans_filters %}
 
+{% block page_title %}Все замечания{% endblock %}
+
 
 {% block app_specific_sidepanel %}
     <form id="filter_submit" class="sidebar__form">
@@ -22,9 +24,6 @@
 {% block app_content %}
 <main class="content" id="orders">
     <section class="main" id="main">
-        <div class="main__header">
-            <h1 class="main__title" id="">Все замечания</h1>
-        </div>
 
         {% for item in events_with_actions %}
             {% with instance=item.instance event=item.event %}
@@ -59,7 +58,7 @@
                     <textarea class="form-popup__input" id="comment" name="comment" rows="4" placeholder="При необходимости введите дополнительную информацию" maxlength="100" minlength="5"></textarea>
                     <span class="form-popup__input-error" id="comment-error"></span>
                 </label>
-                <button class="form-popup__button button module-color__button_plans" type="submit">Сохранить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
             </form>
         </div>
     </div>
@@ -69,7 +68,7 @@
             <button class="popup__button-close" type="button"></button>
             <form class="form-popup" name="confirm-complete" id="form-complete" novalidate>
                 <h2 class="form-popup__header">Отметить выполнение замечания?</h2>
-                <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Подтвердить</button>
             </form>
         </div>
     </div>
@@ -79,7 +78,7 @@
             <button class="popup__button-close" type="button"></button>
             <form class="form-popup" name="confirm-archive" id="form-archive" novalidate>
                 <h2 class="form-popup__header">Архивировать замечание?</h2>
-                <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Подтвердить</button>
             </form>
         </div>
     </div>
@@ -89,7 +88,7 @@
             <button class="popup__button-close" type="button"></button>
             <form class="form-popup" name="confirm-unarchive" id="form-unarchive" novalidate>
                 <h2 class="form-popup__header">Восстановить замечание из архива?</h2>
-                <button class="form-popup__button button module-color__button_plans" type="submit">Подтвердить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Подтвердить</button>
             </form>
         </div>
     </div>
@@ -182,7 +181,7 @@
                     <span class="form-popup__input-error" id="departments-error"></span>
                 </label>
 
-                <button class="form-popup__button button module-color__button_plans" type="submit">Сохранить</button>
+                <button class="form-popup__button button button_dark-green" type="submit">Сохранить</button>
             </form>
         </div>
     </div>

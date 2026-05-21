@@ -7,8 +7,8 @@ from pathlib import Path
 import django
 from openpyxl import load_workbook
 
-BASE_URL = r"G:\WorkDocuments\Dev\module_app"
-# BASE_URL = r"D:\Development\module_a5pp"
+# BASE_URL = r"G:\WorkDocuments\Dev\module_app"
+BASE_URL = r"D:\Development\module_app"
 
 # Настройка Django окружения
 sys.path.append(BASE_URL)

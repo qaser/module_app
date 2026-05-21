@@ -1,10 +1,12 @@
 {% extends "module_app/base.html" %}
 {% block title %}Обзор выбранной утечки газа{% endblock %}
 
+{% block page_title %}Информация об утечке газа{% endblock %}
+
 {% load static %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'css/pages/index.css'%}">
+    <link rel="stylesheet" href="{% static 'css/pages/leaks_styles.css'%}">
 {% endblock %}
 
 {% block sidepanel %}
@@ -33,7 +35,7 @@
         <div class="card" id="{{ leak_id }}">
             <div class="card__container">
                 <div class="card__header card__header_{{ request.resolver_match.app_name }}">
-                    <h3 class="card__title">Информация об утечке газа</h3>
+                    <h3 class="card__title"></h3>
                     <button class="button card__button card__button_edit"></button>
                 </div>
                 <div class="card__field" id="leak_info">
@@ -82,5 +84,5 @@
 {% endblock %}
 
 {% block script %}
-    <script type="module" src="{% static 'js/singleLeak.js' %}"></script>
+    <script type="module" src="{% static 'js/apps/leaks/singleLeak.js' %}"></script>
 {% endblock %}

@@ -1,0 +1,22 @@
+@import url(../pages/popup_styles.css);
+
+@import url(../pages/main_styles.css);
+
+@import url(../pages/table_styles.css);
+
+@import url(../pages/form_styles.css);
+
+@import url(../pages/card_styles.css);
+
+@import url(../blocks/plan/plan.css);
+@import url(../blocks/plan/__card/plan__card.css);
+@import url(../blocks/plan/__content/plan__content.css);
+@import url(../blocks/plan/__info/plan__info.css);
+@import url(../blocks/plan/__name/plan__name.css);
+@import url(../blocks/plan/__quarters/plan__quarters.css);
+@import url(../blocks/plan/__ribbon/plan__ribbon.css);
+@import url(../blocks/plan/__stats/plan__stats.css);
+
+@import url(../blocks/chart/chart.css);
+@import url(../blocks/chart/__inline/chart__inline.css);
+@import url(../blocks/chart/__title/chart__title.css);

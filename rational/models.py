@@ -486,7 +486,7 @@ class QuarterlyPlan(models.Model):
         department_ids = self.annual_plan.department.get_descendants(include_self=True).values_list('id', flat=True)
         # Фильтруем предложения по department и статусам
         proposals = Proposal.objects.filter(
-            reg_date__range=(start_date, end_date),
+            reg_date__date__range=(start_date.date(), end_date.date()),
             department__id__in=department_ids,  # Только для текущего оборудования и его дочерних элементов
             statuses__status=ProposalStatus.StatusChoices.REG,
         ).filter(
@@ -504,7 +504,7 @@ class QuarterlyPlan(models.Model):
         department_ids = self.annual_plan.department.get_descendants(include_self=True).values_list('id', flat=True)
         # Фильтруем предложения по department и статусам
         proposals = Proposal.objects.filter(
-            reg_date__range=(start_date, end_date),
+            reg_date__date__range=(start_date.date(), end_date.date()),
             department__id__in=department_ids,  # Только для текущего оборудования и его дочерних элементов
             statuses__status=ProposalStatus.StatusChoices.REG,
         ).filter(

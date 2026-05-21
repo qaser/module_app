@@ -1,8 +1,8 @@
 .header__user-proff {
     margin: 0 0 0 0;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 14px;
+    font-size: 10px;
+    line-height: 12px;
 }
 
 @media screen and (max-width: 800px) {

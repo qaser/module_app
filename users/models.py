@@ -11,8 +11,6 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 
 from equipments.models import Department
-
-# from rest_framework.authtoken.models import Token
 from module_app.utils import get_installed_apps
 
 APP_CHOICES = [(app, app) for app in get_installed_apps()]
@@ -20,17 +18,15 @@ YOUNG_AGE_THRESHOLD = 35  # Порог молодости
 
 
 # Добавьте сигнал для автоматического создания токена при создании пользователя
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+#     if created:
+#         Token.objects.create(user=instance)
 
 
 class Role(models.TextChoices):
     ADMIN = "admin"  # всемогущий (просмотр всех equipments)
-    MANAGER = (
-        "manager"  # уровень ЛПУМГ (просмотр всех дочерних equipments от самого начала)
-    )
+    MANAGER = "manager"  # уровень ЛПУМГ (просмотр всех дочерних equipments от самого начала)
     EMPLOYEE = "employee"  # уровень рабочего места (просмотр всех дочерних equipments своего места работы)
 
 

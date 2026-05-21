@@ -501,7 +501,10 @@ export default class Api {
   createDoc(data) {
     return fetch(`${this._baseUrl}/plans/docs/`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify(data),
     }).then(this._checkResponse);
   }
@@ -516,7 +519,10 @@ export default class Api {
   createEvent(data) {
     return fetch(`${this._baseUrl}/plans/events/`, {
       method: 'POST',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify(data),
     }).then(this._checkResponse);
   }
@@ -531,7 +537,10 @@ export default class Api {
   markEvent(id, data) {
     return fetch(`${this._baseUrl}/plans/instances/${id}/mark/`, {
       method: 'PATCH',
-      headers: this._headers,
+      headers: {
+        'Content-Type': 'application/json',
+        ...this._headers, // если есть другие заголовки
+      },
       body: JSON.stringify(data),
     }).then(this._checkResponse);
   }
